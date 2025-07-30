@@ -18,7 +18,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "commit": "git-cz",
-    "postinstall": "if [ -d .git ]; then husky install; fi"
+    "setup": "husky install"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
