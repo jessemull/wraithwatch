@@ -21,7 +21,7 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub 'wraithwatch-frontend-${AWS::AccountId}'
+      BucketName: 'wraithwatch-frontend'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
