@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Wraithwatch WebSocket Server - ECS Task Definition'
+
+Parameters:
+  ContainerImage:
+    Type: String
+    Description: 'ECR image URI for the WebSocket server'
+    Default: ''
+
+  Environment:
+    Type: String
+    Description: 'Environment'
+    Default: 'main'
+
+  ECSClusterName:
+    Type: String
+    Description: 'Name of the ECS cluster'
+    Default: 'wraithwatch-websocket-Cluster'
+
+  TargetGroupArn:
+    Type: String
+    Description: 'ARN of the ALB target group'
+    Default: ''
+
+Conditions:
+  HasContainerImage: !Not [!Equals [!Ref ContainerImage, '']]
+  HasTargetGroup: !Not [!Equals [!Ref TargetGroupArn, '']]
+
+Resources:
+  # Task Definition
+  WebSocketTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub 'wraithwatch-websocket-task-${Environment}'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: websocket-server
+          Image: !If
+            - HasContainerImage
+            - !Ref ContainerImage
+            - !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/wraithwatch-websocket:latest'
+          PortMappings:
+            - ContainerPort: 8080
+              Protocol: tcp
+          Environment:
+            - Name: NODE_ENV
+              Value: !Ref Environment
+            - Name: PORT
+              Value: '8080'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref CloudWatchLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: websocket
+
+  # IAM Roles
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: CloudWatchLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CloudWatchLogGroup.Arn
+
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+
+  # CloudWatch Logs
+  CloudWatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ecs/wraithwatch-websocket-${Environment}'
+      RetentionInDays: 7
+
+  # ECS Service (if target group is provided)
+  WebSocketService:
+    Type: AWS::ECS::Service
+    Condition: HasTargetGroup
+    Properties:
+      ServiceName: wraithwatch-websocket-service
+      Cluster: !Ref ECSClusterName
+      TaskDefinition: !Ref WebSocketTaskDefinition
+      DesiredCount: 2
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !ImportValue wraithwatch-websocket-WebSocketSecurityGroup
+          Subnets:
+            - !ImportValue wraithwatch-websocket-PublicSubnet1
+            - !ImportValue wraithwatch-websocket-PublicSubnet2
+      LoadBalancers:
+        - ContainerName: websocket-server
+          ContainerPort: 8080
+          TargetGroupArn: !Ref TargetGroupArn
+
+Outputs:
+  TaskDefinitionArn:
+    Description: 'ARN of the ECS task definition'
+    Value: !Ref WebSocketTaskDefinition
+    Export:
+      Name: !Sub 'wraithwatch-websocket-task-definition-${Environment}'
+
+  ServiceName:
+    Description: 'Name of the ECS service'
+    Value: !If
+      - HasTargetGroup
+      - !Ref WebSocketService
+      - !Ref AWS::NoValue
+    Export:
+      Name: !Sub 'wraithwatch-websocket-service-${Environment}'

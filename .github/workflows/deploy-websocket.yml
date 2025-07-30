@@ -1,0 +1,118 @@
+name: Deploy WebSocket Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/realtime-api/**'
+      - '.github/workflows/deploy-websocket.yml'
+
+jobs:
+  deploy-websocket:
+    name: Deploy WebSocket Server to ECS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          cd apps/realtime-api
+          npm ci
+
+      - name: Lint Code
+        run: |
+          cd apps/realtime-api
+          npm run lint
+
+      - name: Build TypeScript
+        run: |
+          cd apps/realtime-api
+          npm run build
+
+      - name: Set Up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Log Into AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker Image
+        run: |
+          cd apps/realtime-api
+          docker build -t wraithwatch-websocket:$GITHUB_SHA .
+          docker tag wraithwatch-websocket:$GITHUB_SHA ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
+
+      - name: Push Docker Image to ECR
+        run: |
+          cd apps/realtime-api
+          docker push ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
+          echo "CONTAINER_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA" >> $GITHUB_ENV
+
+      - name: Deploy Task Definition
+        run: |
+          aws cloudformation deploy \
+            --stack-name wraithwatch-websocket-task \
+            --template-file infrastructure/wraithwatch-websocket-task-definition.yaml \
+            --parameter-overrides \
+              ContainerImage=${{ env.CONTAINER_IMAGE_URI }} \
+              Environment=main \
+              ECSClusterName=wraithwatch-websocket-Cluster \
+              TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:771265364914:targetgroup/wraithwatch-websocket-TargetGroup/* \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region us-east-1
+
+      - name: Wait for Task Definition to be Available
+        run: |
+          echo "Waiting for task definition to be available..."
+          sleep 30
+
+      - name: Update ECS Service
+        run: |
+          SERVICE_NAME="wraithwatch-websocket-service"
+
+          # Force new deployment
+          aws ecs update-service \
+            --cluster wraithwatch-websocket-Cluster \
+            --service $SERVICE_NAME \
+            --force-new-deployment \
+            --region us-east-1
+
+      - name: Wait for Service to be Stable
+        run: |
+          aws ecs wait services-stable \
+            --cluster wraithwatch-websocket-Cluster \
+            --services wraithwatch-websocket-service \
+            --region us-east-1
+
+      - name: Get WebSocket URL
+        run: |
+          WEBSOCKET_URL=$(aws cloudformation describe-stacks \
+            --stack-name wraithwatch-websocket \
+            --query 'Stacks[0].Outputs[?OutputKey==`WebSocketURL`].OutputValue' \
+            --output text)
+          echo "WebSocket URL: $WEBSOCKET_URL"
+          echo "websocket-url=$WEBSOCKET_URL" >> $GITHUB_OUTPUT
+
+      - name: Comment Deployment URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `WebSocket server deployed successfully!\n\n **WebSocket URL**: ${{ steps.deploy-websocket.outputs.websocket-url }}\n **Deployed at**: ${new Date().toISOString()}`
+            })
+        if: github.event_name == 'pull_request'

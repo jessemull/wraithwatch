@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
+import { createServer } from 'http';
 import { EntityUpdateMessage, EntityListMessage } from './types';
 import {
   initializeEntities,
@@ -8,7 +9,8 @@ import {
 } from './demo-data';
 
 const PORT = process.env.PORT || 3001;
-const wss = new WebSocketServer({ port: parseInt(PORT.toString()) });
+const httpServer = createServer();
+const wss = new WebSocketServer({ server: httpServer });
 
 console.log(`🚀 WebSocket server starting on port ${PORT}`);
 
@@ -117,10 +119,27 @@ wss.on('connection', (ws: WebSocket) => {
   });
 });
 
+// Health check endpoint
+httpServer.on('request', (req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({ status: 'healthy', timestamp: new Date().toISOString() })
+    );
+  } else {
+    res.writeHead(404);
+    res.end('Not Found');
+  }
+});
+
+// Start the HTTP server
+httpServer.listen(PORT, () => {
+  console.log(`🚀 WebSocket server starting on port ${PORT}`);
+});
+
 // Start generating updates every 2 seconds
 setInterval(generateEntityUpdates, 2000);
 
-// Health check endpoint
 console.log('✅ WebSocket server ready');
 console.log(`📡 Clients can connect to: ws://localhost:${PORT}`);
 console.log('🔄 Generating entity updates every 2 seconds...');
