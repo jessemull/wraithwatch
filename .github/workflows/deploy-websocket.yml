@@ -19,23 +19,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: '20'
+          cache: 'yarn'
 
       - name: Install Dependencies
         run: |
-          cd apps/realtime-api
-          npm ci
+          yarn install --frozen-lockfile
 
       - name: Lint Code
         run: |
-          cd apps/realtime-api
-          npm run lint
+          yarn workspace @wraithwatch/realtime-api lint
 
       - name: Build TypeScript
         run: |
-          cd apps/realtime-api
-          npm run build
+          yarn workspace @wraithwatch/realtime-api build
 
       - name: Set Up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
@@ -50,13 +47,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          cd apps/realtime-api
-          docker build -t wraithwatch-websocket:$GITHUB_SHA .
+          docker build -f apps/realtime-api/Dockerfile -t wraithwatch-websocket:$GITHUB_SHA .
           docker tag wraithwatch-websocket:$GITHUB_SHA ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
 
       - name: Push Docker Image to ECR
         run: |
-          cd apps/realtime-api
           docker push ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
           echo "CONTAINER_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA" >> $GITHUB_ENV
 
@@ -97,6 +92,7 @@ jobs:
             --region us-east-1
 
       - name: Get WebSocket URL
+        id: deploy-websocket
         run: |
           WEBSOCKET_URL=$(aws cloudformation describe-stacks \
             --stack-name wraithwatch-websocket \
