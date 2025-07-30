@@ -63,8 +63,8 @@ jobs:
             --parameter-overrides \
               ContainerImage=${{ env.CONTAINER_IMAGE_URI }} \
               Environment=main \
-              ECSClusterName=wraithwatch-websocket-Cluster \
-              TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:771265364914:targetgroup/wraithwatch-websocket-TargetGroup/* \
+              ECSClusterName=wraithwatch-websocket-stack-Cluster \
+              TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:771265364914:targetgroup/wraithwatch-ws-tg/* \
             --capabilities CAPABILITY_NAMED_IAM \
             --region us-east-1
 
@@ -79,7 +79,7 @@ jobs:
 
           # Force new deployment
           aws ecs update-service \
-            --cluster wraithwatch-websocket-Cluster \
+            --cluster wraithwatch-websocket-stack-Cluster \
             --service $SERVICE_NAME \
             --force-new-deployment \
             --region us-east-1
@@ -87,7 +87,7 @@ jobs:
       - name: Wait for Service to be Stable
         run: |
           aws ecs wait services-stable \
-            --cluster wraithwatch-websocket-Cluster \
+            --cluster wraithwatch-websocket-stack-Cluster \
             --services wraithwatch-websocket-service \
             --region us-east-1
 
