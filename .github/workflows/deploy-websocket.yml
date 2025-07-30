@@ -55,14 +55,6 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
           echo "CONTAINER_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA" >> $GITHUB_ENV
 
-      - name: Deploy Service Role
-        run: |
-          aws cloudformation deploy \
-            --stack-name wraithwatch-websocket-service-role \
-            --template-file infrastructure/wraithwatch-websocket-service-role.yaml \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --region us-east-1
-
       - name: Get Target Group ARN
         id: get-target-group
         run: |
