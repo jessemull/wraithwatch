@@ -116,10 +116,10 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-            - !ImportValue wraithwatch-websocket-WebSocketSecurityGroup
+            - !ImportValue wraithwatch-websocket-stack-WebSocketSecurityGroup
           Subnets:
-            - !ImportValue wraithwatch-websocket-PublicSubnet1
-            - !ImportValue wraithwatch-websocket-PublicSubnet2
+            - !ImportValue wraithwatch-websocket-stack-PublicSubnet1
+            - !ImportValue wraithwatch-websocket-stack-PublicSubnet2
       LoadBalancers:
         - ContainerName: websocket-server
           ContainerPort: 8080
