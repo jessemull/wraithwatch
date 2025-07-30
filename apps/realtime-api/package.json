@@ -1,0 +1,23 @@
+{
+  "name": "@wraithwatch/realtime-api",
+  "version": "1.0.0",
+  "description": "WebSocket server for real-time entity updates",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.7.0"
+  },
+  "private": true
+}
