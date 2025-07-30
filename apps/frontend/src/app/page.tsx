@@ -4,7 +4,7 @@ import { useWebSocket } from '../hooks/useWebSocket';
 
 export default function Home() {
   const { entities, isConnected, lastUpdate } = useWebSocket(
-    process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:8080'
+    process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001'
   );
 
   return (

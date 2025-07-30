@@ -15,7 +15,7 @@ Parameters:
   ECSClusterName:
     Type: String
     Description: 'Name of the ECS cluster'
-    Default: 'wraithwatch-websocket-Cluster'
+    Default: 'wraithwatch-websocket-stack-Cluster'
 
   TargetGroupArn:
     Type: String

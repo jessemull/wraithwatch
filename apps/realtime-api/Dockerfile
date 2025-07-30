@@ -1,24 +1,41 @@
-FROM node:20-alpine
+# Multi-stage build for optimized production image
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files from root
-COPY package*.json yarn.lock ./
+# Copy package files
+COPY package*.json ./
 
-# Copy the specific app's package.json
-COPY apps/realtime-api/package.json ./apps/realtime-api/
-
-# Install dependencies
-RUN yarn install
+# Install all dependencies (including dev dependencies for build)
+RUN yarn install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
-# Build TypeScript specifically for realtime-api
-RUN yarn workspace @wraithwatch/realtime-api build
+# Build TypeScript and bundle with Webpack
+RUN yarn workspace @wraithwatch/realtime-api build:prod
 
-# Remove dev dependencies to reduce image size
-RUN yarn install --production
+# Production stage
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Install only the runtime dependencies we actually use
+RUN yarn add ws cors
+
+# Copy bundled application from builder stage
+COPY --from=builder /app/apps/realtime-api/bundle/server.js ./server.js
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Change ownership of the app directory
+RUN chown -R nodejs:nodejs /app
+USER nodejs
+
+# Set environment variables
+ENV PORT=8080
 
 # Expose port
 EXPOSE 8080
@@ -28,4 +45,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:8080/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 # Start the server
-CMD ["yarn", "workspace", "@wraithwatch/realtime-api", "start"] 
+CMD ["node", "server.js"] 
