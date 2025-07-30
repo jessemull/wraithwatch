@@ -147,7 +147,7 @@ Resources:
   WebSocketTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Sub '${AWS::StackName}-TargetGroup'
+      Name: !Sub 'wraithwatch-ws-tg'
       Port: 8080
       Protocol: HTTP
       TargetType: ip
@@ -205,7 +205,7 @@ Outputs:
 
   WebSocketURL:
     Description: 'WebSocket URL'
-    Value: !Sub 'ws://${ApplicationLoadBalancer.DNSName}:8080'
+    Value: !Sub 'ws://${ApplicationLoadBalancer.DNSName}'
     Export:
       Name: !Sub '${AWS::StackName}-WebSocketURL'
 

@@ -11,6 +11,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
     steps:
       - name: Checkout Code
@@ -19,25 +21,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: '20'
+          cache: 'yarn'
 
       - name: Install Dependencies
         run: |
-          cd apps/frontend
-          npm ci
+          yarn install --frozen-lockfile
 
       - name: Build frontend
         run: |
-          cd apps/frontend
-          npm run build
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          yarn workspace @wraithwatch/frontend build
 
       - name: Deploy to S3
         run: |
@@ -58,6 +51,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `Frontend deployed successfully!\n\n **Website URL**: https://www.wraithwatch-demo.com\n\n **Deployed at**: ${new Date().toISOString()}`
+              body: `Frontend deployed successfully!\n\n **Website URL**: https://www.wraithwatch-demo.com\n **WebSocket URL**: ${{ secrets.WEBSOCKET_URL }}\n **Deployed at**: ${new Date().toISOString()}`
             })
         if: github.event_name == 'pull_request'
