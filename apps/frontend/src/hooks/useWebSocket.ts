@@ -15,39 +15,65 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
   const handleMessage = useCallback((message: WebSocketMessage) => {
     switch (message.type) {
       case 'entity_list':
-        setEntities(message.payload.entities);
+        if (
+          message.payload &&
+          typeof message.payload === 'object' &&
+          'entities' in message.payload
+        ) {
+          setEntities((message.payload as { entities: Entity[] }).entities);
+        }
         break;
 
       case 'entity_update':
-        const { entityId, property, timestamp, oldValue, newValue } =
-          message.payload;
-        setEntities(prevEntities =>
-          prevEntities.map(entity => {
-            if (entity.id === entityId) {
-              const updatedEntity = { ...entity };
-              if (updatedEntity.properties[property]) {
-                updatedEntity.properties[property] = {
-                  ...updatedEntity.properties[property],
-                  currentValue: newValue,
-                  lastChanged: timestamp,
-                  history: [
-                    ...updatedEntity.properties[property].history,
-                    { timestamp, oldValue, newValue },
-                  ].slice(-10), // Keep last 10 changes
-                };
+        if (
+          message.payload &&
+          typeof message.payload === 'object' &&
+          'entityId' in message.payload
+        ) {
+          const payload = message.payload as {
+            entityId: string;
+            property: string;
+            timestamp: string;
+            oldValue: string | number;
+            newValue: string | number;
+          };
+          const { entityId, property, timestamp, oldValue, newValue } = payload;
+          setEntities(prevEntities =>
+            prevEntities.map(entity => {
+              if (entity.id === entityId) {
+                const updatedEntity = { ...entity };
+                if (updatedEntity.properties[property]) {
+                  updatedEntity.properties[property] = {
+                    ...updatedEntity.properties[property],
+                    currentValue: newValue,
+                    lastChanged: timestamp,
+                    history: [
+                      ...updatedEntity.properties[property].history,
+                      { timestamp, oldValue, newValue },
+                    ].slice(-10), // Keep last 10 changes
+                  };
+                }
+                updatedEntity.lastSeen = timestamp;
+                updatedEntity.changesToday++;
+                return updatedEntity;
               }
-              updatedEntity.lastSeen = timestamp;
-              updatedEntity.changesToday++;
-              return updatedEntity;
-            }
-            return entity;
-          })
-        );
-        setLastUpdate(timestamp);
+              return entity;
+            })
+          );
+          setLastUpdate(timestamp);
+        }
         break;
 
       case 'connection_status':
-        setIsConnected(message.payload.status === 'connected');
+        if (
+          message.payload &&
+          typeof message.payload === 'object' &&
+          'status' in message.payload
+        ) {
+          setIsConnected(
+            (message.payload as { status: string }).status === 'connected'
+          );
+        }
         break;
     }
   }, []);
