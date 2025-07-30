@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Wraithwatch WebSocket Server - ECS Service Role'
+
+Resources:
+  # ECS Service Role (needed for load balancer management)
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: wraithwatch-websocket-service-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
+
+Outputs:
+  ServiceRoleArn:
+    Description: 'ARN of the ECS Service Role'
+    Value: !GetAtt ECSServiceRole.Arn
+    Export:
+      Name: wraithwatch-websocket-service-role-arn
+
+  ServiceRoleName:
+    Description: 'Name of the ECS Service Role'
+    Value: !Ref ECSServiceRole
+    Export:
+      Name: wraithwatch-websocket-service-role-name

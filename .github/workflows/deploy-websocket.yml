@@ -55,6 +55,24 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
           echo "CONTAINER_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA" >> $GITHUB_ENV
 
+      - name: Deploy Service Role
+        run: |
+          aws cloudformation deploy \
+            --stack-name wraithwatch-websocket-service-role \
+            --template-file infrastructure/wraithwatch-websocket-service-role.yaml \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region us-east-1
+
+      - name: Get Target Group ARN
+        id: get-target-group
+        run: |
+          TARGET_GROUP_ARN=$(aws cloudformation describe-stacks \
+            --stack-name wraithwatch-websocket-stack \
+            --query 'Stacks[0].Outputs[?OutputKey==`TargetGroupArn`].OutputValue' \
+            --output text)
+          echo "Target Group ARN: $TARGET_GROUP_ARN"
+          echo "target-group-arn=$TARGET_GROUP_ARN" >> $GITHUB_OUTPUT
+
       - name: Deploy Task Definition
         run: |
           aws cloudformation deploy \
@@ -64,7 +82,7 @@ jobs:
               ContainerImage=${{ env.CONTAINER_IMAGE_URI }} \
               Environment=main \
               ECSClusterName=wraithwatch-websocket-stack-Cluster \
-              TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:771265364914:targetgroup/wraithwatch-ws-tg/* \
+              TargetGroupArn=${{ steps.get-target-group.outputs.target-group-arn }} \
             --capabilities CAPABILITY_NAMED_IAM \
             --region us-east-1
 

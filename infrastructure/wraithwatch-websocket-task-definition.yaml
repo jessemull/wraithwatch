@@ -112,6 +112,7 @@ Resources:
       TaskDefinition: !Ref WebSocketTaskDefinition
       DesiredCount: 2
       LaunchType: FARGATE
+      Role: !ImportValue wraithwatch-websocket-service-role-arn
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
