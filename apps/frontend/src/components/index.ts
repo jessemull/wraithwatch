@@ -1,4 +1,4 @@
-export { ThreeJSVisualization } from './ThreeJSVisualization';
-export { EnhancedThreeJSVisualization } from './EnhancedThreeJSVisualization';
-export { ThreatParticleSystem } from './ThreatParticleSystem';
-export { DataFlowVisualization } from './DataFlowVisualization';
+export * from './Dashboard';
+export * from './Charts';
+export * from './ConnectionStatus';
+export * from './EntitiesList';

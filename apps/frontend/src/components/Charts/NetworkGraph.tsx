@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { Entity } from '../types';
+import { Entity } from '../../types';
 
-interface ThreeJSVisualizationProps {
+interface NetworkGraphProps {
   entities: Entity[];
   isConnected: boolean;
 }
 
-export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
+export const NetworkGraph: React.FC<NetworkGraphProps> = ({
   entities,
   isConnected,
 }) => {

@@ -3,16 +3,14 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Entity } from '../types';
+import { Entity } from '../../types';
 
-interface DataFlowVisualizationProps {
+interface DataFlowProps {
   entities: Entity[];
   isConnected: boolean;
 }
 
-export const DataFlowVisualization: React.FC<DataFlowVisualizationProps> = ({
-  isConnected,
-}) => {
+export const DataFlow: React.FC<DataFlowProps> = ({ isConnected }) => {
   const flowRef = useRef<THREE.Group>(null);
   const linesRef = useRef<THREE.Group>(null);
 

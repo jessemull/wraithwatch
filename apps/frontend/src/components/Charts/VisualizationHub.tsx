@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { Entity } from '../types';
-import { ThreatParticleSystem } from './ThreatParticleSystem';
-import { DataFlowVisualization } from './DataFlowVisualization';
+import { Entity } from '../../types';
+import { ThreatParticles } from './ThreatParticles';
+import { DataFlow } from './DataFlow';
 
-interface EnhancedThreeJSVisualizationProps {
+interface VisualizationHubProps {
   entities: Entity[];
   isConnected: boolean;
 }
@@ -110,7 +110,7 @@ const NetworkNode: React.FC<{
 
       {/* Threat particle system for high-threat entities */}
       {entity.threatScore && entity.threatScore > 0.7 && (
-        <ThreatParticleSystem
+        <ThreatParticles
           threatLevel={entity.threatScore}
           position={[0, 0, 0]}
         />
@@ -314,12 +314,7 @@ const Scene: React.FC<{
       case 'matrix':
         return <MatrixVisualization entities={entities} />;
       case 'dataflow':
-        return (
-          <DataFlowVisualization
-            entities={entities}
-            isConnected={isConnected}
-          />
-        );
+        return <DataFlow entities={entities} isConnected={isConnected} />;
       default:
         return null;
     }
@@ -336,9 +331,10 @@ const Scene: React.FC<{
 };
 
 // Main Component
-export const EnhancedThreeJSVisualization: React.FC<
-  EnhancedThreeJSVisualizationProps
-> = ({ entities, isConnected }) => {
+export const VisualizationHub: React.FC<VisualizationHubProps> = ({
+  entities,
+  isConnected,
+}) => {
   const [visualizationType, setVisualizationType] =
     useState<VisualizationType>('network');
 

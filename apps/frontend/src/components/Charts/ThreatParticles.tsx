@@ -4,12 +4,12 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-interface ThreatParticleSystemProps {
+interface ThreatParticlesProps {
   threatLevel: number; // 0-1
   position: [number, number, number];
 }
 
-export const ThreatParticleSystem: React.FC<ThreatParticleSystemProps> = ({
+export const ThreatParticles: React.FC<ThreatParticlesProps> = ({
   threatLevel,
   position,
 }) => {
