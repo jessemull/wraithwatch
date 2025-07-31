@@ -11,6 +11,10 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "commit": "git-cz",
+    "db:clean": "tsx scripts/delete-time-series-data.ts",
+    "db:refresh": "yarn db:reset && yarn db:seed",
+    "db:reset": "tsx scripts/delete-time-series-data.ts",
+    "db:seed": "tsx scripts/generate-time-series-data.ts",
     "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:realtime\"",
     "dev:frontend": "yarn --cwd apps/frontend dev",
     "dev:realtime": "yarn --cwd apps/realtime-api dev",
