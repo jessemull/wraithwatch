@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Real-time entity monitoring dashboard",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "shared"
@@ -23,16 +24,20 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.32.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "commitizen": "^4.3.0",
     "concurrently": "^8.2.2",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^8.56.0",
+    "eslint": "^9",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "typescript-eslint": "^8.38.0"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -47,7 +52,7 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,md,yml,yaml}": [
+    "*.{json,md,yml,yaml,css}": [
       "prettier --write"
     ]
   }
