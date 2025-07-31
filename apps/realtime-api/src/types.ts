@@ -1,5 +1,3 @@
-// Types for the WebSocket server
-
 export type EntityType =
   | 'System'
   | 'User'
@@ -9,6 +7,7 @@ export type EntityType =
   | 'Network_Node';
 
 export type ThreatSeverity = 'low' | 'medium' | 'high' | 'critical';
+
 export type ProtocolType =
   | 'HTTPS'
   | 'HTTP'
@@ -17,6 +16,7 @@ export type ProtocolType =
   | 'FTP'
   | 'DNS'
   | 'SMTP';
+
 export type AgentAction =
   | 'monitoring'
   | 'investigating'
@@ -31,7 +31,9 @@ export interface Entity {
   properties: Record<string, EntityProperty>;
   lastSeen: string;
   changesToday: number;
-  // Cybersecurity fields
+
+  // Cybersecurity fields...
+
   threatScore?: number; // 0-1 scale
   ipAddress?: string;
   location?: {
@@ -58,7 +60,8 @@ export interface PropertyChange {
   changeType?: 'increment' | 'decrement' | 'replacement';
 }
 
-// WebSocket message types
+// WebSocket message types...
+
 export interface WebSocketMessage {
   type:
     | 'entity_update'
@@ -99,7 +102,8 @@ export interface PropertyChangeMessage {
   };
 }
 
-// Cybersecurity event messages
+// Cybersecurity event messages...
+
 export interface NetworkActivityMessage {
   type: 'network_activity';
   payload: {
@@ -151,7 +155,8 @@ export interface GeoEventMessage {
   };
 }
 
-// Demo data types
+// Demo data types...
+
 export interface DemoEntityConfig {
   id: string;
   name: string;
