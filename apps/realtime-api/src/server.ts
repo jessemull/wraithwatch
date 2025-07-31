@@ -1,6 +1,103 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import websocket from '@fastify/websocket';
+
 import { DynamoDBService } from './services/dynamodb';
+import { EntityUpdateMessage, EntityListMessage } from './types';
+import {
+  initializeEntities,
+  generateRandomValue,
+  shouldChangeProperty,
+  demoEntities,
+} from './demo-data';
+
+// Define WebSocket connection interface
+interface WebSocketConnection {
+  socket: {
+    readyState: number;
+    send: (data: string) => void;
+    on: (event: string, handler: (data?: unknown) => void) => void;
+  };
+}
+
+// Store connected WebSocket clients
+const clients = new Set<WebSocketConnection>();
+
+// Initialize entities
+const entities = initializeEntities();
+
+// Broadcast message to all connected clients
+const broadcast = (message: unknown) => {
+  const messageStr = JSON.stringify(message);
+  clients.forEach(client => {
+    if (client.socket.readyState === 1) { // WebSocket.OPEN
+      client.socket.send(messageStr);
+    }
+  });
+};
+
+// Send initial entity list to new client
+const sendEntityList = (client: WebSocketConnection) => {
+  const message: EntityListMessage = {
+    type: 'entity_list',
+    payload: { entities },
+  };
+  client.socket.send(JSON.stringify(message));
+};
+
+// Generate random entity updates
+const generateEntityUpdates = (): void => {
+  entities.forEach(entity => {
+    Object.entries(entity.properties).forEach(([propertyName, property]) => {
+      // Find the demo config for this entity and property
+      const demoConfig = demoEntities.find(e => e.id === entity.id);
+      if (!demoConfig || !demoConfig.properties[propertyName]) return;
+
+      const propConfig = demoConfig.properties[propertyName];
+
+      // Check if this property should change based on frequency
+      if (shouldChangeProperty(propConfig.changeFrequency)) {
+        const oldValue = property.currentValue;
+        const newValue = generateRandomValue(propConfig);
+
+        // Update the entity
+        property.currentValue = newValue;
+        property.lastChanged = new Date().toISOString();
+        entity.lastSeen = new Date().toISOString();
+        entity.changesToday++;
+
+        // Add to history (keep last 10 changes)
+        property.history.push({
+          timestamp: property.lastChanged,
+          oldValue,
+          newValue,
+        });
+
+        if (property.history.length > 10) {
+          property.history.shift();
+        }
+
+        // Broadcast the update
+        const updateMessage: EntityUpdateMessage = {
+          type: 'entity_update',
+          payload: {
+            entityId: entity.id,
+            property: propertyName,
+            timestamp: property.lastChanged,
+            oldValue,
+            newValue,
+          },
+        };
+
+        broadcast(updateMessage);
+
+        console.log(
+          `📊 ${entity.name}.${propertyName}: ${oldValue} → ${newValue}`
+        );
+      }
+    });
+  });
+};
 
 export async function createServer() {
   const fastify = Fastify({
@@ -12,8 +109,38 @@ export async function createServer() {
     origin: true, // Allow all origins in development
   });
 
+  // Register WebSocket support
+  await fastify.register(websocket);
+
   // Initialize DynamoDB service
   const dynamoDBService = new DynamoDBService();
+
+  // WebSocket route
+  fastify.get('/ws', { websocket: true }, (connection) => {
+    console.log('🔌 New WebSocket client connected');
+    clients.add(connection);
+
+    // Send initial entity list
+    sendEntityList(connection);
+
+    // Send connection status
+    connection.socket.send(
+      JSON.stringify({
+        type: 'connection_status',
+        payload: { status: 'connected' },
+      })
+    );
+
+    connection.socket.on('close', () => {
+      console.log('🔌 WebSocket client disconnected');
+      clients.delete(connection);
+    });
+
+    connection.socket.on('error', (error: Error) => {
+      console.error('❌ WebSocket error:', error);
+      clients.delete(connection);
+    });
+  });
 
   // Health check endpoint
   fastify.get('/health', async () => {
@@ -162,6 +289,9 @@ export async function createServer() {
       };
     }
   });
+
+  // Start generating updates every 2 seconds
+  setInterval(generateEntityUpdates, 2000);
 
   return fastify;
 }
