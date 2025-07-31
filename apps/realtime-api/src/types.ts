@@ -4,7 +4,9 @@ export type EntityType =
   | 'Sensor'
   | 'AI_Agent'
   | 'Threat'
-  | 'Network_Node';
+  | 'Network_Node'
+  | 'Server'
+  | 'Workstation';
 
 export type ThreatSeverity = 'low' | 'medium' | 'high' | 'critical';
 
@@ -23,6 +25,15 @@ export type AgentAction =
   | 'blocking'
   | 'isolating'
   | 'quarantining';
+
+export interface PropertyConfig {
+  name: string;
+  type: 'string' | 'number';
+  possibleValues?: string[];
+  minValue?: number;
+  maxValue?: number;
+  changeFrequency: number;
+}
 
 export interface Entity {
   id: string;
