@@ -110,15 +110,3 @@ jobs:
             --output text)
           echo "WebSocket URL: $WEBSOCKET_URL"
           echo "websocket-url=$WEBSOCKET_URL" >> $GITHUB_OUTPUT
-
-      - name: Comment Deployment URL
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `WebSocket server deployed successfully!\n\n **WebSocket URL**: ${{ steps.deploy-websocket.outputs.websocket-url }}\n **Deployed at**: ${new Date().toISOString()}`
-            })
-        if: github.event_name == 'pull_request'

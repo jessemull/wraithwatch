@@ -49,15 +49,3 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id E2BS8G6FZ8VAXH \
             --paths "/*"
-
-      - name: Comment Deployment URL
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Frontend deployed successfully!\n\n **Website URL**: https://www.wraithwatch-demo.com\n **WebSocket URL**: ${{ secrets.WEBSOCKET_URL }}\n **Deployed at**: ${new Date().toISOString()}`
-            })
-        if: github.event_name == 'pull_request'
