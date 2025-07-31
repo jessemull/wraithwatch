@@ -2,7 +2,7 @@ export const config = {
   app: {
     description: 'Adaptive, Intelligent Cyber Defense',
     name: 'Wraithwatch',
-    tagline: 'Real-time Entity Monitoring Dashboard',
+    tagline: 'Real-Time Entity Monitoring Dashboard',
   },
   features: {
     enableAnimations: true,
