@@ -3,7 +3,6 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -25,7 +24,9 @@ export default [
       '**/eslint.config.*',
     ],
   },
-  // Frontend (Next.js) overrides
+
+  // Frontend (Next.js) overrides...
+
   {
     files: ['apps/frontend/**/*.{js,jsx,ts,tsx}'],
     plugins: {
@@ -42,7 +43,9 @@ export default [
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      // Next.js specific rules
+
+      // Next.js specific rules...
+
       'react/react-in-jsx-scope': 'off', // Not needed in Next.js
       'react/prop-types': 'off', // Using TypeScript
       'react/no-unknown-property': 'off', // Allow Three.js properties
@@ -57,7 +60,9 @@ export default [
       },
     },
   },
-  // Backend (Node.js) overrides
+
+  // Backend (Node.js) overrides...
+
   {
     files: ['apps/realtime-api/**/*.{js,ts}'],
     languageOptions: {
@@ -83,7 +88,9 @@ export default [
       'no-var': 'error',
     },
   },
-  // Root level TypeScript files
+
+  // Root level TypeScript files...
+
   {
     files: ['**/*.{js,ts}'],
     languageOptions: {

@@ -9,6 +9,6 @@ export const config = {
     enableBackdropBlur: true,
   },
   websocket: {
-    url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001',
+    url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001/ws',
   },
 } as const;
