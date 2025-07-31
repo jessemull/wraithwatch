@@ -30,7 +30,7 @@ const websocketPlugin: FastifyPluginAsync<WebSocketPluginOptions> = async (fasti
     });
 
     // Handle WebSocket errors
-    connection.socket.on('error', (error: Error) => {
+    connection.socket.on('error', (error: unknown) => {
       console.error('❌ WebSocket error:', error);
       websocketManager.removeClient(connection);
     });

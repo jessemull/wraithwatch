@@ -1,10 +1,7 @@
 import Fastify from 'fastify';
-import { DynamoDBService } from './services/dynamodb';
-import { WebSocketManager } from './services/websocket-manager';
-import { EntityManager } from './services/entity-manager';
-import corsPlugin from './plugins/cors';
-import websocketPlugin from './plugins/websocket';
-import routes from './routes';
+import { DynamoDBService, EntityManager, WebSocketManager } from './services';
+import { corsPlugin, websocketPlugin } from './plugins';
+import * as routes from './routes';
 
 export async function createServer() {
   const fastify = Fastify({
@@ -26,7 +23,7 @@ export async function createServer() {
   });
 
   // Register routes
-  await fastify.register(routes, {
+  await fastify.register(routes.default, {
     dynamoDBService,
   });
 
