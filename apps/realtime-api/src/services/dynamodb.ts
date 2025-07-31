@@ -6,13 +6,14 @@ import {
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { EntityChange } from '../types/dynamodb';
 import { createComponentLogger } from '../utils/logger';
+import { AWS_REGION, DYNAMODB_TABLE_NAME } from '../constants';
 
 const logger = createComponentLogger('dynamodb-service');
 
-const client = new DynamoDBClient({ region: 'us-east-1' });
+const client = new DynamoDBClient({ region: AWS_REGION });
 
 export class DynamoDBService {
-  private tableName = 'wraithwatch-entity-changes';
+  private tableName = DYNAMODB_TABLE_NAME;
 
   /**
    * Simple scan to get all data (for testing)

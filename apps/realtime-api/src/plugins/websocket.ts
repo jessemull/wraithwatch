@@ -3,13 +3,14 @@ import { FastifyPluginAsync } from 'fastify';
 import { WebSocketConnection } from '../types/websocket';
 import { WebSocketPluginOptions } from '../types/plugins';
 import { createComponentLogger } from '../utils/logger';
+import { WEBSOCKET_PATH } from '../constants';
 
 const logger = createComponentLogger('websocket-plugin');
 
 const websocketPlugin: FastifyPluginAsync<WebSocketPluginOptions> = async (fastify, options) => {
   await fastify.register(websocket);
 
-  fastify.get('/ws', { websocket: true }, (connection: WebSocketConnection) => {
+  fastify.get(WEBSOCKET_PATH, { websocket: true }, (connection: WebSocketConnection) => {
     const { websocketManager, entityManager } = options;
     
     // Add client to manager...

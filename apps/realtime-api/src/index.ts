@@ -1,12 +1,13 @@
 import { createServer } from './server';
 import { logger } from './utils/logger';
+import { DEFAULT_PORT, DEFAULT_HOST } from './constants';
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || DEFAULT_PORT;
 
 async function startServer() {
   try {
     const fastify = await createServer();
-    await fastify.listen({ port: Number(PORT), host: '0.0.0.0' });
+    await fastify.listen({ port: Number(PORT), host: DEFAULT_HOST });
 
     logger.info({ port: PORT }, 'Server starting');
     logger.info('Fastify server ready with WebSocket and REST API');

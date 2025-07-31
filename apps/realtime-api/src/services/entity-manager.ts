@@ -3,6 +3,7 @@ import { initializeEntities, generateRandomValue, shouldChangeProperty, demoEnti
 import { WebSocketManager } from './websocket-manager';
 import { WebSocketConnection } from '../types/websocket';
 import { createComponentLogger } from '../utils/logger';
+import { MAX_PROPERTY_HISTORY_LENGTH, DEFAULT_UPDATE_INTERVAL } from '../constants';
 
 const logger = createComponentLogger('entity-manager');
 
@@ -67,7 +68,7 @@ export class EntityManager {
             newValue,
           });
 
-          if (property.history.length > 10) {
+          if (property.history.length > MAX_PROPERTY_HISTORY_LENGTH) {
             property.history.shift();
           }
 
@@ -101,7 +102,7 @@ export class EntityManager {
     });
   }
 
-  startUpdateGeneration(intervalMs: number = 2000): void {
+  startUpdateGeneration(intervalMs: number = DEFAULT_UPDATE_INTERVAL): void {
     setInterval(() => {
       this.generateEntityUpdates();
     }, intervalMs);
