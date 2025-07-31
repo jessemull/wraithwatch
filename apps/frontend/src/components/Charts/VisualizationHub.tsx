@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { Entity } from '../../types';
-import { ThreatParticles } from './ThreatParticles';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { DataFlow } from './DataFlow';
+import { Entity } from '../../types';
+import { OrbitControls, Html } from '@react-three/drei';
+import { ThreatParticles } from './ThreatParticles';
+import { useEffect, useRef, useState } from 'react';
 
 interface VisualizationHubProps {
   entities: Entity[];
@@ -15,7 +15,8 @@ interface VisualizationHubProps {
 
 type VisualizationType = 'network' | 'radar' | 'globe' | 'matrix' | 'dataflow';
 
-// Network Node Component
+// Network Node Component...
+
 const NetworkNode: React.FC<{
   entity: Entity;
   index: number;
@@ -25,7 +26,8 @@ const NetworkNode: React.FC<{
   const glowRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Position in a circle
+  // Position in a circle...
+
   const angle = (index / total) * Math.PI * 2;
   const radius = 5;
   const position = [
@@ -77,7 +79,6 @@ const NetworkNode: React.FC<{
 
   return (
     <group position={position as [number, number, number]}>
-      {/* Main node */}
       <mesh
         ref={meshRef}
         onPointerOver={() => setHovered(true)}
@@ -91,32 +92,24 @@ const NetworkNode: React.FC<{
           opacity={0.8}
         />
       </mesh>
-
-      {/* Glow effect for AI agents */}
       {entity.type === 'AI_Agent' && (
         <mesh ref={glowRef}>
           <sphereGeometry args={[0.4, 16, 16]} />
           <meshBasicMaterial color={0x3b82f6} transparent opacity={0.3} />
         </mesh>
       )}
-
-      {/* Threat indicator */}
       {entity.threatScore && entity.threatScore > 0.5 && (
         <mesh position={[0.4, 0.4, 0]}>
           <sphereGeometry args={[0.1, 8, 8]} />
           <meshBasicMaterial color={0xff4444} transparent opacity={0.8} />
         </mesh>
       )}
-
-      {/* Threat particle system for high-threat entities */}
       {entity.threatScore && entity.threatScore > 0.7 && (
         <ThreatParticles
           threatLevel={entity.threatScore}
           position={[0, 0, 0]}
         />
       )}
-
-      {/* Hover tooltip */}
       {hovered && (
         <Html position={[0, 0.5, 0]} center>
           <div className="bg-gray-900 text-white p-2 rounded text-xs whitespace-nowrap">
@@ -132,7 +125,8 @@ const NetworkNode: React.FC<{
   );
 };
 
-// Radar Visualization Component
+// Radar Visualization Component...
+
 const RadarVisualization: React.FC<{ entities: Entity[] }> = ({ entities }) => {
   const radarRef = useRef<THREE.Group>(null);
 
@@ -144,21 +138,16 @@ const RadarVisualization: React.FC<{ entities: Entity[] }> = ({ entities }) => {
 
   return (
     <group ref={radarRef}>
-      {/* Radar base */}
       <mesh>
         <cylinderGeometry args={[8, 8, 0.1, 32]} />
         <meshBasicMaterial color={0x1e3a8a} transparent opacity={0.3} />
       </mesh>
-
-      {/* Radar rings */}
       {[1, 2, 3, 4].map(ring => (
         <mesh key={ring} position={[0, 0, 0.05]}>
           <ringGeometry args={[ring * 1.5, ring * 1.5 + 0.1, 32]} />
           <meshBasicMaterial color={0x3b82f6} transparent opacity={0.2} />
         </mesh>
       ))}
-
-      {/* Entity blips */}
       {entities.map((entity, index) => {
         const angle = (index / entities.length) * Math.PI * 2;
         const distance = 2 + Math.random() * 4;
@@ -180,7 +169,6 @@ const RadarVisualization: React.FC<{ entities: Entity[] }> = ({ entities }) => {
   );
 };
 
-// Globe Visualization Component
 const GlobeVisualization: React.FC<{ entities: Entity[] }> = ({ entities }) => {
   const globeRef = useRef<THREE.Group>(null);
 
@@ -192,21 +180,16 @@ const GlobeVisualization: React.FC<{ entities: Entity[] }> = ({ entities }) => {
 
   return (
     <group ref={globeRef}>
-      {/* Earth sphere */}
       <mesh>
         <sphereGeometry args={[4, 32, 32]} />
         <meshBasicMaterial color={0x1e40af} transparent opacity={0.3} />
       </mesh>
-
-      {/* Grid lines */}
       {Array.from({ length: 18 }, (_, i) => (
         <mesh key={`lat-${i}`} rotation={[0, 0, (i * Math.PI) / 18]}>
           <ringGeometry args={[4, 4.1, 32]} />
           <meshBasicMaterial color={0x3b82f6} transparent opacity={0.1} />
         </mesh>
       ))}
-
-      {/* Entity points on globe */}
       {entities.map(entity => {
         const lat = (Math.random() - 0.5) * Math.PI;
         const lon = (Math.random() - 0.5) * Math.PI * 2;
@@ -229,7 +212,8 @@ const GlobeVisualization: React.FC<{ entities: Entity[] }> = ({ entities }) => {
   );
 };
 
-// Matrix Visualization Component
+// Matrix Visualization Component...
+
 const MatrixVisualization: React.FC<{ entities: Entity[] }> = ({
   entities,
 }) => {
@@ -247,7 +231,6 @@ const MatrixVisualization: React.FC<{ entities: Entity[] }> = ({
 
   return (
     <group ref={matrixRef}>
-      {/* Matrix grid */}
       {Array.from({ length: 20 }, (_, x) =>
         Array.from({ length: 20 }, (_, z) => (
           <mesh key={`${x}-${z}`} position={[x - 10, 0, z - 10]}>
@@ -256,8 +239,6 @@ const MatrixVisualization: React.FC<{ entities: Entity[] }> = ({
           </mesh>
         ))
       )}
-
-      {/* Entity columns */}
       {entities.map((entity, index) => {
         const x = (index % 5) * 2 - 4;
         const z = Math.floor(index / 5) * 2 - 4;
@@ -280,7 +261,8 @@ const MatrixVisualization: React.FC<{ entities: Entity[] }> = ({
   );
 };
 
-// Main Scene Component
+// Main Scene Component...
+
 const Scene: React.FC<{
   entities: Entity[];
   visualizationType: VisualizationType;
@@ -330,7 +312,8 @@ const Scene: React.FC<{
   );
 };
 
-// Main Component
+// Main Component...
+
 export const VisualizationHub: React.FC<VisualizationHubProps> = ({
   entities,
   isConnected,
@@ -348,7 +331,6 @@ export const VisualizationHub: React.FC<VisualizationHubProps> = ({
 
   return (
     <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
-      {/* Visualization Type Selector */}
       <div className="absolute top-4 left-4 z-10 flex space-x-2">
         {visualizationTypes.map(({ key, label, icon }) => (
           <button
@@ -365,20 +347,14 @@ export const VisualizationHub: React.FC<VisualizationHubProps> = ({
           </button>
         ))}
       </div>
-
-      {/* Connection Status */}
       {!isConnected && (
         <div className="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded text-xs">
           Disconnected
         </div>
       )}
-
-      {/* Entity Count */}
       <div className="absolute bottom-4 left-4 bg-gray-800 text-white px-2 py-1 rounded text-xs">
         {entities.length} entities
       </div>
-
-      {/* Three.js Canvas */}
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
         style={{

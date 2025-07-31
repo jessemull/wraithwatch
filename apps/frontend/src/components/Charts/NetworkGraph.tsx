@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { Entity } from '../../types';
+import { useEffect, useRef } from 'react';
 
 interface NetworkGraphProps {
   entities: Entity[];
@@ -13,23 +13,25 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
   entities,
   isConnected,
 }) => {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const nodesRef = useRef<THREE.Group | null>(null);
   const animationRef = useRef<number | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
+  const nodesRef = useRef<THREE.Group | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
 
   useEffect(() => {
     const mountElement = mountRef.current;
     if (!mountElement) return;
 
-    // Scene setup
+    // Scene setup...
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0a0a);
     sceneRef.current = scene;
 
-    // Camera setup
+    // Camera setup...
+
     const camera = new THREE.PerspectiveCamera(
       75,
       mountElement.clientWidth / mountElement.clientHeight,
@@ -39,14 +41,16 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
     camera.position.set(0, 0, 10);
     cameraRef.current = camera;
 
-    // Renderer setup
+    // Renderer setup...
+
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(mountElement.clientWidth, mountElement.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
 
-    // Lighting
+    // Lighting...
+
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambientLight);
 
@@ -55,12 +59,14 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
     directionalLight.castShadow = true;
     scene.add(directionalLight);
 
-    // Create nodes group
+    // Create nodes group...
+
     const nodesGroup = new THREE.Group();
     nodesRef.current = nodesGroup;
     scene.add(nodesGroup);
 
-    // Create entity nodes
+    // Create entity nodes...
+
     entities.forEach((entity, index) => {
       const geometry = new THREE.SphereGeometry(0.3, 16, 16);
       const material = new THREE.MeshPhongMaterial({
@@ -71,7 +77,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 
       const node = new THREE.Mesh(geometry, material);
 
-      // Position nodes in a circle
+      // Position nodes in a circle...
+
       const angle = (index / entities.length) * Math.PI * 2;
       const radius = 5;
       node.position.set(
@@ -80,7 +87,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
         0
       );
 
-      // Add glow effect for AI agents
+      // Add glow effect for AI agents...
+
       if (entity.type === 'AI_Agent') {
         const glowGeometry = new THREE.SphereGeometry(0.4, 16, 16);
         const glowMaterial = new THREE.MeshBasicMaterial({
@@ -92,7 +100,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
         node.add(glow);
       }
 
-      // Add threat score indicator
+      // Add threat score indicator...
+
       if (entity.threatScore && entity.threatScore > 0.5) {
         const threatGeometry = new THREE.SphereGeometry(0.1, 8, 8);
         const threatMaterial = new THREE.MeshBasicMaterial({
@@ -108,7 +117,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
       nodesGroup.add(node);
     });
 
-    // Add connections between network nodes
+    // Add connections between network nodes...
+
     const networkNodes = entities.filter(e => e.type === 'Network_Node');
     networkNodes.forEach((node1, i) => {
       networkNodes.slice(i + 1).forEach(() => {
@@ -128,16 +138,19 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 
     mountElement.appendChild(renderer.domElement);
 
-    // Animation loop
+    // Animation loop...
+
     const animate = () => {
       animationRef.current = requestAnimationFrame(animate);
 
-      // Rotate nodes group
+      // Rotate nodes group...
+
       if (nodesGroup) {
         nodesGroup.rotation.y += 0.005;
       }
 
-      // Animate individual nodes
+      // Animate individual nodes...
+
       nodesGroup.children.forEach((child, index) => {
         if (child instanceof THREE.Mesh) {
           child.rotation.y += 0.01;
@@ -150,7 +163,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 
     animate();
 
-    // Handle window resize
+    // Handle window resize...
+
     const handleResize = () => {
       if (!mountElement || !camera || !renderer) return;
 

@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Entity } from '../../types';
+import { useFrame } from '@react-three/fiber';
+import { useRef } from 'react';
 
 interface DataFlowProps {
   entities: Entity[];
@@ -20,7 +20,8 @@ export const DataFlow: React.FC<DataFlowProps> = ({ isConnected }) => {
     }
 
     if (linesRef.current) {
-      // Animate the flowing lines
+      // Animate the flowing lines...
+
       const time = state.clock.elapsedTime;
       linesRef.current.children.forEach((child, index) => {
         if (child instanceof THREE.Line) {
@@ -32,13 +33,10 @@ export const DataFlow: React.FC<DataFlowProps> = ({ isConnected }) => {
 
   return (
     <group ref={flowRef}>
-      {/* Central hub */}
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[1, 16, 16]} />
         <meshBasicMaterial color={0x3b82f6} transparent opacity={0.6} />
       </mesh>
-
-      {/* Flowing data lines */}
       <group ref={linesRef}>
         {Array.from({ length: 10 }, (_, i) => (
           <mesh
@@ -58,14 +56,10 @@ export const DataFlow: React.FC<DataFlowProps> = ({ isConnected }) => {
           </mesh>
         ))}
       </group>
-
-      {/* Connection status indicator */}
       <mesh position={[0, 2, 0]}>
         <sphereGeometry args={[0.2, 8, 8]} />
         <meshBasicMaterial color={isConnected ? 0x10b981 : 0xef4444} />
       </mesh>
-
-      {/* Data packets */}
       {Array.from({ length: 20 }, (_, i) => (
         <mesh
           key={i}
