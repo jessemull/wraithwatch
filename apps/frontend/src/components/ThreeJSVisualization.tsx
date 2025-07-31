@@ -21,7 +21,8 @@ export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
   const animationRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const mountElement = mountRef.current;
+    if (!mountElement) return;
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -31,7 +32,7 @@ export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
     // Camera setup
     const camera = new THREE.PerspectiveCamera(
       75,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      mountElement.clientWidth / mountElement.clientHeight,
       0.1,
       1000
     );
@@ -40,10 +41,7 @@ export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
 
     // Renderer setup
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(
-      mountRef.current.clientWidth,
-      mountRef.current.clientHeight
-    );
+    renderer.setSize(mountElement.clientWidth, mountElement.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
@@ -128,7 +126,7 @@ export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
       });
     });
 
-    mountRef.current.appendChild(renderer.domElement);
+    mountElement.appendChild(renderer.domElement);
 
     // Animation loop
     const animate = () => {
@@ -154,15 +152,11 @@ export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
 
     // Handle window resize
     const handleResize = () => {
-      if (!mountRef.current || !camera || !renderer) return;
+      if (!mountElement || !camera || !renderer) return;
 
-      camera.aspect =
-        mountRef.current.clientWidth / mountRef.current.clientHeight;
+      camera.aspect = mountElement.clientWidth / mountElement.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(
-        mountRef.current.clientWidth,
-        mountRef.current.clientHeight
-      );
+      renderer.setSize(mountElement.clientWidth, mountElement.clientHeight);
     };
 
     window.addEventListener('resize', handleResize);
@@ -172,7 +166,6 @@ export const ThreeJSVisualization: React.FC<ThreeJSVisualizationProps> = ({
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-      const mountElement = mountRef.current;
       if (mountElement && renderer.domElement) {
         mountElement.removeChild(renderer.domElement);
       }

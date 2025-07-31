@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Real-time entity monitoring dashboard",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "shared"

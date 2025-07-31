@@ -18,7 +18,7 @@ export default [
       '**/bundle/**',
       '**/out/**',
       '**/webpack.config.js',
-      '**/commitlint.config.js',
+      '**/commitlint.config.*',
       '**/next.config.*',
       '**/postcss.config.*',
       '**/tailwind.config.*',
