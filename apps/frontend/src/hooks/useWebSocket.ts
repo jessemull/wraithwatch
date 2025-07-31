@@ -1,36 +1,23 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  Entity,
-  WebSocketMessage,
-  EntityUpdateMessage,
-  EntityListMessage,
-} from '../types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { WEBSOCKET_CONNECTION_STATUS } from '../constants';
 import {
-  updateEntityProperty,
-  updateEntityInList,
+  Entity,
+  EntityListMessage,
+  EntityUpdateMessage,
+  WebSocketHandlers,
+  WebSocketMessage,
+  WebSocketState,
+} from '../types';
+import {
+  isConnectionStatusMessage,
   isEntityListMessage,
   isEntityUpdateMessage,
-  isConnectionStatusMessage,
+  updateEntityInList,
+  updateEntityProperty,
 } from '../util';
 
-// Types
-interface WebSocketState {
-  entities: Entity[];
-  isConnected: boolean;
-  lastUpdate: string | null;
-}
+// WebSocket message handlers...
 
-interface WebSocketHandlers {
-  onConnectionOpen: () => void;
-  onConnectionClose: () => void;
-  onConnectionError: (error: Event) => void;
-  onMessageReceived: (message: WebSocketMessage) => void;
-}
-
-// Note: Type guards and business logic functions are now imported from util/
-
-// WebSocket message handlers
 const createMessageHandlers = (
   setEntities: React.Dispatch<React.SetStateAction<Entity[]>>,
   setLastUpdate: React.Dispatch<React.SetStateAction<string | null>>,
@@ -42,12 +29,12 @@ const createMessageHandlers = (
   };
 
   const handleEntityUpdateMessage = (message: EntityUpdateMessage) => {
-    const { entityId, property, timestamp, oldValue, newValue } =
+    const { entityId, newValue, oldValue, property, timestamp } =
       message.payload;
 
     setEntities(prevEntities =>
-      updateEntityInList(prevEntities, entityId, entity =>
-        updateEntityProperty(entity, property, newValue, timestamp, oldValue)
+      updateEntityInList(entityId, prevEntities, entity =>
+        updateEntityProperty(entity, newValue, oldValue, property, timestamp)
       )
     );
 
@@ -74,29 +61,30 @@ const createMessageHandlers = (
   };
 
   const onConnectionOpen = () => {
-    console.log('🔌 WebSocket connected');
+    console.log('WebSocket connected');
     setIsConnected(true);
   };
 
   const onConnectionClose = () => {
-    console.log('🔌 WebSocket disconnected');
+    console.log('WebSocket disconnected');
     setIsConnected(false);
   };
 
   const onConnectionError = (error: Event) => {
-    console.error('❌ WebSocket error:', error);
+    console.error('WebSocket error:', error);
     setIsConnected(false);
   };
 
   return {
-    onConnectionOpen,
     onConnectionClose,
     onConnectionError,
+    onConnectionOpen,
     onMessageReceived,
   };
 };
 
-// WebSocket connection management
+// WebSocket connection management...
+
 const createWebSocketConnection = (
   url: string,
   handlers: WebSocketHandlers
@@ -111,14 +99,15 @@ const createWebSocketConnection = (
       const message: WebSocketMessage = JSON.parse(event.data);
       handlers.onMessageReceived(message);
     } catch (error) {
-      console.error('❌ Error parsing WebSocket message:', error);
+      console.error('Error parsing WebSocket message:', error);
     }
   };
 
   return websocket;
 };
 
-// Main hook
+// Main hook...
+
 export const useWebSocket = (url: string): WebSocketState => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [isConnected, setIsConnected] = useState(false);

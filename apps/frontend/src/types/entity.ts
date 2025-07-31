@@ -1,24 +1,24 @@
 export type EntityType = 'System' | 'User' | 'Sensor';
 
 export interface Entity {
-  id: string;
-  name: string;
-  type: EntityType;
-  properties: Record<string, EntityProperty>;
-  lastSeen: string;
   changesToday: number;
+  id: string;
+  lastSeen: string;
+  name: string;
+  properties: Record<string, EntityProperty>;
+  type: EntityType;
 }
 
 export interface EntityProperty {
-  name: string;
   currentValue: string | number;
-  lastChanged: string;
   history: PropertyChange[];
+  lastChanged: string;
+  name: string;
 }
 
 export interface PropertyChange {
-  timestamp: string;
-  oldValue: string | number;
+  changeType?: 'decrement' | 'increment' | 'replacement';
   newValue: string | number;
-  changeType?: 'increment' | 'decrement' | 'replacement';
+  oldValue: string | number;
+  timestamp: string;
 }

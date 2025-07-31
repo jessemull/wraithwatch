@@ -1,12 +1,12 @@
-import { Entity } from '../types';
 import { MAX_PROPERTY_HISTORY_LENGTH } from '../constants';
+import { Entity } from '../types';
 
 export const updateEntityProperty = (
   entity: Entity,
-  propertyName: string,
   newValue: string | number,
-  timestamp: string,
-  oldValue: string | number
+  oldValue: string | number,
+  propertyName: string,
+  timestamp: string
 ): Entity => {
   const updatedEntity = { ...entity };
 
@@ -31,8 +31,8 @@ export const updateEntityProperty = (
 };
 
 export const updateEntityInList = (
-  entities: Entity[],
   entityId: string,
+  entities: Entity[],
   updateFunction: (entity: Entity) => Entity
 ): Entity[] => {
   return entities.map(entity =>

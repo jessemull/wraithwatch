@@ -1,11 +1,10 @@
+import { WEBSOCKET_MESSAGE_TYPES } from '../constants';
 import {
-  WebSocketMessage,
   EntityListMessage,
   EntityUpdateMessage,
+  WebSocketMessage,
 } from '../types';
-import { WEBSOCKET_MESSAGE_TYPES } from '../constants';
 
-// Message type guards for type safety
 export const isEntityListMessage = (
   message: WebSocketMessage
 ): message is EntityListMessage => {
