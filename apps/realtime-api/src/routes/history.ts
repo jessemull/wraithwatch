@@ -1,15 +1,12 @@
-import { FastifyPluginAsync } from 'fastify';
-import { DynamoDBService } from '../services/dynamodb';
 import { ApiResponse, HistoryQuery, RecentChangesQuery } from '../types/api';
-
-export interface HistoryRouteOptions {
-  dynamoDBService: DynamoDBService;
-}
+import { FastifyPluginAsync } from 'fastify';
+import { HistoryRouteOptions } from '../types/routes';
 
 const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, options) => {
   const { dynamoDBService } = options;
 
-  // Test endpoint to see table data
+  // Test endpoint to see table data...
+
   fastify.get('/api/test/data', async (request, reply) => {
     const { limit } = request.query as { limit?: string };
 
@@ -31,7 +28,8 @@ const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, op
     }
   });
 
-  // Get entity history
+  // Get entity history...
+
   fastify.get('/api/history/entity/:entityId', async (request, reply) => {
     const { entityId } = request.params as { entityId: string };
     const { propertyName, startTime, endTime, limit } = request.query as HistoryQuery;
@@ -58,7 +56,8 @@ const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, op
     }
   });
 
-  // Get property history for a specific entity and property
+  // Get property history for a specific entity and property...
+
   fastify.get(
     '/api/history/entity/:entityId/property/:propertyName',
     async (request, reply) => {
@@ -94,7 +93,8 @@ const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, op
     }
   );
 
-  // Get recent changes across all entities
+  // Get recent changes across all entities...
+
   fastify.get('/api/history/recent', async (request, reply) => {
     const { entityType, limit, hours } = request.query as RecentChangesQuery;
 
@@ -120,4 +120,4 @@ const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, op
   });
 };
 
-export default historyRoute; 
+export default historyRoute;

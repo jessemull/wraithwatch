@@ -5,19 +5,18 @@ export class WebSocketManager {
 
   addClient(client: WebSocketConnection): void {
     this.clients.add(client);
-    console.log('🔌 New WebSocket client connected');
+    console.log('New WebSocket client connected');
   }
 
   removeClient(client: WebSocketConnection): void {
     this.clients.delete(client);
-    console.log('🔌 WebSocket client disconnected');
+    console.log('WebSocket client disconnected');
   }
 
   broadcast(message: unknown): void {
     const messageStr = JSON.stringify(message);
     this.clients.forEach(client => {
       if (client.socket.readyState === 1) {
-        // WebSocket.OPEN
         client.socket.send(messageStr);
       }
     });

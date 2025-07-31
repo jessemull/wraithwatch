@@ -1,4 +1,4 @@
-import { Entity, PropertyConfig, EntityType } from '../types';
+import { Entity, PropertyConfig, EntityType } from '../types/entity';
 
 // Demo entity configurations
 export const demoEntities: Array<{

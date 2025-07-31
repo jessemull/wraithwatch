@@ -1,4 +1,4 @@
-import { Entity, EntityUpdateMessage, EntityListMessage } from '../types';
+import { Entity, EntityUpdateMessage, EntityListMessage } from '../types/entity';
 import { initializeEntities, generateRandomValue, shouldChangeProperty, demoEntities } from '../utils/demo-data';
 import { WebSocketManager } from './websocket-manager';
 import { WebSocketConnection } from '../types/websocket';
@@ -36,24 +36,28 @@ export class EntityManager {
   generateEntityUpdates(): void {
     this.entities.forEach(entity => {
       Object.entries(entity.properties).forEach(([propertyName, property]) => {
-        // Find the demo config for this entity and property
+        // Find the demo config for this entity and property...
+
         const demoConfig = demoEntities.find(e => e.id === entity.id);
         if (!demoConfig || !demoConfig.properties[propertyName]) return;
 
         const propConfig = demoConfig.properties[propertyName];
 
-        // Check if this property should change based on frequency
+        // Check if this property should change based on frequency...
+
         if (shouldChangeProperty(propConfig.changeFrequency)) {
           const oldValue = property.currentValue;
           const newValue = generateRandomValue(propConfig);
 
-          // Update the entity
+          // Update the entity...
+
           property.currentValue = newValue;
           property.lastChanged = new Date().toISOString();
           entity.lastSeen = new Date().toISOString();
           entity.changesToday++;
 
-          // Add to history (keep last 10 changes)
+          // Add to history (keep last 10 changes)...
+
           property.history.push({
             timestamp: property.lastChanged,
             oldValue,
@@ -64,7 +68,8 @@ export class EntityManager {
             property.history.shift();
           }
 
-          // Broadcast the update
+          // Broadcast the update...
+          
           const updateMessage: EntityUpdateMessage = {
             type: 'entity_update',
             payload: {
@@ -78,9 +83,9 @@ export class EntityManager {
 
           this.websocketManager.broadcast(updateMessage);
 
-          console.log(
-            `📊 ${entity.name}.${propertyName}: ${oldValue} → ${newValue}`
-          );
+                console.log(
+        `${entity.name}.${propertyName}: ${oldValue} → ${newValue}`
+      );
         }
       });
     });

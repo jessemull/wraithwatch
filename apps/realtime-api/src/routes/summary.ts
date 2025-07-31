@@ -1,15 +1,12 @@
-import { FastifyPluginAsync } from 'fastify';
-import { DynamoDBService } from '../services/dynamodb';
 import { ApiResponse } from '../types/api';
-
-export interface SummaryRouteOptions {
-  dynamoDBService: DynamoDBService;
-}
+import { FastifyPluginAsync } from 'fastify';
+import { SummaryRouteOptions } from '../types/routes';
 
 const summaryRoute: FastifyPluginAsync<SummaryRouteOptions> = async (fastify, options) => {
   const { dynamoDBService } = options;
 
-  // Get entity summary
+  // Get entity summary...
+
   fastify.get('/api/summary/entity/:entityId', async (request, reply) => {
     const { entityId } = request.params as { entityId: string };
 

@@ -1,12 +1,8 @@
 import { FastifyPluginAsync } from 'fastify';
-import { DynamoDBService } from '../services/dynamodb';
 import healthRoute from './health';
 import historyRoute from './history';
 import summaryRoute from './summary';
-
-export interface RouteOptions {
-  dynamoDBService: DynamoDBService;
-}
+import { RouteOptions } from '../types/routes';
 
 const routes: FastifyPluginAsync<RouteOptions> = async (fastify, options) => {
   // Register all routes

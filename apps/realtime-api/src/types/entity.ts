@@ -11,13 +11,16 @@ export type EntityType =
 export type ThreatSeverity = 'low' | 'medium' | 'high' | 'critical';
 
 export type ProtocolType =
-  | 'HTTPS'
   | 'HTTP'
+  | 'HTTPS'
   | 'SSH'
-  | 'SMB'
   | 'FTP'
+  | 'SMTP'
   | 'DNS'
-  | 'SMTP';
+  | 'SMB'
+  | 'RDP'
+  | 'LDAP'
+  | 'NTP';
 
 export type AgentAction =
   | 'monitoring'
@@ -44,7 +47,6 @@ export interface Entity {
   changesToday: number;
 
   // Cybersecurity fields...
-
   threatScore?: number; // 0-1 scale
   ipAddress?: string;
   location?: {
@@ -70,8 +72,6 @@ export interface PropertyChange {
   newValue: string | number;
   changeType?: 'increment' | 'decrement' | 'replacement';
 }
-
-// WebSocket message types...
 
 export interface WebSocketMessage {
   type:
@@ -104,69 +104,63 @@ export interface EntityListMessage {
   };
 }
 
-export interface PropertyChangeMessage {
+export interface PropertyChangeMessage extends WebSocketMessage {
   type: 'property_change';
-  payload: {
-    entityId: string;
-    propertyName: string;
-    change: PropertyChange;
-  };
+  data: PropertyChange;
 }
 
-// Cybersecurity event messages...
-
-export interface NetworkActivityMessage {
+export interface NetworkActivityMessage extends WebSocketMessage {
   type: 'network_activity';
-  payload: {
-    sourceIp: string;
-    destIp: string;
+  data: {
+    sourceId: string;
+    targetId: string;
     protocol: ProtocolType;
-    bytesSent: number;
-    bytesReceived: number;
-    threatScore: number;
     timestamp: string;
+    bytesTransferred: number;
+    connectionStatus: 'established' | 'terminated' | 'failed';
   };
 }
 
-export interface AgentActionMessage {
+export interface AgentActionMessage extends WebSocketMessage {
   type: 'agent_action';
-  payload: {
+  data: {
     agentId: string;
-    observation: string;
     action: AgentAction;
-    confidence: number;
-    target: string;
-    threatScore: number;
+    targetId?: string;
     timestamp: string;
+    confidence: number;
+    description: string;
   };
 }
 
-export interface ThreatDetectedMessage {
+export interface ThreatDetectedMessage extends WebSocketMessage {
   type: 'threat_detected';
-  payload: {
+  data: {
+    threatId: string;
     threatType: string;
-    sourceIp: string;
-    targetSystem: string;
     severity: ThreatSeverity;
+    sourceId: string;
+    targetId?: string;
+    timestamp: string;
+    description: string;
     confidence: number;
-    threatScore: number;
-    timestamp: string;
+    indicators: string[];
   };
 }
 
-export interface GeoEventMessage {
+export interface GeoEventMessage extends WebSocketMessage {
   type: 'geo_event';
-  payload: {
-    ip: string;
-    latitude: number;
-    longitude: number;
-    activity: string;
-    threatScore: number;
+  data: {
+    eventId: string;
+    eventType: 'login' | 'logout' | 'access' | 'denied';
+    userId: string;
+    location: string;
+    ipAddress: string;
     timestamp: string;
+    userAgent?: string;
+    success: boolean;
   };
 }
-
-// Demo data types...
 
 export interface DemoEntityConfig {
   id: string;
@@ -180,4 +174,4 @@ export interface DemoEntityConfig {
       possibleValues?: string[];
     };
   };
-}
+} 
