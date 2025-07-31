@@ -23,6 +23,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
   const [hovered, setHovered] = useState(false);
 
   // Position in a circle...
+
   const angle = (index / total) * Math.PI * 2;
   const radius = 5;
   const position = [
@@ -38,6 +39,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
         Math.sin(state.clock.elapsedTime + index) * 0.001;
 
       // Pulse animation for threats...
+
       if (
         entity.type === 'Threat' &&
         entity.threatScore &&
