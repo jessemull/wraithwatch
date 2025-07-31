@@ -30,7 +30,8 @@ const entities = initializeEntities();
 const broadcast = (message: unknown) => {
   const messageStr = JSON.stringify(message);
   clients.forEach(client => {
-    if (client.socket.readyState === 1) { // WebSocket.OPEN
+    if (client.socket.readyState === 1) {
+      // WebSocket.OPEN
       client.socket.send(messageStr);
     }
   });
@@ -116,7 +117,7 @@ export async function createServer() {
   const dynamoDBService = new DynamoDBService();
 
   // WebSocket route
-  fastify.get('/ws', { websocket: true }, (connection) => {
+  fastify.get('/ws', { websocket: true }, connection => {
     console.log('🔌 New WebSocket client connected');
     clients.add(connection);
 

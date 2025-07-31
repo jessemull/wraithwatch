@@ -6,7 +6,7 @@ async function startServer() {
   try {
     const fastify = await createServer();
     await fastify.listen({ port: Number(PORT), host: '0.0.0.0' });
-    
+
     console.log(`🚀 Server starting on port ${PORT}`);
     console.log('✅ Fastify server ready with WebSocket and REST API');
     console.log('📡 REST API endpoints:');
