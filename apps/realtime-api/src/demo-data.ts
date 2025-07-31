@@ -3,7 +3,8 @@ import { DemoEntityConfig, Entity, EntityProperty } from './types';
 // Demo entity configurations...
 
 export const demoEntities: DemoEntityConfig[] = [
-  // AI Agents
+  // AI Agents...
+
   {
     id: 'sentinel-42',
     name: 'Sentinel-42',
@@ -68,7 +69,9 @@ export const demoEntities: DemoEntityConfig[] = [
       },
     },
   },
-  // Network Nodes
+
+  // Network Nodes...
+
   {
     id: 'web-server-12',
     name: 'web-server-12',
@@ -123,7 +126,9 @@ export const demoEntities: DemoEntityConfig[] = [
       },
     },
   },
-  // Threats
+
+  // Threats...
+
   {
     id: 'threat-port-scan',
     name: 'Port Scan Detected',
@@ -151,7 +156,9 @@ export const demoEntities: DemoEntityConfig[] = [
       },
     },
   },
-  // Original entities for compatibility
+
+  // Original entities for compatibility...
+
   {
     id: 'alpha-1',
     name: 'alpha-1',
@@ -230,7 +237,8 @@ export const initializeEntities = (): Entity[] => {
       };
     });
 
-    // Add cybersecurity fields based on entity type
+    // Add cybersecurity fields based on entity type...
+
     const entity: Entity = {
       id: config.id,
       name: config.name,
@@ -240,7 +248,8 @@ export const initializeEntities = (): Entity[] => {
       changesToday: 0,
     };
 
-    // Add type-specific cybersecurity fields
+    // Add type-specific cybersecurity fields...
+
     if (config.type === 'AI_Agent') {
       entity.agentId = config.id;
       entity.confidence =

@@ -7,6 +7,25 @@ interface EntitiesListProps {
   lastUpdate?: string;
 }
 
+const getEntityTypeColor = (entityType: string): string => {
+  switch (entityType) {
+    case 'AI_Agent':
+      return 'bg-blue-500';
+    case 'Network_Node':
+      return 'bg-green-500';
+    case 'Threat':
+      return 'bg-red-500';
+    case 'System':
+      return 'bg-yellow-500';
+    case 'User':
+      return 'bg-purple-500';
+    case 'Sensor':
+      return 'bg-cyan-500';
+    default:
+      return 'bg-gray-500';
+  }
+};
+
 export const EntitiesList: React.FC<EntitiesListProps> = ({
   entities,
   lastUpdate,
@@ -33,19 +52,7 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div
-                  className={`w-3 h-3 rounded-full ${
-                    entity.type === 'AI_Agent'
-                      ? 'bg-blue-500'
-                      : entity.type === 'Network_Node'
-                        ? 'bg-green-500'
-                        : entity.type === 'Threat'
-                          ? 'bg-red-500'
-                          : entity.type === 'System'
-                            ? 'bg-yellow-500'
-                            : entity.type === 'User'
-                              ? 'bg-purple-500'
-                              : 'bg-cyan-500'
-                  }`}
+                  className={`w-3 h-3 rounded-full ${getEntityTypeColor(entity.type)}`}
                 />
                 <div>
                   <h3 className="text-sm font-medium text-white">

@@ -7,6 +7,7 @@ export type EntityType =
   | 'Network_Node';
 
 export type ThreatSeverity = 'low' | 'medium' | 'high' | 'critical';
+
 export type ProtocolType =
   | 'HTTPS'
   | 'HTTP'
@@ -29,7 +30,9 @@ export interface Entity {
   name: string;
   properties: Record<string, EntityProperty>;
   type: EntityType;
-  // Cybersecurity fields
+
+  // Cybersecurity fields...
+
   threatScore?: number; // 0-1 scale
   ipAddress?: string;
   location?: {
