@@ -2,6 +2,7 @@ export { DataFlow } from './DataFlow';
 export { GlobeVisualization } from './GlobeVisualization';
 export { MatrixVisualization } from './MatrixVisualization';
 export { NetworkGraph } from './NetworkGraph';
+export { NetworkNode } from './NetworkNode';
 export { NetworkVisualization } from './NetworkVisualization';
 export { RadarVisualization } from './RadarVisualization';
 export { ThreatParticles } from './ThreatParticles';
