@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Wraithwatch WebSocket Server - ECS Task Roles'
+
+Resources:
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: CloudWatchLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !ImportValue 'wraithwatch-websocket-log-group-arn'
+
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+
+Outputs:
+  TaskExecutionRoleArn:
+    Description: 'ARN of the ECS Task Execution Role'
+    Value: !GetAtt ECSTaskExecutionRole.Arn
+    Export:
+      Name: 'wraithwatch-websocket-task-execution-role-arn'
+
+  TaskRoleArn:
+    Description: 'ARN of the ECS Task Role'
+    Value: !GetAtt ECSTaskRole.Arn
+    Export:
+      Name: 'wraithwatch-websocket-task-role-arn'

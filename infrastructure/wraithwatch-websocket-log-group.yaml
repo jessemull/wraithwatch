@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Wraithwatch WebSocket Server - CloudWatch Log Group'
+
+Resources:
+  CloudWatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: '/ecs/wraithwatch-websocket'
+      RetentionInDays: 7
+
+Outputs:
+  LogGroupName:
+    Description: 'Name of the CloudWatch Log Group'
+    Value: !Ref CloudWatchLogGroup
+    Export:
+      Name: 'wraithwatch-websocket-log-group-name'
+
+  LogGroupArn:
+    Description: 'ARN of the CloudWatch Log Group'
+    Value: !GetAtt CloudWatchLogGroup.Arn
+    Export:
+      Name: 'wraithwatch-websocket-log-group-arn'
