@@ -1,17 +1,14 @@
 'use client';
 
+import { config } from '../config';
 import { useWebSocket } from '../hooks/useWebSocket';
 
 export default function Home() {
-  const websocketUrl =
-    process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001';
-  console.log('WebSocket URL:', websocketUrl);
-
-  const { entities, isConnected, lastUpdate } = useWebSocket(websocketUrl);
-
+  const { entities, isConnected, lastUpdate } = useWebSocket(
+    config.websocket.url
+  );
   return (
     <div className="min-h-screen relative">
-      {/* Background pattern overlay */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-black/20"></div>
         <div className="absolute top-20 left-20 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
@@ -20,20 +17,15 @@ export default function Home() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-12 text-center">
           <h1 className="text-5xl text-white mb-4 condensed-text">
-            WRAITHWATCH
+            {config.app.name.toUpperCase()}
           </h1>
           <p className="text-xl text-blue-200 font-light">
-            Adaptive, Intelligent Cyber Defense
+            {config.app.description}
           </p>
-          <p className="text-sm text-gray-400 mt-4">
-            Real-time entity monitoring dashboard
-          </p>
+          <p className="text-sm text-gray-400 mt-4">{config.app.tagline}</p>
         </div>
-
-        {/* Entity List */}
         <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl">
           <div className="px-6 py-4 border-b border-gray-800">
             <h2 className="text-lg font-semibold text-white">Entities</h2>
@@ -46,7 +38,6 @@ export default function Home() {
               )}
             </p>
           </div>
-
           <div className="divide-y divide-gray-800">
             {entities.map(entity => (
               <div
@@ -86,8 +77,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
-        {/* Status */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-400">
             WebSocket connection:

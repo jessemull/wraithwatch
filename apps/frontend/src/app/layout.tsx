@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Roboto_Condensed } from 'next/font/google';
 import './globals.css';
+import { config } from '../config';
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ['latin'],
@@ -12,29 +13,28 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://www.wraithwatch-demo.com',
   },
-  description:
-    'Adaptive, Intelligent Cyber Defense. Real-time entity monitoring and threat detection powered by advanced AI.',
+  description: `${config.app.description}. Real-time entity monitoring and threat detection powered by advanced AI.`,
   metadataBase: new URL('https://www.wraithwatch-demo.com'),
   openGraph: {
-    description: 'Adaptive, Intelligent Cyber Defense.',
+    description: config.app.description,
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Wraithwatch - Demo - Cyber Defense Command Center',
+        alt: `${config.app.name} - Demo - Cyber Defense Command Center`,
       },
     ],
-    siteName: 'Wraithwatch Demo',
-    title: 'Wraithwatch Demo',
+    siteName: `${config.app.name} Demo`,
+    title: `${config.app.name} Demo`,
     url: 'https://www.wraithwatch-demo.com',
     type: 'website',
   },
-  title: 'Wraithwatch',
+  title: config.app.name,
   twitter: {
     card: 'summary_large_image',
-    title: 'Wraithwatch',
-    description: 'Adaptive, Intelligent Cyber Defense.',
+    title: config.app.name,
+    description: config.app.description,
     images: ['/og-image.png'],
   },
 };
