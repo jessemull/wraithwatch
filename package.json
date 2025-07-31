@@ -16,6 +16,7 @@
     "dev:realtime": "yarn --cwd apps/realtime-api dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "generate-data": "tsx scripts/generate-time-series-data.ts",
     "install:all": "yarn install",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
@@ -38,6 +39,11 @@
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "typescript-eslint": "^8.38.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "date-fns": "^3.0.0"
   },
   "engines": {
     "node": ">=22.0.0"

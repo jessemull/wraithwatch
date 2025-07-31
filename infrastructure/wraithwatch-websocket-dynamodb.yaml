@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Wraithwatch WebSocket Server - DynamoDB for Entity Time-Series Data'
+
+Resources:
+  EntityChangesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: wraithwatch-entity-changes
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
+      Tags:
+        - Key: Name
+          Value: wraithwatch-entity-changes
+        - Key: Purpose
+          Value: entity-time-series-data
+
+Outputs:
+  TableName:
+    Description: 'Name of the DynamoDB table'
+    Value: !Ref EntityChangesTable
+    Export:
+      Name: 'wraithwatch-entity-changes-table-name'
+
+  TableArn:
+    Description: 'ARN of the DynamoDB table'
+    Value: !GetAtt EntityChangesTable.Arn
+    Export:
+      Name: 'wraithwatch-entity-changes-table-arn'
