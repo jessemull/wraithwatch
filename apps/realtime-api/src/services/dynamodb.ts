@@ -5,6 +5,9 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { EntityChange } from '../types/dynamodb';
+import { createComponentLogger } from '../utils/logger';
+
+const logger = createComponentLogger('dynamodb-service');
 
 const client = new DynamoDBClient({ region: 'us-east-1' });
 
@@ -26,7 +29,7 @@ export class DynamoDBService {
         unmarshall(item)
       ) as EntityChange[];
     } catch (error) {
-      console.error('Error scanning table:', error);
+      logger.error({ error }, 'Error scanning table');
       throw error;
     }
   }
@@ -99,7 +102,7 @@ export class DynamoDBService {
         unmarshall(item)
       ) as EntityChange[];
     } catch (error) {
-      console.error('Error querying entity history:', error);
+      logger.error({ error, entityId }, 'Error querying entity history');
       throw error;
     }
   }
@@ -136,10 +139,7 @@ export class DynamoDBService {
 
       return items.slice(0, limit);
     } catch (error) {
-      console.error(
-        'Error scanning entity history with property filter:',
-        error
-      );
+      logger.error({ error, entityId, propertyName }, 'Error scanning entity history with property filter');
       throw error;
     }
   }
@@ -187,7 +187,7 @@ export class DynamoDBService {
 
       return items.slice(0, limit);
     } catch (error) {
-      console.error('Error scanning recent changes:', error);
+      logger.error({ error }, 'Error scanning recent changes');
       throw error;
     }
   }

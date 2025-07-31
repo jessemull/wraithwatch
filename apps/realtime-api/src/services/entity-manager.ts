@@ -2,6 +2,9 @@ import { Entity, EntityUpdateMessage, EntityListMessage } from '../types/entity'
 import { initializeEntities, generateRandomValue, shouldChangeProperty, demoEntities } from '../utils/demo-data';
 import { WebSocketManager } from './websocket-manager';
 import { WebSocketConnection } from '../types/websocket';
+import { createComponentLogger } from '../utils/logger';
+
+const logger = createComponentLogger('entity-manager');
 
 export class EntityManager {
   private entities: Entity[];
@@ -83,9 +86,16 @@ export class EntityManager {
 
           this.websocketManager.broadcast(updateMessage);
 
-                console.log(
-        `${entity.name}.${propertyName}: ${oldValue} → ${newValue}`
-      );
+          logger.info(
+            { 
+              entityId: entity.id, 
+              entityName: entity.name, 
+              propertyName, 
+              oldValue, 
+              newValue 
+            }, 
+            'Entity property updated'
+          );
         }
       });
     });

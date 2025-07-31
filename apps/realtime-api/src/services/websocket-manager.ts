@@ -1,16 +1,19 @@
 import { WebSocketConnection } from '../types/websocket';
+import { createComponentLogger } from '../utils/logger';
+
+const logger = createComponentLogger('websocket-manager');
 
 export class WebSocketManager {
   private clients = new Set<WebSocketConnection>();
 
   addClient(client: WebSocketConnection): void {
     this.clients.add(client);
-    console.log('New WebSocket client connected');
+    logger.info({ clientCount: this.clients.size }, 'New WebSocket client connected');
   }
 
   removeClient(client: WebSocketConnection): void {
     this.clients.delete(client);
-    console.log('WebSocket client disconnected');
+    logger.info({ clientCount: this.clients.size }, 'WebSocket client disconnected');
   }
 
   broadcast(message: unknown): void {

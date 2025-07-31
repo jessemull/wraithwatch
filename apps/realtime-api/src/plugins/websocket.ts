@@ -2,6 +2,9 @@ import websocket from '@fastify/websocket';
 import { FastifyPluginAsync } from 'fastify';
 import { WebSocketConnection } from '../types/websocket';
 import { WebSocketPluginOptions } from '../types/plugins';
+import { createComponentLogger } from '../utils/logger';
+
+const logger = createComponentLogger('websocket-plugin');
 
 const websocketPlugin: FastifyPluginAsync<WebSocketPluginOptions> = async (fastify, options) => {
   await fastify.register(websocket);
@@ -30,7 +33,7 @@ const websocketPlugin: FastifyPluginAsync<WebSocketPluginOptions> = async (fasti
     // Handle WebSocket errors...
     
     connection.socket.on('error', (error: unknown) => {
-      console.error('WebSocket error:', error);
+      logger.error({ error }, 'WebSocket error');
       websocketManager.removeClient(connection);
     });
   });
