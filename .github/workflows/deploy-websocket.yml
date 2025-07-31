@@ -67,17 +67,3 @@ jobs:
               TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:771265364914:targetgroup/wraithwatch-ws-tg/* \
             --capabilities CAPABILITY_NAMED_IAM \
             --region us-east-1
-
-      - name: Wait for Task Definition to be Available
-        run: |
-          echo "Waiting for task definition to be available..."
-          sleep 30
-
-      - name: Update ECS Service
-        run: |
-          SERVICE_NAME="wraithwatch-websocket-service"
-          aws ecs update-service \
-            --cluster wraithwatch-websocket-stack-Cluster \
-            --service $SERVICE_NAME \
-            --force-new-deployment \
-            --region us-east-1
