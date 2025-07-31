@@ -4,4 +4,4 @@ import { WebSocketManager } from '../services/websocket-manager';
 export interface WebSocketPluginOptions {
   websocketManager: WebSocketManager;
   entityManager: EntityManager;
-} 
+}

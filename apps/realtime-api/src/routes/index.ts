@@ -10,4 +10,4 @@ const routes: FastifyPluginAsync<RouteOptions> = async (fastify, options) => {
   await fastify.register(summaryRoute, options);
 };
 
-export default routes; 
+export default routes;

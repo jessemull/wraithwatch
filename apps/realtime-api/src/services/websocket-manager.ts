@@ -8,12 +8,18 @@ export class WebSocketManager {
 
   addClient(client: WebSocketConnection): void {
     this.clients.add(client);
-    logger.info({ clientCount: this.clients.size }, 'New WebSocket client connected');
+    logger.info(
+      { clientCount: this.clients.size },
+      'New WebSocket client connected'
+    );
   }
 
   removeClient(client: WebSocketConnection): void {
     this.clients.delete(client);
-    logger.info({ clientCount: this.clients.size }, 'WebSocket client disconnected');
+    logger.info(
+      { clientCount: this.clients.size },
+      'WebSocket client disconnected'
+    );
   }
 
   broadcast(message: unknown): void {
@@ -32,4 +38,4 @@ export class WebSocketManager {
   getClients(): Set<WebSocketConnection> {
     return this.clients;
   }
-} 
+}

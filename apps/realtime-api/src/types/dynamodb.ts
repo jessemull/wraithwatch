@@ -18,4 +18,4 @@ export interface HistoricalDataQuery {
   startTime?: string;
   endTime?: string;
   limit?: number;
-} 
+}

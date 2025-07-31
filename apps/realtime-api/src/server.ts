@@ -32,8 +32,8 @@ export async function createServer() {
   });
 
   // Start generating entity updates...
-  
+
   entityManager.startUpdateGeneration(2000);
 
   return fastify;
-} 
+}

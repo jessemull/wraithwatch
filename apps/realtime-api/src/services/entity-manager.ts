@@ -1,9 +1,21 @@
-import { Entity, EntityUpdateMessage, EntityListMessage } from '../types/entity';
-import { initializeEntities, generateRandomValue, shouldChangeProperty, demoEntities } from '../utils/demo-data';
+import {
+  Entity,
+  EntityUpdateMessage,
+  EntityListMessage,
+} from '../types/entity';
+import {
+  initializeEntities,
+  generateRandomValue,
+  shouldChangeProperty,
+  demoEntities,
+} from '../utils/demo-data';
 import { WebSocketManager } from './websocket-manager';
 import { WebSocketConnection } from '../types/websocket';
 import { createComponentLogger } from '../utils/logger';
-import { MAX_PROPERTY_HISTORY_LENGTH, DEFAULT_UPDATE_INTERVAL } from '../constants';
+import {
+  MAX_PROPERTY_HISTORY_LENGTH,
+  DEFAULT_UPDATE_INTERVAL,
+} from '../constants';
 
 const logger = createComponentLogger('entity-manager');
 
@@ -73,7 +85,7 @@ export class EntityManager {
           }
 
           // Broadcast the update...
-          
+
           const updateMessage: EntityUpdateMessage = {
             type: 'entity_update',
             payload: {
@@ -88,13 +100,13 @@ export class EntityManager {
           this.websocketManager.broadcast(updateMessage);
 
           logger.info(
-            { 
-              entityId: entity.id, 
-              entityName: entity.name, 
-              propertyName, 
-              oldValue, 
-              newValue 
-            }, 
+            {
+              entityId: entity.id,
+              entityName: entity.name,
+              propertyName,
+              oldValue,
+              newValue,
+            },
             'Entity property updated'
           );
         }
@@ -107,4 +119,4 @@ export class EntityManager {
       this.generateEntityUpdates();
     }, intervalMs);
   }
-} 
+}

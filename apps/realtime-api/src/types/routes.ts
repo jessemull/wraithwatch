@@ -10,4 +10,4 @@ export interface HistoryRouteOptions {
 
 export interface SummaryRouteOptions {
   dynamoDBService: DynamoDBService;
-} 
+}

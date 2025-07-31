@@ -7,37 +7,44 @@ import { createComponentLogger } from '../utils/logger';
 
 const logger = createComponentLogger('websocket-plugin');
 
-const websocketPlugin: FastifyPluginAsync<WebSocketPluginOptions> = async (fastify, options) => {
+const websocketPlugin: FastifyPluginAsync<WebSocketPluginOptions> = async (
+  fastify,
+  options
+) => {
   await fastify.register(websocket);
 
-  fastify.get(WEBSOCKET_PATH, { websocket: true }, (connection: WebSocketConnection) => {
-    const { websocketManager, entityManager } = options;
-    
-    // Add client to manager...
+  fastify.get(
+    WEBSOCKET_PATH,
+    { websocket: true },
+    (connection: WebSocketConnection) => {
+      const { websocketManager, entityManager } = options;
 
-    websocketManager.addClient(connection);
+      // Add client to manager...
 
-    // Send initial entity list...
+      websocketManager.addClient(connection);
 
-    entityManager.sendEntityList(connection);
+      // Send initial entity list...
 
-    // Send connection status...
+      entityManager.sendEntityList(connection);
 
-    entityManager.sendConnectionStatus(connection);
+      // Send connection status...
 
-    // Handle client disconnect...
+      entityManager.sendConnectionStatus(connection);
 
-    connection.socket.on('close', () => {
-      websocketManager.removeClient(connection);
-    });
+      // Handle client disconnect...
 
-    // Handle WebSocket errors...
-    
-    connection.socket.on('error', (error: unknown) => {
-      logger.error({ error }, 'WebSocket error');
-      websocketManager.removeClient(connection);
-    });
-  });
+      connection.socket.on('close', () => {
+        websocketManager.removeClient(connection);
+      });
+
+      // Handle WebSocket errors...
+
+      connection.socket.on('error', (error: unknown) => {
+        logger.error({ error }, 'WebSocket error');
+        websocketManager.removeClient(connection);
+      });
+    }
+  );
 };
 
-export default websocketPlugin; 
+export default websocketPlugin;

@@ -2,7 +2,10 @@ import { ApiResponse } from '../types/api';
 import { FastifyPluginAsync } from 'fastify';
 import { SummaryRouteOptions } from '../types/routes';
 
-const summaryRoute: FastifyPluginAsync<SummaryRouteOptions> = async (fastify, options) => {
+const summaryRoute: FastifyPluginAsync<SummaryRouteOptions> = async (
+  fastify,
+  options
+) => {
   const { dynamoDBService } = options;
 
   // Get entity summary...
@@ -27,4 +30,4 @@ const summaryRoute: FastifyPluginAsync<SummaryRouteOptions> = async (fastify, op
   });
 };
 
-export default summaryRoute; 
+export default summaryRoute;

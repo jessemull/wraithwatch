@@ -140,7 +140,10 @@ export class DynamoDBService {
 
       return items.slice(0, limit);
     } catch (error) {
-      logger.error({ error, entityId, propertyName }, 'Error scanning entity history with property filter');
+      logger.error(
+        { error, entityId, propertyName },
+        'Error scanning entity history with property filter'
+      );
       throw error;
     }
   }

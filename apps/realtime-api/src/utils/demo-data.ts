@@ -16,7 +16,12 @@ export const demoEntities: Array<{
       status: {
         name: 'status',
         type: 'string',
-        possibleValues: ['monitoring', 'investigating', 'blocking', 'isolating'],
+        possibleValues: [
+          'monitoring',
+          'investigating',
+          'blocking',
+          'isolating',
+        ],
         changeFrequency: 0.3,
       },
       confidence: {
@@ -50,7 +55,12 @@ export const demoEntities: Array<{
       status: {
         name: 'status',
         type: 'string',
-        possibleValues: ['monitoring', 'investigating', 'blocking', 'isolating'],
+        possibleValues: [
+          'monitoring',
+          'investigating',
+          'blocking',
+          'isolating',
+        ],
         changeFrequency: 0.2,
       },
       confidence: {
@@ -190,7 +200,12 @@ export const demoEntities: Array<{
       targetSystem: {
         name: 'targetSystem',
         type: 'string',
-        possibleValues: ['web-server-12', 'db-server-3', 'internal-db-3', 'api-gateway'],
+        possibleValues: [
+          'web-server-12',
+          'db-server-3',
+          'internal-db-3',
+          'api-gateway',
+        ],
         changeFrequency: 0.4,
       },
       confidence: {
@@ -246,9 +261,13 @@ export const initializeEntities = (): Entity[] => {
 
 // Generate random value based on property configuration...
 
-export const generateRandomValue = (config: PropertyConfig): string | number => {
+export const generateRandomValue = (
+  config: PropertyConfig
+): string | number => {
   if (config.type === 'string' && config.possibleValues) {
-    const randomIndex = Math.floor(Math.random() * config.possibleValues.length);
+    const randomIndex = Math.floor(
+      Math.random() * config.possibleValues.length
+    );
     return config.possibleValues[randomIndex];
   } else if (config.type === 'number') {
     const min = config.minValue || 0;
@@ -262,4 +281,4 @@ export const generateRandomValue = (config: PropertyConfig): string | number => 
 
 export const shouldChangeProperty = (frequency: number): boolean => {
   return Math.random() < frequency;
-}; 
+};

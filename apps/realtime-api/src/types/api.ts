@@ -21,4 +21,4 @@ export interface RecentChangesQuery {
   entityType?: string;
   limit?: number;
   hours?: number;
-} 
+}

@@ -2,7 +2,10 @@ import { ApiResponse, HistoryQuery, RecentChangesQuery } from '../types/api';
 import { FastifyPluginAsync } from 'fastify';
 import { HistoryRouteOptions } from '../types/routes';
 
-const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, options) => {
+const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (
+  fastify,
+  options
+) => {
   const { dynamoDBService } = options;
 
   // Test endpoint to see table data...
@@ -32,7 +35,8 @@ const historyRoute: FastifyPluginAsync<HistoryRouteOptions> = async (fastify, op
 
   fastify.get('/api/history/entity/:entityId', async (request, reply) => {
     const { entityId } = request.params as { entityId: string };
-    const { propertyName, startTime, endTime, limit } = request.query as HistoryQuery;
+    const { propertyName, startTime, endTime, limit } =
+      request.query as HistoryQuery;
 
     try {
       const history = await dynamoDBService.getEntityHistory(entityId, {

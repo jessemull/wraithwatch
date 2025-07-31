@@ -20,4 +20,4 @@ export const logger = bunyan.createLogger({
 
 export const createComponentLogger = (component: string) => {
   return logger.child({ component });
-}; 
+};

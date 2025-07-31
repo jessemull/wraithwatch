@@ -19,4 +19,4 @@ export const MAX_PROPERTY_HISTORY_LENGTH = 10;
 
 // Logging configuration.
 
-export const DEFAULT_LOG_LEVEL = 'info'; 
+export const DEFAULT_LOG_LEVEL = 'info';
