@@ -1,6 +1,7 @@
 import { DemoEntityConfig, Entity, EntityProperty } from './types';
 
-// Demo entity configurations
+// Demo entity configurations...
+
 export const demoEntities: DemoEntityConfig[] = [
   {
     id: 'alpha-1',
@@ -141,7 +142,8 @@ export const shouldChangeProperty = (
   return Math.random() < probabilities[frequency];
 };
 
-// Initialize entities from demo config
+// Initialize entities from demo config...
+
 export const initializeEntities = (): Entity[] => {
   return demoEntities.map(config => {
     const properties: Record<string, EntityProperty> = {};

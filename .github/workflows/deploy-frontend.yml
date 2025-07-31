@@ -21,18 +21,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'yarn'
 
       - name: Install Dependencies
         run: |
           yarn install --frozen-lockfile
 
-      - name: Build frontend
+      - name: Build Frontend
         run: |
           yarn workspace @wraithwatch/frontend build
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -44,7 +44,7 @@ jobs:
           # Sync build output to S3
           aws s3 sync apps/frontend/out/ s3://wraithwatch-frontend/ --delete
 
-      - name: Invalidate CloudFront cache
+      - name: Invalidate CloudFront Cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id E2BS8G6FZ8VAXH \

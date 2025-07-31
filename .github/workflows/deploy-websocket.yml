@@ -13,13 +13,13 @@ jobs:
     name: Deploy WebSocket Server to ECS
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'yarn'
 
       - name: Install Dependencies
@@ -55,16 +55,6 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA
           echo "CONTAINER_IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/wraithwatch-websocket:$GITHUB_SHA" >> $GITHUB_ENV
 
-      - name: Get Target Group ARN
-        id: get-target-group
-        run: |
-          TARGET_GROUP_ARN=$(aws cloudformation describe-stacks \
-            --stack-name wraithwatch-websocket-stack \
-            --query 'Stacks[0].Outputs[?OutputKey==`TargetGroupArn`].OutputValue' \
-            --output text)
-          echo "Target Group ARN: $TARGET_GROUP_ARN"
-          echo "target-group-arn=$TARGET_GROUP_ARN" >> $GITHUB_OUTPUT
-
       - name: Deploy Task Definition
         run: |
           aws cloudformation deploy \
@@ -74,7 +64,7 @@ jobs:
               ContainerImage=${{ env.CONTAINER_IMAGE_URI }} \
               Environment=main \
               ECSClusterName=wraithwatch-websocket-stack-Cluster \
-              TargetGroupArn=${{ steps.get-target-group.outputs.target-group-arn }} \
+              TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:771265364914:targetgroup/wraithwatch-ws-tg/* \
             --capabilities CAPABILITY_NAMED_IAM \
             --region us-east-1
 
@@ -86,8 +76,6 @@ jobs:
       - name: Update ECS Service
         run: |
           SERVICE_NAME="wraithwatch-websocket-service"
-
-          # Force new deployment
           aws ecs update-service \
             --cluster wraithwatch-websocket-stack-Cluster \
             --service $SERVICE_NAME \

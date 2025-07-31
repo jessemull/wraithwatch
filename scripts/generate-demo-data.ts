@@ -1,6 +1,20 @@
-import { DemoEntityConfig } from '../shared/types';
-
 // Demo entity configurations
+export type EntityType = 'System' | 'User' | 'Sensor';
+
+export interface DemoEntityConfig {
+  id: string;
+  name: string;
+  type: EntityType;
+  properties: {
+    [key: string]: {
+      initialValue: string | number;
+      changeFrequency: 'low' | 'medium' | 'high';
+      valueRange?: [number, number];
+      possibleValues?: string[];
+    };
+  };
+}
+
 export const demoEntities: DemoEntityConfig[] = [
   {
     id: 'alpha-1',

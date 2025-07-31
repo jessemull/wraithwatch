@@ -14,13 +14,16 @@ const wss = new WebSocketServer({ server: httpServer });
 
 console.log(`🚀 WebSocket server starting on port ${PORT}`);
 
-// Store connected clients
+// Store connected clients...
+
 const clients = new Set<WebSocket>();
 
-// Initialize entities
+// Initialize entities...
+
 const entities = initializeEntities();
 
-// Broadcast message to all connected clients
+// Broadcast message to all connected clients...
+
 const broadcast = (message: unknown) => {
   const messageStr = JSON.stringify(message);
   clients.forEach(client => {
@@ -30,7 +33,8 @@ const broadcast = (message: unknown) => {
   });
 };
 
-// Send initial entity list to new client
+// Send initial entity list to new client...
+
 const sendEntityList = (client: WebSocket) => {
   const message: EntityListMessage = {
     type: 'entity_list',
@@ -39,28 +43,33 @@ const sendEntityList = (client: WebSocket) => {
   client.send(JSON.stringify(message));
 };
 
-// Generate random entity updates
+// Generate random entity updates...
+
 const generateEntityUpdates = () => {
   entities.forEach(entity => {
     Object.entries(entity.properties).forEach(([propertyName, property]) => {
-      // Find the demo config for this entity and property
+      // Find the demo config for this entity and property...
+
       const demoConfig = demoEntities.find(e => e.id === entity.id);
       if (!demoConfig || !demoConfig.properties[propertyName]) return;
 
       const propConfig = demoConfig.properties[propertyName];
 
-      // Check if this property should change based on frequency
+      // Check if this property should change based on frequency...
+
       if (shouldChangeProperty(propConfig.changeFrequency)) {
         const oldValue = property.currentValue;
         const newValue = generateRandomValue(propConfig);
 
-        // Update the entity
+        // Update the entity...
+
         property.currentValue = newValue;
         property.lastChanged = new Date().toISOString();
         entity.lastSeen = new Date().toISOString();
         entity.changesToday++;
 
-        // Add to history (keep last 10 changes)
+        // Add to history (keep last 10 changes)...
+
         property.history.push({
           timestamp: property.lastChanged,
           oldValue,
@@ -71,7 +80,8 @@ const generateEntityUpdates = () => {
           property.history.shift();
         }
 
-        // Broadcast the update
+        // Broadcast the update...
+
         const updateMessage: EntityUpdateMessage = {
           type: 'entity_update',
           payload: {
@@ -84,6 +94,7 @@ const generateEntityUpdates = () => {
         };
 
         broadcast(updateMessage);
+
         console.log(
           `📊 ${entity.name}.${propertyName}: ${oldValue} → ${newValue}`
         );
@@ -92,15 +103,18 @@ const generateEntityUpdates = () => {
   });
 };
 
-// WebSocket connection handler
+// WebSocket connection handler...
+
 wss.on('connection', (ws: WebSocket) => {
   console.log('🔌 New client connected');
   clients.add(ws);
 
-  // Send initial entity list
+  // Send initial entity list...
+
   sendEntityList(ws);
 
-  // Send connection status
+  // Send connection status...
+
   ws.send(
     JSON.stringify({
       type: 'connection_status',
@@ -119,7 +133,8 @@ wss.on('connection', (ws: WebSocket) => {
   });
 });
 
-// Health check endpoint
+// Health check endpoint...
+
 httpServer.on('request', (req, res) => {
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -132,12 +147,14 @@ httpServer.on('request', (req, res) => {
   }
 });
 
-// Start the HTTP server
+// Start the HTTP server...
+
 httpServer.listen(PORT, () => {
   console.log(`🚀 WebSocket server starting on port ${PORT}`);
 });
 
-// Start generating updates every 2 seconds
+// Start generating updates every 2 seconds...
+
 setInterval(generateEntityUpdates, 2000);
 
 console.log('✅ WebSocket server ready');

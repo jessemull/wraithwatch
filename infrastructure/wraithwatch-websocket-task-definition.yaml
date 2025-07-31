@@ -27,7 +27,8 @@ Conditions:
   HasTargetGroup: !Not [!Equals [!Ref TargetGroupArn, '']]
 
 Resources:
-  # Task Definition
+  # Task Definition...
+
   WebSocketTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -60,7 +61,8 @@ Resources:
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: websocket
 
-  # IAM Roles
+  # IAM Roles...
+
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -95,14 +97,16 @@ Resources:
               Service: ecs-tasks.amazonaws.com
             Action: sts:AssumeRole
 
-  # CloudWatch Logs
+  # CloudWatch Logs...
+
   CloudWatchLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub '/ecs/wraithwatch-websocket-${Environment}'
       RetentionInDays: 7
 
-  # ECS Service (if target group is provided)
+  # ECS Service (if target group is provided)...
+
   WebSocketService:
     Type: AWS::ECS::Service
     Condition: HasTargetGroup

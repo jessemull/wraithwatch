@@ -2,7 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Wraithwatch WebSocket Server - ECS Service Role'
 
 Resources:
-  # ECS Service Role (needed for load balancer management)
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
