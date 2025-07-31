@@ -1,4 +1,8 @@
 export { DataFlow } from './DataFlow';
+export { GlobeVisualization } from './GlobeVisualization';
+export { MatrixVisualization } from './MatrixVisualization';
 export { NetworkGraph } from './NetworkGraph';
+export { NetworkVisualization } from './NetworkVisualization';
+export { RadarVisualization } from './RadarVisualization';
 export { ThreatParticles } from './ThreatParticles';
 export { VisualizationHub } from './VisualizationHub';
