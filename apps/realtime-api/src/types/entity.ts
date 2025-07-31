@@ -47,6 +47,7 @@ export interface Entity {
   changesToday: number;
 
   // Cybersecurity fields...
+  
   threatScore?: number; // 0-1 scale
   ipAddress?: string;
   location?: {

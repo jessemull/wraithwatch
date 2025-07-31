@@ -1,9 +1,9 @@
 import websocket from '@fastify/websocket';
 import { FastifyPluginAsync } from 'fastify';
+import { WEBSOCKET_PATH } from '../constants';
 import { WebSocketConnection } from '../types/websocket';
 import { WebSocketPluginOptions } from '../types/plugins';
 import { createComponentLogger } from '../utils/logger';
-import { WEBSOCKET_PATH } from '../constants';
 
 const logger = createComponentLogger('websocket-plugin');
 

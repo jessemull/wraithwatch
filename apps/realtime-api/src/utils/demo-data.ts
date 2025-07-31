@@ -1,6 +1,7 @@
 import { Entity, PropertyConfig, EntityType } from '../types/entity';
 
-// Demo entity configurations
+// Demo entity configurations...
+
 export const demoEntities: Array<{
   id: string;
   name: string;
@@ -215,7 +216,8 @@ export const demoEntities: Array<{
   },
 ];
 
-// Initialize entities with demo data
+// Initialize entities with demo data...
+
 export const initializeEntities = (): Entity[] => {
   return demoEntities.map(demoEntity => {
     const entity: Entity = {
@@ -227,7 +229,8 @@ export const initializeEntities = (): Entity[] => {
       properties: {},
     };
 
-    // Initialize properties with current values
+    // Initialize properties with current values...
+
     Object.entries(demoEntity.properties).forEach(([propertyName, config]) => {
       entity.properties[propertyName] = {
         name: config.name,
@@ -241,7 +244,8 @@ export const initializeEntities = (): Entity[] => {
   });
 };
 
-// Generate random value based on property configuration
+// Generate random value based on property configuration...
+
 export const generateRandomValue = (config: PropertyConfig): string | number => {
   if (config.type === 'string' && config.possibleValues) {
     const randomIndex = Math.floor(Math.random() * config.possibleValues.length);
@@ -254,7 +258,8 @@ export const generateRandomValue = (config: PropertyConfig): string | number => 
   return 'unknown';
 };
 
-// Check if property should change based on frequency
+// Check if property should change based on frequency...
+
 export const shouldChangeProperty = (frequency: number): boolean => {
   return Math.random() < frequency;
 }; 

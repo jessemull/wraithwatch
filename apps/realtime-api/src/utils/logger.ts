@@ -16,7 +16,8 @@ export const logger = bunyan.createLogger({
   ],
 });
 
-// Create child loggers for different components
+// Create child loggers for different components...
+
 export const createComponentLogger = (component: string) => {
   return logger.child({ component });
 }; 

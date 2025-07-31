@@ -1,6 +1,6 @@
+import { DEFAULT_PORT, DEFAULT_HOST } from './constants';
 import { createServer } from './server';
 import { logger } from './utils/logger';
-import { DEFAULT_PORT, DEFAULT_HOST } from './constants';
 
 const PORT = process.env.PORT || DEFAULT_PORT;
 
