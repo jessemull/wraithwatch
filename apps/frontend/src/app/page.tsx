@@ -3,9 +3,11 @@
 import { useWebSocket } from '../hooks/useWebSocket';
 
 export default function Home() {
-  const { entities, isConnected, lastUpdate } = useWebSocket(
-    process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001'
-  );
+  const websocketUrl =
+    process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:3001';
+  console.log('WebSocket URL:', websocketUrl);
+
+  const { entities, isConnected, lastUpdate } = useWebSocket(websocketUrl);
 
   return (
     <div className="min-h-screen bg-gray-50">
