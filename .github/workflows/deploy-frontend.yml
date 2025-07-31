@@ -28,6 +28,10 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
+      - name: Lint Code
+        run: |
+          yarn lint
+
       - name: Build Frontend
         run: |
           yarn workspace @wraithwatch/frontend build

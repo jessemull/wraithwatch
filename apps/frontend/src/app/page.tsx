@@ -2,6 +2,7 @@
 
 import { config } from '../config';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { EnhancedThreeJSVisualization } from '../components';
 
 export default function Home() {
   const { entities, isConnected, lastUpdate } = useWebSocket(
@@ -26,6 +27,23 @@ export default function Home() {
           </p>
           <p className="text-sm text-gray-400 mt-4">{config.app.tagline}</p>
         </div>
+        {/* Three.js Visualization */}
+        <div className="mb-8">
+          <div className="px-6 py-4 border-b border-gray-800">
+            <h2 className="text-lg font-semibold text-white">
+              3D Network Visualization
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Real-time cybersecurity entity mapping
+            </p>
+          </div>
+          <EnhancedThreeJSVisualization
+            entities={entities}
+            isConnected={isConnected}
+          />
+        </div>
+
+        {/* Entity List */}
         <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl">
           <div className="px-6 py-4 border-b border-gray-800">
             <h2 className="text-lg font-semibold text-white">Entities</h2>
@@ -48,11 +66,17 @@ export default function Home() {
                   <div className="flex items-center space-x-3">
                     <div
                       className={`w-3 h-3 rounded-full ${
-                        entity.type === 'System'
+                        entity.type === 'AI_Agent'
                           ? 'bg-blue-500'
-                          : entity.type === 'User'
+                          : entity.type === 'Network_Node'
                             ? 'bg-green-500'
-                            : 'bg-purple-500'
+                            : entity.type === 'Threat'
+                              ? 'bg-red-500'
+                              : entity.type === 'System'
+                                ? 'bg-yellow-500'
+                                : entity.type === 'User'
+                                  ? 'bg-purple-500'
+                                  : 'bg-cyan-500'
                       }`}
                     />
                     <div>

@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint Code
         run: |
-          yarn workspace @wraithwatch/realtime-api lint
+          yarn lint
 
       - name: Build TypeScript
         run: |
