@@ -7,11 +7,6 @@ Parameters:
     Description: 'ECR image URI for the WebSocket server'
     Default: ''
 
-  Environment:
-    Type: String
-    Description: 'Environment'
-    Default: 'main'
-
   ECSClusterName:
     Type: String
     Description: 'Name of the ECS cluster'
@@ -32,14 +27,14 @@ Resources:
   WebSocketTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub 'wraithwatch-websocket-task-${Environment}'
+      Family: 'wraithwatch-websocket-task'
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
       Cpu: 256
       Memory: 512
-      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
-      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ExecutionRoleArn: !ImportValue 'wraithwatch-websocket-task-execution-role-arn'
+      TaskRoleArn: !ImportValue 'wraithwatch-websocket-task-role-arn'
       ContainerDefinitions:
         - Name: websocket-server
           Image: !If
@@ -51,59 +46,15 @@ Resources:
               Protocol: tcp
           Environment:
             - Name: NODE_ENV
-              Value: !Ref Environment
+              Value: 'main'
             - Name: PORT
               Value: '8080'
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Ref CloudWatchLogGroup
+              awslogs-group: !ImportValue 'wraithwatch-websocket-log-group-name'
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: websocket
-
-  # IAM Roles...
-
-  ECSTaskExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-      Policies:
-        - PolicyName: CloudWatchLogs
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt CloudWatchLogGroup.Arn
-
-  ECSTaskRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: sts:AssumeRole
-
-  # CloudWatch Logs...
-
-  CloudWatchLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub '/ecs/wraithwatch-websocket-${Environment}'
-      RetentionInDays: 7
 
   # ECS Service (if target group is provided)...
 
@@ -135,7 +86,7 @@ Outputs:
     Description: 'ARN of the ECS task definition'
     Value: !Ref WebSocketTaskDefinition
     Export:
-      Name: !Sub 'wraithwatch-websocket-task-definition-${Environment}'
+      Name: 'wraithwatch-websocket-task-definition'
 
   ServiceName:
     Description: 'Name of the ECS service'
@@ -144,4 +95,4 @@ Outputs:
       - !Ref WebSocketService
       - !Ref AWS::NoValue
     Export:
-      Name: !Sub 'wraithwatch-websocket-service-${Environment}'
+      Name: 'wraithwatch-websocket-service'
