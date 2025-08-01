@@ -143,3 +143,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 // test comment
 // test comment
 // test
+const unusedVariable = 'this will cause a linting error';
