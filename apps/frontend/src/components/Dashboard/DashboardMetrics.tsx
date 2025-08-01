@@ -11,8 +11,8 @@ import {
 import { useAggregatedData } from '../../hooks/useAggregatedData';
 
 interface DashboardMetricsProps {
-  entities: unknown[];
   changes: EntityChange[];
+  entities: unknown[];
 }
 
 export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
@@ -22,7 +22,6 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-      {/* KPI Cards - Stacked on the left */}
       <div className="xl:col-span-1 space-y-8">
         <KPICard
           title="Active Threats"
@@ -61,10 +60,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           comparison="vs previous 24 hours"
         />
       </div>
-
-      {/* Chart Cards - Left column with stacked charts, right column with full-width charts */}
       <div className="xl:col-span-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column - stacked charts */}
         <div className="lg:col-span-1 space-y-8">
           <ChartCard title="Threat Severity Distribution">
             <div className="h-full">
@@ -83,8 +79,6 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
             </div>
           </ChartCard>
         </div>
-
-        {/* Right column - full-width charts */}
         <div className="lg:col-span-2 space-y-8">
           <ChartCard title="Entity Changes">
             <div className="h-full">
@@ -96,7 +90,6 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               />
             </div>
           </ChartCard>
-
           <ChartCard title="AI Agent Activity">
             <div className="h-full">
               <HorizontalBarChart

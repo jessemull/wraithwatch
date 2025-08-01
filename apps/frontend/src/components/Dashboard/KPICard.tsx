@@ -26,7 +26,6 @@ export const KPICard: React.FC<KPICardProps> = ({
         </h3>
         {icon && <div className="text-gray-400">{icon}</div>}
       </div>
-
       <div className="flex items-baseline space-x-2">
         <span className="text-2xl font-bold text-white">{value}</span>
         {change && (
@@ -40,7 +39,6 @@ export const KPICard: React.FC<KPICardProps> = ({
           </div>
         )}
       </div>
-
       {comparison && <p className="text-gray-500 text-xs mt-2">{comparison}</p>}
     </div>
   );

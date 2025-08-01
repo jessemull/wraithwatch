@@ -1,5 +1,11 @@
 import React from 'react';
 import { Entity } from '../../types/entity';
+import {
+  getEntityTypeColor,
+  getStatusColor,
+  formatPropertyName,
+  getUnit,
+} from '../../util/entity';
 
 interface EntityDetailsProps {
   selectedEntity: Entity | undefined;
@@ -8,74 +14,6 @@ interface EntityDetailsProps {
 export const EntityDetails: React.FC<EntityDetailsProps> = ({
   selectedEntity,
 }) => {
-  const formatPropertyName = (name: string) => {
-    return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
-
-  const getUnit = (name: string) => {
-    if (name.includes('rate') || name.includes('loss')) return '%';
-    if (name.includes('latency')) return 'ms';
-    if (name.includes('bandwidth')) return 'Mbps';
-    if (name.includes('count')) return '';
-    if (name.includes('duration')) return 'min';
-    return '';
-  };
-
-  const getStatusColor = (name: string, value: string) => {
-    const statusColors = {
-      routing_status: {
-        optimal: 'bg-green-500 text-white',
-        maintenance: 'bg-yellow-500 text-black',
-        degraded: 'bg-orange-500 text-white',
-        default: 'bg-gray-500 text-white',
-      },
-      severity: {
-        critical: 'bg-red-500 text-white',
-        high: 'bg-orange-500 text-white',
-        medium: 'bg-yellow-500 text-black',
-        low: 'bg-green-500 text-white',
-        default: 'bg-gray-500 text-white',
-      },
-      mitigation_status: {
-        mitigated: 'bg-green-500 text-white',
-        mitigating: 'bg-yellow-500 text-black',
-        detected: 'bg-red-500 text-white',
-        default: 'bg-gray-500 text-white',
-      },
-      last_activity: {
-        locked: 'bg-red-500 text-white',
-        offline: 'bg-gray-500 text-white',
-        active: 'bg-green-500 text-white',
-        default: 'bg-yellow-500 text-black',
-      },
-      permission_level: {
-        super_admin: 'bg-red-500 text-white',
-        admin: 'bg-orange-500 text-white',
-        user: 'bg-blue-500 text-white',
-        default: 'bg-gray-500 text-white',
-      },
-    };
-
-    const colorMap = statusColors[name as keyof typeof statusColors];
-
-    if (colorMap) {
-      return colorMap[value as keyof typeof colorMap] || colorMap.default;
-    }
-
-    return 'bg-gray-500 text-white';
-  };
-
-  const getEntityTypeColor = (type: string) => {
-    const typeColors = {
-      AI_Agent: 'bg-blue-500',
-      Threat: 'bg-red-500',
-      Network_Node: 'bg-green-500',
-      System: 'bg-yellow-500',
-      User: 'bg-purple-500',
-    };
-    return typeColors[type as keyof typeof typeColors] || 'bg-gray-500';
-  };
-
   const renderProperty = (
     key: string,
     property: { currentValue: string | number }
