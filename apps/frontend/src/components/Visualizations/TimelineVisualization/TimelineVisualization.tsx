@@ -10,7 +10,7 @@ import { Canvas } from '@react-three/fiber';
 import { ControlPanel } from './ControlPanel';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
-import { OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { TimelineScene } from './TimelineScene';
 
 interface TimelineVisualizationProps {
@@ -77,7 +77,6 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />
-          <Stats />
         </Suspense>
       </Canvas>
       <ControlPanel

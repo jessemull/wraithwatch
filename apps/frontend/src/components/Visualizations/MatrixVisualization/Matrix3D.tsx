@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { MatrixScene } from './MatrixScene';
-import { OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 
 interface Matrix3DProps {
   entities: Entity[];
@@ -41,7 +41,6 @@ export const Matrix3D: React.FC<Matrix3DProps> = ({
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />
-          <Stats />
         </Suspense>
       </Canvas>
     </div>

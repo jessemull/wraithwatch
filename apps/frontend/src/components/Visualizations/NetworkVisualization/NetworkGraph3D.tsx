@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { NetworkScene } from './NetworkScene';
-import { OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 
 interface NetworkGraph3DProps {
   changes: EntityChange[];
@@ -41,7 +41,6 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />
-          <Stats />
         </Suspense>
       </Canvas>
     </div>
