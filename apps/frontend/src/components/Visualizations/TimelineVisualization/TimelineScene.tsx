@@ -89,25 +89,11 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           );
           const entityPosition = entityPositions[selectedEntityIndex];
 
-          // Calculate time progress for this change
-          const sortedChanges = [...allChanges].sort(
-            (a, b) =>
-              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-          );
-          const startTime = new Date(sortedChanges[0].timestamp).getTime();
-          const endTime = new Date(
-            sortedChanges[sortedChanges.length - 1].timestamp
-          ).getTime();
-          const currentTime = new Date(change.timestamp).getTime();
-
-          const timeProgress =
-            (currentTime - startTime) / (endTime - startTime);
-          const y = (timeProgress - 0.5) * 8; // Use same scale as entities
-
-          // Position change particles scattered around the entity
+          // Position change particles centered around the entity's position
           const angle = Math.random() * Math.PI * 2;
-          const radius = 0.5 + Math.random() * 2; // Random distance from entity
+          const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
           const x = entityPosition[0] + Math.cos(angle) * radius;
+          const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
           const z = entityPosition[2] + Math.sin(angle) * radius;
 
           return (
