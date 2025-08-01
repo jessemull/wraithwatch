@@ -43,6 +43,7 @@ interface NumericConfig {
   min: number;
   max: number;
   changeRate: number;
+  volatility?: number; // How much the value can change
 }
 
 interface EnumConfig {
@@ -55,52 +56,407 @@ type PropertyConfig = NumericConfig | EnumConfig;
 // Entity configurations...
 
 const entities = [
-  { id: 'system-001', type: 'System', name: 'Production Server Alpha' },
-  { id: 'system-002', type: 'System', name: 'Database Server Beta' },
-  { id: 'system-003', type: 'System', name: 'Load Balancer Gamma' },
-  { id: 'ai-agent-001', type: 'AI_Agent', name: 'Threat Detection AI' },
-  { id: 'ai-agent-002', type: 'AI_Agent', name: 'Network Analysis AI' },
-  { id: 'threat-001', type: 'Threat', name: 'Suspicious Activity Detected' },
-  { id: 'threat-002', type: 'Threat', name: 'DDoS Attack Pattern' },
-  { id: 'network-node-001', type: 'Network_Node', name: 'Core Router' },
-  { id: 'network-node-002', type: 'Network_Node', name: 'Edge Switch' },
-  { id: 'user-001', type: 'User', name: 'Admin User' },
+  // Systems with different characteristics
+  {
+    id: 'system-001',
+    type: 'System',
+    name: 'Production Server Alpha',
+    characteristics: { load: 'high', criticality: 'critical' },
+  },
+  {
+    id: 'system-002',
+    type: 'System',
+    name: 'Database Server Beta',
+    characteristics: { load: 'medium', criticality: 'high' },
+  },
+  {
+    id: 'system-003',
+    type: 'System',
+    name: 'Load Balancer Gamma',
+    characteristics: { load: 'low', criticality: 'medium' },
+  },
+  {
+    id: 'system-004',
+    type: 'System',
+    name: 'Development Server Delta',
+    characteristics: { load: 'low', criticality: 'low' },
+  },
+  {
+    id: 'system-005',
+    type: 'System',
+    name: 'Analytics Server Epsilon',
+    characteristics: { load: 'high', criticality: 'medium' },
+  },
+
+  // AI Agents with different specializations
+  {
+    id: 'ai-agent-001',
+    type: 'AI_Agent',
+    name: 'Threat Detection AI',
+    characteristics: { specialization: 'security', accuracy: 'high' },
+  },
+  {
+    id: 'ai-agent-002',
+    type: 'AI_Agent',
+    name: 'Network Analysis AI',
+    characteristics: { specialization: 'network', accuracy: 'medium' },
+  },
+  {
+    id: 'ai-agent-003',
+    type: 'AI_Agent',
+    name: 'Performance Monitor AI',
+    characteristics: { specialization: 'performance', accuracy: 'low' },
+  },
+  {
+    id: 'ai-agent-004',
+    type: 'AI_Agent',
+    name: 'Anomaly Detection AI',
+    characteristics: { specialization: 'anomaly', accuracy: 'high' },
+  },
+
+  // Threats with different severities
+  {
+    id: 'threat-001',
+    type: 'Threat',
+    name: 'Suspicious Activity Detected',
+    characteristics: { severity: 'medium', persistence: 'high' },
+  },
+  {
+    id: 'threat-002',
+    type: 'Threat',
+    name: 'DDoS Attack Pattern',
+    characteristics: { severity: 'critical', persistence: 'low' },
+  },
+  {
+    id: 'threat-003',
+    type: 'Threat',
+    name: 'Data Exfiltration Attempt',
+    characteristics: { severity: 'high', persistence: 'medium' },
+  },
+  {
+    id: 'threat-004',
+    type: 'Threat',
+    name: 'Malware Detection',
+    characteristics: { severity: 'low', persistence: 'high' },
+  },
+
+  // Network nodes with different roles
+  {
+    id: 'network-node-001',
+    type: 'Network_Node',
+    name: 'Core Router',
+    characteristics: { role: 'core', traffic: 'high' },
+  },
+  {
+    id: 'network-node-002',
+    type: 'Network_Node',
+    name: 'Edge Switch',
+    characteristics: { role: 'edge', traffic: 'medium' },
+  },
+  {
+    id: 'network-node-003',
+    type: 'Network_Node',
+    name: 'Backup Router',
+    characteristics: { role: 'backup', traffic: 'low' },
+  },
+  {
+    id: 'network-node-004',
+    type: 'Network_Node',
+    name: 'DMZ Gateway',
+    characteristics: { role: 'security', traffic: 'high' },
+  },
+
+  // Users with different roles
+  {
+    id: 'user-001',
+    type: 'User',
+    name: 'Admin User',
+    characteristics: { role: 'admin', activity: 'high' },
+  },
+  {
+    id: 'user-002',
+    type: 'User',
+    name: 'Developer User',
+    characteristics: { role: 'developer', activity: 'medium' },
+  },
+  {
+    id: 'user-003',
+    type: 'User',
+    name: 'Analyst User',
+    characteristics: { role: 'analyst', activity: 'low' },
+  },
+  {
+    id: 'user-004',
+    type: 'User',
+    name: 'Guest User',
+    characteristics: { role: 'guest', activity: 'very_low' },
+  },
 ];
 
-// Property configurations with realistic change patterns...
+// Property configurations with high-frequency changes for realistic cybersecurity monitoring...
 
-const propertyConfigs: Record<string, Record<string, PropertyConfig>> = {
-  System: {
-    cpu_usage: { min: 20, max: 95, changeRate: 0.3 },
-    memory_usage: { min: 30, max: 90, changeRate: 0.25 },
-    network_connections: { min: 50, max: 500, changeRate: 0.4 },
-    status: { values: ['online', 'offline', 'maintenance'], changeRate: 0.05 },
-  },
-  AI_Agent: {
-    confidence_score: { min: 0.6, max: 0.99, changeRate: 0.2 },
-    response_time: { min: 50, max: 300, changeRate: 0.35 },
-    active_requests: { min: 10, max: 200, changeRate: 0.4 },
-    model_version: { values: ['v1.2.3', 'v1.2.4', 'v1.3.0'], changeRate: 0.02 },
-  },
-  Threat: {
-    threat_score: { min: 0.3, max: 0.95, changeRate: 0.25 },
-    severity: {
-      values: ['low', 'medium', 'high', 'critical'],
-      changeRate: 0.15,
+// Function to get property config based on entity characteristics
+function getPropertyConfig(
+  entityType: string,
+  entity: any
+): Record<string, PropertyConfig> {
+  const baseConfigs = {
+    System: {
+      cpu_usage: { min: 10, max: 95, changeRate: 0.8, volatility: 0.15 },
+      memory_usage: { min: 20, max: 90, changeRate: 0.6, volatility: 0.12 },
+      network_connections: {
+        min: 50,
+        max: 2000,
+        changeRate: 0.9,
+        volatility: 0.2,
+      },
+      disk_usage: { min: 30, max: 85, changeRate: 0.3, volatility: 0.05 },
+      response_time: { min: 10, max: 500, changeRate: 0.7, volatility: 0.25 },
+      status: {
+        values: [
+          'online',
+          'offline',
+          'maintenance',
+          'degraded',
+          'overloaded',
+          'recovering',
+        ],
+        changeRate: 0.02,
+      },
     },
-    detection_count: { min: 1, max: 50, changeRate: 0.3 },
-  },
-  Network_Node: {
-    bandwidth_usage: { min: 100, max: 1000, changeRate: 0.4 },
-    connection_count: { min: 20, max: 300, changeRate: 0.35 },
-    latency: { min: 5, max: 150, changeRate: 0.3 },
-    packet_loss: { min: 0, max: 5, changeRate: 0.2 },
-  },
-  User: {
-    login_count: { min: 0, max: 20, changeRate: 0.1 },
-    last_activity: { values: ['active', 'idle', 'away'], changeRate: 0.2 },
-  },
-};
+    AI_Agent: {
+      confidence_score: {
+        min: 0.5,
+        max: 0.99,
+        changeRate: 0.5,
+        volatility: 0.1,
+      },
+      response_time: { min: 20, max: 300, changeRate: 0.6, volatility: 0.2 },
+      active_requests: { min: 5, max: 500, changeRate: 0.8, volatility: 0.3 },
+      model_version: {
+        values: ['v1.2.3', 'v1.2.4', 'v1.3.0', 'v1.3.1', 'v1.4.0'],
+        changeRate: 0.01,
+      },
+      accuracy: { min: 0.7, max: 0.98, changeRate: 0.4, volatility: 0.08 },
+      training_status: {
+        values: ['idle', 'training', 'evaluating', 'deploying', 'failed'],
+        changeRate: 0.05,
+      },
+    },
+    Threat: {
+      threat_score: { min: 0.1, max: 0.95, changeRate: 0.3, volatility: 0.15 },
+      severity: {
+        values: ['low', 'medium', 'high', 'critical', 'emergency'],
+        changeRate: 0.1,
+      },
+      detection_count: { min: 1, max: 100, changeRate: 0.4, volatility: 0.2 },
+      source_ip: {
+        values: [
+          '192.168.1.100',
+          '10.0.0.50',
+          '172.16.0.25',
+          '203.0.113.45',
+          '198.51.100.123',
+        ],
+        changeRate: 0.05,
+      },
+      attack_type: {
+        values: [
+          'ddos',
+          'malware',
+          'phishing',
+          'sql_injection',
+          'xss',
+          'brute_force',
+        ],
+        changeRate: 0.02,
+      },
+      mitigation_status: {
+        values: [
+          'detected',
+          'investigating',
+          'mitigating',
+          'resolved',
+          'false_positive',
+        ],
+        changeRate: 0.08,
+      },
+    },
+    Network_Node: {
+      bandwidth_usage: {
+        min: 100,
+        max: 2000,
+        changeRate: 0.7,
+        volatility: 0.25,
+      },
+      connection_count: { min: 10, max: 500, changeRate: 0.8, volatility: 0.3 },
+      latency: { min: 1, max: 200, changeRate: 0.6, volatility: 0.2 },
+      packet_loss: { min: 0, max: 10, changeRate: 0.4, volatility: 0.15 },
+      error_rate: { min: 0, max: 5, changeRate: 0.3, volatility: 0.1 },
+      routing_status: {
+        values: ['optimal', 'congested', 'rerouting', 'failed', 'maintenance'],
+        changeRate: 0.03,
+      },
+    },
+    User: {
+      login_count: { min: 0, max: 50, changeRate: 0.2, volatility: 0.1 },
+      last_activity: {
+        values: ['active', 'idle', 'away', 'offline', 'suspended', 'locked'],
+        changeRate: 0.3,
+      },
+      session_duration: { min: 0, max: 480, changeRate: 0.4, volatility: 0.2 },
+      permission_level: {
+        values: ['guest', 'user', 'admin', 'super_admin', 'read_only'],
+        changeRate: 0.01,
+      },
+      failed_login_attempts: {
+        min: 0,
+        max: 10,
+        changeRate: 0.1,
+        volatility: 0.05,
+      },
+    },
+  };
+
+  const config = {
+    ...baseConfigs[entityType as keyof typeof baseConfigs],
+  } as Record<string, PropertyConfig>;
+
+  // Adjust configs based on entity characteristics
+  if (entityType === 'System') {
+    if (entity.characteristics.load === 'high') {
+      (config as any).cpu_usage = {
+        ...(config as any).cpu_usage,
+        min: 40,
+        max: 98,
+        changeRate: 0.9,
+      };
+      (config as any).memory_usage = {
+        ...(config as any).memory_usage,
+        min: 50,
+        max: 95,
+        changeRate: 0.8,
+      };
+    } else if (entity.characteristics.load === 'low') {
+      (config as any).cpu_usage = {
+        ...(config as any).cpu_usage,
+        min: 5,
+        max: 60,
+        changeRate: 0.4,
+      };
+      (config as any).memory_usage = {
+        ...(config as any).memory_usage,
+        min: 15,
+        max: 70,
+        changeRate: 0.3,
+      };
+    }
+  } else if (entityType === 'AI_Agent') {
+    if (entity.characteristics.accuracy === 'high') {
+      (config as any).confidence_score = {
+        ...(config as any).confidence_score,
+        min: 0.8,
+        max: 0.99,
+      };
+      (config as any).accuracy = {
+        ...(config as any).accuracy,
+        min: 0.9,
+        max: 0.98,
+      };
+    } else if (entity.characteristics.accuracy === 'low') {
+      (config as any).confidence_score = {
+        ...(config as any).confidence_score,
+        min: 0.3,
+        max: 0.7,
+      };
+      (config as any).accuracy = {
+        ...(config as any).accuracy,
+        min: 0.5,
+        max: 0.8,
+      };
+    }
+  } else if (entityType === 'Threat') {
+    if (entity.characteristics.severity === 'critical') {
+      (config as any).threat_score = {
+        ...(config as any).threat_score,
+        min: 0.7,
+        max: 0.99,
+        changeRate: 0.5,
+      };
+      (config as any).severity = {
+        ...(config as any).severity,
+        values: ['high', 'critical', 'emergency'],
+      };
+    } else if (entity.characteristics.severity === 'low') {
+      (config as any).threat_score = {
+        ...(config as any).threat_score,
+        min: 0.1,
+        max: 0.4,
+        changeRate: 0.1,
+      };
+      (config as any).severity = {
+        ...(config as any).severity,
+        values: ['low', 'medium'],
+      };
+    }
+  } else if (entityType === 'Network_Node') {
+    if (entity.characteristics.traffic === 'high') {
+      (config as any).bandwidth_usage = {
+        ...(config as any).bandwidth_usage,
+        min: 500,
+        max: 3000,
+        changeRate: 0.9,
+      };
+      (config as any).connection_count = {
+        ...(config as any).connection_count,
+        min: 100,
+        max: 1000,
+        changeRate: 0.9,
+      };
+    } else if (entity.characteristics.traffic === 'low') {
+      (config as any).bandwidth_usage = {
+        ...(config as any).bandwidth_usage,
+        min: 10,
+        max: 500,
+        changeRate: 0.3,
+      };
+      (config as any).connection_count = {
+        ...(config as any).connection_count,
+        min: 5,
+        max: 100,
+        changeRate: 0.4,
+      };
+    }
+  } else if (entityType === 'User') {
+    if (entity.characteristics.activity === 'high') {
+      (config as any).login_count = {
+        ...(config as any).login_count,
+        min: 10,
+        max: 100,
+        changeRate: 0.4,
+      };
+      (config as any).last_activity = {
+        ...(config as any).last_activity,
+        values: ['active', 'idle'],
+        changeRate: 0.5,
+      };
+    } else if (entity.characteristics.activity === 'very_low') {
+      (config as any).login_count = {
+        ...(config as any).login_count,
+        min: 0,
+        max: 5,
+        changeRate: 0.05,
+      };
+      (config as any).last_activity = {
+        ...(config as any).last_activity,
+        values: ['away', 'offline'],
+        changeRate: 0.1,
+      };
+    }
+  }
+
+  return config;
+}
 
 // Helper function to check if config is enum...
 
@@ -128,16 +484,34 @@ function generateValue(
     }
     return availableValues[Math.floor(Math.random() * availableValues.length)];
   } else {
-    // For numeric properties - truly random within range...
+    // For numeric properties with volatility...
 
     const shouldChange = Math.random() < config.changeRate;
     if (!shouldChange && previousValue !== undefined) {
       return previousValue;
     }
 
-    // Generate random value within range...
+    // Generate random value within range with volatility...
+    let value: number;
+    if (
+      previousValue !== undefined &&
+      typeof previousValue === 'number' &&
+      config.volatility
+    ) {
+      // Change based on previous value and volatility
+      const change =
+        (Math.random() - 0.5) *
+        2 *
+        config.volatility *
+        (config.max - config.min);
+      value = Number(previousValue) + change;
+    } else {
+      // Initial random value
+      value = Math.random() * (config.max - config.min) + config.min;
+    }
 
-    const value = Math.random() * (config.max - config.min) + config.min;
+    // Clamp to min/max range
+    value = Math.max(config.min, Math.min(config.max, value));
     return Math.round(value * 100) / 100; // Round to 2 decimal places
   }
 }
@@ -158,7 +532,7 @@ async function generateTimeSeriesData(): Promise<EntityChange[]> {
   const endDate = new Date();
 
   for (const entity of entities) {
-    const config = propertyConfigs[entity.type];
+    const config = getPropertyConfig(entity.type, entity);
     if (!config) continue;
 
     const properties = Object.keys(config);
@@ -181,10 +555,18 @@ async function generateTimeSeriesData(): Promise<EntityChange[]> {
     }
 
     // Generate changes over time with more realistic patterns...
+    // Add randomization to when each entity starts generating changes
+    const entityStartOffset = Math.floor(Math.random() * 7 * 24 * 60); // Random offset up to 7 days in minutes
+    let currentTime = addMinutes(startDate, entityStartOffset);
 
-    let currentTime = startDate;
+    // Add some burst patterns and quiet periods for realism
+    let burstMode = Math.random() < 0.2; // 20% chance to start in burst mode
+    let burstCounter = 0;
     while (currentTime <= endDate) {
-      for (const prop of properties) {
+      // Randomize which properties to check for changes (not all properties change at the same time)
+      const propertiesToCheck = properties.filter(() => Math.random() < 0.3); // Only check 30% of properties each iteration
+
+      for (const prop of propertiesToCheck) {
         const propConfig = config[prop];
         const previousValue = currentValues[prop];
         const newValue = generateValue(propConfig, previousValue);
@@ -221,9 +603,28 @@ async function generateTimeSeriesData(): Promise<EntityChange[]> {
         }
       }
 
-      // Move to next time interval (every 15 minutes)...
-
-      currentTime = addMinutes(currentTime, 15);
+      // Randomize time intervals with burst patterns
+      let timeOffset;
+      if (burstMode) {
+        // Burst mode: rapid changes
+        timeOffset = Math.floor(Math.random() * 2) + 1; // 1-2 minutes
+        burstCounter++;
+        if (burstCounter > 10) {
+          // End burst after 10 rapid changes
+          burstMode = false;
+          burstCounter = 0;
+        }
+      } else {
+        // Normal mode: slower changes
+        timeOffset = Math.floor(Math.random() * 5) + 2; // 2-6 minutes
+        // Occasionally enter burst mode
+        if (Math.random() < 0.05) {
+          // 5% chance to enter burst mode
+          burstMode = true;
+          burstCounter = 0;
+        }
+      }
+      currentTime = addMinutes(currentTime, timeOffset);
     }
   }
 

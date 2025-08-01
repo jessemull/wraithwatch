@@ -35,7 +35,7 @@ export class DynamoDBService {
       const items = (response.Items || []).map(item =>
         unmarshall(item)
       ) as EntityChange[];
-      
+
       logger.info({ count: items.length }, 'GSI query found items');
       return items;
     } catch (error) {
@@ -167,7 +167,7 @@ export class DynamoDBService {
     try {
       const scanResponse = await client.send(scanCommand);
       const timeBuckets = new Set<string>();
-      
+
       (scanResponse.Items || []).forEach(item => {
         if (item.GSI2PK?.S) {
           timeBuckets.add(item.GSI2PK.S);
@@ -184,7 +184,7 @@ export class DynamoDBService {
       }
 
       logger.info({ mostRecentBucket }, 'Found most recent time bucket');
-      
+
       // Query the most recent time bucket
       const command = new QueryCommand({
         TableName: this.tableName,

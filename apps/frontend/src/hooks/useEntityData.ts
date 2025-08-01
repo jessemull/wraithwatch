@@ -2,6 +2,7 @@ import { Entity } from '../types/entity';
 import { EntityChange, HistoryQuery } from '../types/api';
 import { config } from '../config';
 import { useState, useEffect, useCallback } from 'react';
+import { mockEntityChanges } from '../data/mock-entity-changes';
 
 export const useEntityData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
@@ -52,23 +53,13 @@ export const useEntityData = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `${config.api.baseUrl}/api/history/recent?limit=100`
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch data');
-
-      const result = await response.json();
-      const changes = result.data;
-
-      setChanges(changes);
-
-      const transformedEntities = transformChangesToEntities(changes);
-
+      // Use mock data for now
+      setChanges(mockEntityChanges);
+      const transformedEntities = transformChangesToEntities(mockEntityChanges);
       setEntities(transformedEntities);
     } catch (err) {
-      console.error('Error fetching data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      console.error('Error loading mock data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load mock data');
     } finally {
       setLoading(false);
     }
