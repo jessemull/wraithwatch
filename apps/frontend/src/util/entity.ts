@@ -90,6 +90,10 @@ export const updateEntityProperty = (
 ): Entity => {
   const updatedEntity = { ...entity };
 
+  if (!updatedEntity.properties) {
+    updatedEntity.properties = {};
+  }
+
   if (updatedEntity.properties[propertyName]) {
     const property = updatedEntity.properties[propertyName];
     const propertyChange = { timestamp, oldValue, newValue };
@@ -101,6 +105,14 @@ export const updateEntityProperty = (
       history: [...property.history, propertyChange].slice(
         -MAX_PROPERTY_HISTORY_LENGTH
       ),
+    };
+  } else {
+    const propertyChange = { timestamp, oldValue, newValue };
+    updatedEntity.properties[propertyName] = {
+      name: propertyName,
+      currentValue: newValue,
+      lastChanged: timestamp,
+      history: [propertyChange],
     };
   }
 

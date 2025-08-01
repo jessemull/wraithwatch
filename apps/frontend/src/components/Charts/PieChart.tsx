@@ -8,6 +8,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
+import { PIE_CHART_COLORS } from '../../constants/charts';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -19,19 +20,11 @@ interface PieChartProps {
   legendPosition?: 'top' | 'left' | 'bottom' | 'right';
 }
 
-// Default color palette
-const DEFAULT_COLORS = [
-  'rgba(59, 130, 246, 0.8)', // Blue
-  'rgba(34, 197, 94, 0.8)', // Green
-  'rgba(251, 191, 36, 0.8)', // Yellow
-  'rgba(168, 85, 247, 0.8)', // Purple
-  'rgba(239, 68, 68, 0.8)', // Red
-  'rgba(14, 165, 233, 0.8)', // Sky Blue
-];
+// Default color palette...
 
 export const PieChart: React.FC<PieChartProps> = ({
   data,
-  colors = DEFAULT_COLORS,
+  colors = PIE_CHART_COLORS,
   borderWidth = 1,
   showLegend = true,
   legendPosition = 'bottom',

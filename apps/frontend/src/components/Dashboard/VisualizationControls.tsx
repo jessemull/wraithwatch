@@ -1,6 +1,6 @@
 import React from 'react';
-
-type VisualizationType = 'timeline' | 'network' | 'globe' | 'matrix';
+import { VisualizationType } from '../../types/visualization';
+import { visualizationTypes } from '../../constants/visualization';
 
 interface VisualizationControlsProps {
   visualizationType: VisualizationType;
@@ -8,13 +8,6 @@ interface VisualizationControlsProps {
   entitiesCount: number;
   changesCount: number;
 }
-
-const visualizationTypes: { type: VisualizationType; label: string }[] = [
-  { type: 'timeline', label: 'Timeline' },
-  { type: 'network', label: 'Network' },
-  { type: 'globe', label: 'Globe' },
-  { type: 'matrix', label: 'Matrix' },
-];
 
 export const VisualizationControls: React.FC<VisualizationControlsProps> = ({
   visualizationType,

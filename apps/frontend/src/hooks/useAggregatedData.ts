@@ -1,21 +1,5 @@
 import { useMemo } from 'react';
-import { EntityChange } from '../types/api';
-
-interface AggregatedMetrics {
-  activeThreats: number;
-  threatScore: string;
-  aiConfidence: number;
-  totalConnections: number;
-  threatSeverityDistribution: Record<string, number>;
-  aiAgentActivity: Record<string, number>;
-  protocolUsage: Record<string, number>;
-  entityChangesByDay: Record<string, number>;
-}
-
-interface EntityState {
-  entity_type: string;
-  [key: string]: string | number;
-}
+import { EntityChange, AggregatedMetrics, EntityState } from '../types/api';
 
 // Helper function to get the most recent change for each property...
 

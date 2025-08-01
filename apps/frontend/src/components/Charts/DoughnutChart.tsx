@@ -8,8 +8,8 @@ import {
   ChartData,
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { DEFAULT_COLORS, DEFAULT_BORDER_COLORS } from '../../constants/charts';
 
-// Register Chart.js components once outside the component
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface DoughnutChartProps {
@@ -21,24 +21,7 @@ interface DoughnutChartProps {
   legendPosition?: 'top' | 'left' | 'bottom' | 'right';
 }
 
-// Default color palette
-const DEFAULT_COLORS = [
-  'rgba(59, 130, 246, 0.5)', // Blue
-  'rgba(34, 197, 94, 0.5)', // Green
-  'rgba(251, 191, 36, 0.5)', // Yellow
-  'rgba(168, 85, 247, 0.5)', // Purple
-  'rgba(239, 68, 68, 0.5)', // Red
-  'rgba(14, 165, 233, 0.5)', // Sky Blue
-];
-
-const DEFAULT_BORDER_COLORS = [
-  'rgba(59, 130, 246, 1)', // Blue border
-  'rgba(34, 197, 94, 1)', // Green border
-  'rgba(251, 191, 36, 1)', // Yellow border
-  'rgba(168, 85, 247, 1)', // Purple border
-  'rgba(239, 68, 68, 1)', // Red border
-  'rgba(14, 165, 233, 1)', // Sky Blue border
-];
+// Default color palette...
 
 export const DoughnutChart: React.FC<DoughnutChartProps> = ({
   data,
@@ -48,7 +31,6 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({
   showLegend = true,
   legendPosition = 'right',
 }) => {
-  // Memoize chart data to prevent unnecessary re-renders
   const chartData: ChartData<'doughnut'> = useMemo(() => {
     const dataKeys = Object.keys(data);
     const dataValues = Object.values(data);
@@ -67,7 +49,6 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({
     };
   }, [data, colors, borderColors, cutout]);
 
-  // Memoize options to prevent unnecessary re-renders
   const options: ChartOptions<'doughnut'> = useMemo(
     () => ({
       responsive: true,

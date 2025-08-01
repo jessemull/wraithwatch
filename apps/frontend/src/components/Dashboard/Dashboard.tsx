@@ -14,8 +14,7 @@ import { VisualizationControls } from './VisualizationControls';
 import { useEntityData } from '../../hooks/useEntityData';
 import { useState, useMemo } from 'react';
 import { Entity } from '../../types/entity';
-
-type VisualizationType = 'timeline' | 'network' | 'globe' | 'matrix';
+import { VisualizationType } from '../../types/visualization';
 
 export const Dashboard: React.FC = () => {
   const { entities, changes, loading, error } = useEntityData();

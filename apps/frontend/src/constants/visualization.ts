@@ -1,3 +1,13 @@
+import { VisualizationType } from '../types/visualization';
+
+export const visualizationTypes: { type: VisualizationType; label: string }[] =
+  [
+    { type: 'timeline', label: 'Timeline' },
+    { type: 'network', label: 'Network' },
+    { type: 'globe', label: 'Globe' },
+    { type: 'matrix', label: 'Matrix' },
+  ];
+
 export const ENTITY_STYLES = {
   Threat: {
     base: { color: '#ff6b6b', textColor: '#ffffff', pulse: true },

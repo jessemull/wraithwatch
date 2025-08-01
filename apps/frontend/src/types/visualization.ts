@@ -175,3 +175,5 @@ export interface Particle {
   delay: number;
   active: boolean;
 }
+
+export type VisualizationType = 'timeline' | 'network' | 'globe' | 'matrix';
