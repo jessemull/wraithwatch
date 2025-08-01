@@ -134,16 +134,16 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="h-[600px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-hidden p-6">
+              <div className="h-[667px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-hidden p-6">
                 {renderVisualization()}
               </div>
             </div>
           </div>
 
           {/* Right Column - Entity Details and Entities List */}
-          <div className="xl:col-span-1 flex flex-col h-[600px]">
+          <div className="xl:col-span-1 flex flex-col h-[667px]">
             {/* Entity Details Widget */}
-            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl mb-6">
+            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl mb-4 flex-1">
               <div className="px-6 py-4 border-b border-gray-800">
                 <h2 className="text-lg font-semibold text-white">
                   Entity Details
@@ -225,7 +225,7 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {/* Entities List with remaining height */}
-            <div className="flex-1 overflow-hidden">
+            <div className="h-[485px] overflow-hidden">
               <EntitiesList
                 entities={entities}
                 lastUpdate={new Date().toISOString()}
