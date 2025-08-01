@@ -7,7 +7,7 @@ import {
   LineChart,
   DoughnutChart,
   HorizontalBarChart,
-} from './Charts';
+} from '../Charts';
 import { useAggregatedData } from '../../hooks/useAggregatedData';
 
 interface DashboardMetricsProps {
