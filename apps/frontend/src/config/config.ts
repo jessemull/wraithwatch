@@ -1,4 +1,7 @@
 export const config = {
+  api: {
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  },
   app: {
     description: 'Adaptive, Intelligent Cyber Defense',
     name: 'Wraithwatch',

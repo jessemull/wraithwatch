@@ -3,10 +3,10 @@ import {
   QueryCommand,
   ScanCommand,
 } from '@aws-sdk/client-dynamodb';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
+import { AWS_REGION, DYNAMODB_TABLE_NAME } from '../constants';
 import { EntityChange } from '../types/dynamodb';
 import { createComponentLogger } from '../utils/logger';
-import { AWS_REGION, DYNAMODB_TABLE_NAME } from '../constants';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 const logger = createComponentLogger('dynamodb-service');
 
@@ -15,9 +15,8 @@ const client = new DynamoDBClient({ region: AWS_REGION });
 export class DynamoDBService {
   private tableName = DYNAMODB_TABLE_NAME;
 
-  /**
-   * Simple scan to get all data (for testing)
-   */
+  // Just simple scan for now for demo...
+
   async getAllData(limit: number = 10): Promise<EntityChange[]> {
     const command = new ScanCommand({
       TableName: this.tableName,
@@ -35,9 +34,8 @@ export class DynamoDBService {
     }
   }
 
-  /**
-   * Get historical changes for a specific entity
-   */
+  // Get historical data for an entity...
+
   async getEntityHistory(
     entityId: string,
     options?: {
@@ -49,7 +47,6 @@ export class DynamoDBService {
   ): Promise<EntityChange[]> {
     const { propertyName, startTime, endTime, limit = 100 } = options || {};
 
-    // If we have a property filter but no time range, we need to use a scan with filter
     if (propertyName && !startTime && !endTime) {
       return this.getEntityHistoryWithPropertyFilter(
         entityId,
@@ -63,9 +60,11 @@ export class DynamoDBService {
       ':pk': { S: `ENTITY#${entityId}` },
     };
 
-    // Add property filter if specified
+    // Add property filter if specified...
+
     if (propertyName) {
-      // For property-specific queries with time range
+      // For property-specific queries with time range...
+
       if (startTime) {
         keyConditionExpression += ' AND SK >= :startTime';
         expressionAttributeValues[':startTime'] = {
@@ -83,7 +82,8 @@ export class DynamoDBService {
       expressionAttributeValues[':startTime'] = { S: `${startTime}#` };
     }
 
-    // Add end time filter for non-property queries
+    // Add end time filter for non-property queries...
+
     if (endTime && !propertyName) {
       keyConditionExpression += ' AND SK <= :endTime';
       expressionAttributeValues[':endTime'] = { S: `${endTime}#~` };
@@ -108,9 +108,8 @@ export class DynamoDBService {
     }
   }
 
-  /**
-   * Get entity history with property filter using scan
-   */
+  // Get entity history with property filter using scan...
+
   private async getEntityHistoryWithPropertyFilter(
     entityId: string,
     propertyName: string,
@@ -132,7 +131,8 @@ export class DynamoDBService {
         unmarshall(item)
       ) as EntityChange[];
 
-      // Sort by timestamp (most recent first)
+      // Sort by timestamp (most recent first)...
+
       items.sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -148,9 +148,8 @@ export class DynamoDBService {
     }
   }
 
-  /**
-   * Get recent changes across all entities
-   */
+  // Get recent changes across all entities...
+
   async getRecentChanges(options?: {
     entityType?: string;
     limit?: number;
@@ -158,11 +157,11 @@ export class DynamoDBService {
   }): Promise<EntityChange[]> {
     const { entityType, limit = 100, hours } = options || {};
 
-    // For demo data, we'll get all data and filter by hours if specified
-    // Since demo data might be from the future, we'll get everything and sort by timestamp
+    // For demo data, we'll get all data and filter by hours if specified. Since demo data might be from the future, we'll get everything and sort by timestamp...
+
     const command = new ScanCommand({
       TableName: this.tableName,
-      Limit: limit * 2, // Get more items to account for filtering
+      Limit: limit * 2,
     });
 
     try {
@@ -171,19 +170,22 @@ export class DynamoDBService {
         unmarshall(item)
       ) as EntityChange[];
 
-      // Filter by entity type if specified
+      // Filter by entity type if specified...
+
       if (entityType) {
         items = items.filter(item => item.entity_type === entityType);
       }
 
-      // Filter by time range if specified (only if hours is provided and > 0)
+      // Filter by time range if specified (only if hours is provided and > 0)...
+
       if (hours && hours > 0) {
         const cutoffTime = new Date();
         cutoffTime.setHours(cutoffTime.getHours() - hours);
         items = items.filter(item => new Date(item.timestamp) >= cutoffTime);
       }
 
-      // Sort by timestamp (most recent first)
+      // Sort by timestamp (most recent first)...
+
       items.sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -196,9 +198,8 @@ export class DynamoDBService {
     }
   }
 
-  /**
-   * Get property history for a specific entity and property
-   */
+  // Get property history for a specific entity and property...
+
   async getPropertyHistory(
     entityId: string,
     propertyName: string,
@@ -214,9 +215,8 @@ export class DynamoDBService {
     });
   }
 
-  /**
-   * Get summary statistics for an entity
-   */
+  // Get summary statistics for an entity...
+
   async getEntitySummary(entityId: string): Promise<{
     entityId: string;
     entityType: string;
@@ -245,7 +245,8 @@ export class DynamoDBService {
       }
     > = {};
 
-    // Group by property and find current values
+    // Group by property and find current values...
+
     changes.forEach(change => {
       if (!properties[change.property_name]) {
         properties[change.property_name] = {
@@ -254,7 +255,9 @@ export class DynamoDBService {
           lastChange: change.timestamp,
         };
       }
+
       properties[change.property_name].changeCount++;
+
       if (
         new Date(change.timestamp) >
         new Date(properties[change.property_name].lastChange)
