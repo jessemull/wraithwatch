@@ -1,5 +1,6 @@
 import { EntityChange } from './api';
 import { Entity } from './entity';
+import * as THREE from 'three';
 
 export interface EntityStyle {
   color: string;
@@ -165,4 +166,12 @@ export interface NetworkConnection {
 export interface NetworkLayout {
   entityPositions: Map<string, [number, number, number]>;
   connections: NetworkConnection[];
+}
+
+export interface Particle {
+  position: THREE.Vector3;
+  progress: number;
+  speed: number;
+  delay: number;
+  active: boolean;
 }

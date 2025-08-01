@@ -1,10 +1,11 @@
-import React, { useMemo, useRef, useEffect } from 'react';
+import React, { useMemo, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import {
   CONNECTION_LINE_CONFIG,
   CONNECTION_PARTICLE_CONFIG,
 } from '../../../constants/visualization';
+import { Particle } from '../../../types/visualization';
 
 interface ConnectionParticleProps {
   start: [number, number, number];
@@ -13,14 +14,6 @@ interface ConnectionParticleProps {
   speed?: number;
   particleCount?: number;
   particleSize?: number;
-}
-
-interface Particle {
-  position: THREE.Vector3;
-  progress: number;
-  speed: number;
-  delay: number;
-  active: boolean;
 }
 
 export const ConnectionParticle: React.FC<ConnectionParticleProps> = ({
@@ -49,9 +42,8 @@ export const ConnectionParticle: React.FC<ConnectionParticleProps> = ({
     [end]
   );
 
-  useEffect(() => {
-    // Initialize particles with random delays and speeds
-    particles.current = Array.from({ length: particleCount }, () => ({
+  const createParticle = useCallback(
+    (speed: number): Particle => ({
       position: new THREE.Vector3(),
       progress: 0,
       speed:
@@ -62,38 +54,58 @@ export const ConnectionParticle: React.FC<ConnectionParticleProps> = ({
               CONNECTION_PARTICLE_CONFIG.speedVariation.min)),
       delay: Math.random() * CONNECTION_PARTICLE_CONFIG.delayRange.max,
       active: false,
-    }));
-  }, [particleCount, speed]);
+    }),
+    []
+  );
+
+  useEffect(() => {
+    // Initialize particles with random delays and speeds...
+    
+    particles.current = Array.from({ length: particleCount }, () =>
+      createParticle(speed)
+    );
+  }, [particleCount, speed, createParticle]);
 
   useFrame(state => {
     if (!particlesRef.current) return;
 
     const time = state.clock.elapsedTime;
+    const progressIncrement =
+      CONNECTION_PARTICLE_CONFIG.animation.progressIncrement;
+    const maxProgress = CONNECTION_PARTICLE_CONFIG.animation.maxProgress;
 
     particles.current.forEach((particle, index) => {
-      // Activate particle after delay
+      const mesh = particlesRef.current?.children[index] as THREE.Mesh;
+      if (!mesh) return;
+
+      // Activate particle after delay...
+
       if (time > particle.delay && !particle.active) {
         particle.active = true;
         particle.progress = 0;
       }
 
       if (particle.active) {
-        // Update progress
-        particle.progress += particle.speed * 0.01;
+        // Update progress...
 
-        // Calculate position along the line
-        const t = particle.progress;
-        particle.position.lerpVectors(startVector, endVector, t);
+        particle.progress += particle.speed * progressIncrement;
 
-        // Update the mesh position
-        const mesh = particlesRef.current?.children[index] as THREE.Mesh;
-        if (mesh) {
-          mesh.position.copy(particle.position);
-          mesh.visible = true;
-        }
+        // Calculate position along the line...
 
-        // Reset particle when it reaches the end
-        if (particle.progress >= 1) {
+        particle.position.lerpVectors(
+          startVector,
+          endVector,
+          particle.progress
+        );
+
+        // Update the mesh position...
+
+        mesh.position.copy(particle.position);
+        mesh.visible = true;
+
+        // Reset particle when it reaches the end...
+
+        if (particle.progress >= maxProgress) {
           particle.active = false;
           particle.delay =
             time +
@@ -101,16 +113,12 @@ export const ConnectionParticle: React.FC<ConnectionParticleProps> = ({
             Math.random() *
               (CONNECTION_PARTICLE_CONFIG.resetDelayRange.max -
                 CONNECTION_PARTICLE_CONFIG.resetDelayRange.min);
-          if (mesh) {
-            mesh.visible = false;
-          }
-        }
-      } else {
-        // Hide particle when inactive
-        const mesh = particlesRef.current?.children[index] as THREE.Mesh;
-        if (mesh) {
           mesh.visible = false;
         }
+      } else {
+        // Hide particle when inactive...
+
+        mesh.visible = false;
       }
     });
   });

@@ -208,4 +208,8 @@ export const CONNECTION_PARTICLE_CONFIG = {
     opacity: 0.7,
     transparent: true,
   },
+  animation: {
+    progressIncrement: 0.01,
+    maxProgress: 1.0,
+  },
 } as const;
