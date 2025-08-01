@@ -12,6 +12,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
+      NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
       NEXT_PUBLIC_WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
 
     steps:

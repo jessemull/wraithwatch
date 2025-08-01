@@ -12,7 +12,11 @@ export async function createServer() {
   // Register CORS directly...
 
   await fastify.register(cors, {
-    origin: true,
+    origin: [
+      'http://localhost:3000',
+      'https://www.wraithwatch-demo.com',
+      'https://wraithwatch-demo.com',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: [
