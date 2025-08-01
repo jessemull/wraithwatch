@@ -14,6 +14,8 @@ module.exports = {
     minimize: true,
     usedExports: true,
     sideEffects: false,
+    splitChunks: false,
+    runtimeChunk: false, 
   },
   resolve: {
     extensions: ['.js', '.ts'],
