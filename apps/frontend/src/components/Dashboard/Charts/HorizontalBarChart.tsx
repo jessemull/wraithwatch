@@ -38,9 +38,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
       {
         label: title,
         data: Object.values(data),
-        backgroundColor,
-        borderColor,
-        borderWidth: 1,
+        backgroundColor: backgroundColor.replace('0.8', '0.3'),
         borderRadius: 4,
         barThickness: 12,
       },
@@ -86,8 +84,10 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
     },
     elements: {
       bar: {
-        borderRadius: 2,
-        borderSkipped: false,
+        borderRadius: 1,
+        borderSkipped: 'start',
+        borderWidth: 1,
+        borderColor,
       },
     },
   };

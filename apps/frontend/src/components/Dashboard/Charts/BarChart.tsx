@@ -38,9 +38,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       {
         label: title,
         data: Object.values(data),
-        backgroundColor,
-        borderColor,
-        borderWidth: 1,
+        backgroundColor: backgroundColor.replace('0.8', '0.3'),
         barThickness: 'flex',
         maxBarThickness: 30,
       },
@@ -79,8 +77,10 @@ export const BarChart: React.FC<BarChartProps> = ({
     },
     elements: {
       bar: {
-        borderRadius: 4,
-        borderSkipped: false,
+        borderRadius: 3,
+        borderSkipped: 'start',
+        borderWidth: 1,
+        borderColor,
       },
     },
     layout: {
