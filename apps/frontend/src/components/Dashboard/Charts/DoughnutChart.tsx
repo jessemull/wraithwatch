@@ -44,15 +44,29 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data, title }) => 
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'bottom' as const,
+        position: 'right' as const,
+        align: 'start' as const,
         labels: {
           color: 'rgba(156, 163, 175, 1)',
-          padding: 10,
+          padding: 20,
           usePointStyle: true,
+          font: {
+            size: 11,
+          },
+          boxWidth: 12,
+          boxHeight: 12,
         },
       },
       title: {
         display: false,
+      },
+    },
+    layout: {
+      padding: {
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: 16,
       },
     },
   };
