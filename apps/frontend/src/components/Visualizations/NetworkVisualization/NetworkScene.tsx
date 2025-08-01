@@ -25,6 +25,7 @@ interface NetworkLayout {
 
 export const NetworkScene: React.FC<NetworkSceneProps> = ({
   entities,
+  changes,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -50,53 +51,53 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       networkNodes: networkNodes.length
     });
 
-    // Position AI agents at the top (monitoring level)
+    // Position AI agents at the top (monitoring level) - more spread out
     aiAgents.forEach((agent, i) => {
       const angle = (i / Math.max(aiAgents.length, 1)) * Math.PI * 2;
-      const radius = 6;
+      const radius = 8;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 3; // AI agents at highest level
+      const y = 4; // AI agents at highest level
       entityPositions.set(agent.id, [x, y, z]);
     });
 
-    // Position systems in the center (infrastructure level)
+    // Position systems in the center (infrastructure level) - more distributed
     systems.forEach((system, i) => {
       const angle = (i / Math.max(systems.length, 1)) * Math.PI * 2;
-      const radius = 4;
+      const radius = 6;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       const y = 0; // Systems at center level
       entityPositions.set(system.id, [x, y, z]);
     });
 
-    // Position users around systems (user level)
+    // Position users around systems (user level) - wider distribution
     users.forEach((user, i) => {
       const angle = (i / Math.max(users.length, 1)) * Math.PI * 2;
-      const radius = 8;
+      const radius = 10;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 1; // Users at user level
+      const y = 2; // Users at user level
       entityPositions.set(user.id, [x, y, z]);
     });
 
-    // Position threats at the bottom (threat level)
+    // Position threats at the bottom (threat level) - more spread out
     threats.forEach((threat, i) => {
       const angle = (i / Math.max(threats.length, 1)) * Math.PI * 2;
-      const radius = 5;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      const y = -2; // Threats at lowest level
-      entityPositions.set(threat.id, [x, y, z]);
-    });
-
-    // Position network nodes around systems (infrastructure level)
-    networkNodes.forEach((node, i) => {
-      const angle = (i / Math.max(networkNodes.length, 1)) * Math.PI * 2;
       const radius = 7;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 0; // Network nodes at center level
+      const y = -3; // Threats at lowest level
+      entityPositions.set(threat.id, [x, y, z]);
+    });
+
+    // Position network nodes around systems (infrastructure level) - distributed
+    networkNodes.forEach((node, i) => {
+      const angle = (i / Math.max(networkNodes.length, 1)) * Math.PI * 2;
+      const radius = 9;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      const y = -1; // Network nodes at lower center level
       entityPositions.set(node.id, [x, y, z]);
     });
 
@@ -108,10 +109,10 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     
     unpositionedEntities.forEach((entity, i) => {
       const angle = (i / unpositionedEntities.length) * Math.PI * 2;
-      const radius = 3;
+      const radius = 5;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 0; // Default level
+      const y = 1; // Default level
       entityPositions.set(entity.id, [x, y, z]);
     });
 

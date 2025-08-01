@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Text } from '@react-three/drei';
 import { Entity } from '../../../types/entity';
 
 interface NetworkNodeProps {
@@ -59,16 +60,66 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
     }
   }, [entity.type, isSelected]);
 
+  const isThreat = entity.type === 'Threat';
+
   return (
     <group position={position}>
+      {/* Halo effect for threats */}
+      {isThreat && (
+        <mesh>
+          <sphereGeometry args={[nodeStyle.size + 0.1, 32, 32]} />
+          <meshStandardMaterial
+            color="#ff6b6b"
+            transparent
+            opacity={0.3}
+            emissive="#ff6b6b"
+            emissiveIntensity={0.2}
+          />
+        </mesh>
+      )}
+      
+      {/* Main spherical node */}
       <mesh onClick={onClick}>
-        <sphereGeometry args={[nodeStyle.size, 16, 16]} />
+        <sphereGeometry args={[nodeStyle.size, 32, 32]} />
         <meshStandardMaterial
           color={nodeStyle.color}
           emissive={nodeStyle.color}
           emissiveIntensity={nodeStyle.emissiveIntensity}
+          metalness={0.4}
+          roughness={0.1}
+          clearcoat={0.5}
+          clearcoatRoughness={0.1}
         />
       </mesh>
+      
+      {/* Additional highlight for threats */}
+      {isThreat && (
+        <mesh>
+          <sphereGeometry args={[nodeStyle.size + 0.05, 32, 32]} />
+          <meshStandardMaterial
+            color="#ff6b6b"
+            transparent
+            opacity={0.2}
+            emissive="#ff6b6b"
+            emissiveIntensity={0.1}
+          />
+        </mesh>
+      )}
+      
+      {/* Entity label */}
+      <Text
+        position={[0, nodeStyle.size + 0.3, 0]}
+        fontSize={0.15}
+        color="white"
+        anchorX="center"
+        anchorY="bottom"
+        maxWidth={2}
+        textAlign="center"
+        outlineWidth={0.01}
+        outlineColor="#000000"
+      >
+        {entity.name}
+      </Text>
     </group>
   );
 };
