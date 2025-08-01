@@ -1,4 +1,6 @@
 import { EntityChange } from './api';
+import { Entity } from './entity';
+import * as THREE from 'three';
 
 export interface EntityStyle {
   color: string;
@@ -152,4 +154,24 @@ export interface ControlPanelConfig {
     rotate: string;
   };
   helpText: string[];
+}
+
+export interface NetworkConnection {
+  from: Entity;
+  to: Entity;
+  strength: number;
+  type: 'location' | 'agent' | 'network' | 'type';
+}
+
+export interface NetworkLayout {
+  entityPositions: Map<string, [number, number, number]>;
+  connections: NetworkConnection[];
+}
+
+export interface Particle {
+  position: THREE.Vector3;
+  progress: number;
+  speed: number;
+  delay: number;
+  active: boolean;
 }

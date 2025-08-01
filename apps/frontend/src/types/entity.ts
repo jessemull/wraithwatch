@@ -4,7 +4,9 @@ export type EntityType =
   | 'Sensor'
   | 'AI_Agent'
   | 'Threat'
-  | 'Network_Node';
+  | 'Network_Node'
+  | 'Server'
+  | 'Workstation';
 
 export type ThreatSeverity = 'low' | 'medium' | 'high' | 'critical';
 

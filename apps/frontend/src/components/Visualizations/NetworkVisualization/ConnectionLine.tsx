@@ -1,34 +1,48 @@
-import React from 'react';
+import * as THREE from 'three';
+import React, { useMemo } from 'react';
+import { CONNECTION_LINE_CONFIG } from '../../../constants/visualization';
 
 interface ConnectionLineProps {
   start: [number, number, number];
   end: [number, number, number];
+  strength?: number;
+  type?: 'location' | 'agent' | 'network' | 'type';
 }
 
 export const ConnectionLine: React.FC<ConnectionLineProps> = ({
   start,
   end,
+  strength = CONNECTION_LINE_CONFIG.defaultStrength,
+  type = CONNECTION_LINE_CONFIG.defaultType,
 }) => {
-  const midPoint: [number, number, number] = [
-    (start[0] + end[0]) / 2,
-    (start[1] + end[1]) / 2,
-    (start[2] + end[2]) / 2,
-  ];
+  const connectionColor = useMemo(() => {
+    return (
+      CONNECTION_LINE_CONFIG.colors[type] || CONNECTION_LINE_CONFIG.colors.type
+    );
+  }, [type]);
 
-  const distance = Math.sqrt(
-    Math.pow(end[0] - start[0], 2) +
-      Math.pow(end[1] - start[1], 2) +
-      Math.pow(end[2] - start[2], 2)
-  );
+  const opacity = useMemo(() => {
+    return (
+      CONNECTION_LINE_CONFIG.opacityRange.min +
+      strength * CONNECTION_LINE_CONFIG.opacityRange.strengthMultiplier
+    );
+  }, [strength]);
 
-  return (
-    <mesh position={midPoint}>
-      <cylinderGeometry args={[0.02, 0.02, distance, 8]} />
-      <meshStandardMaterial
-        color="#6c5ce7"
-        emissive="#6c5ce7"
-        emissiveIntensity={0.3}
-      />
-    </mesh>
-  );
+  const lineObject = useMemo(() => {
+    const points = [
+      new THREE.Vector3(start[0], start[1], start[2]),
+      new THREE.Vector3(end[0], end[1], end[2]),
+    ];
+
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: connectionColor,
+      transparent: true,
+      opacity,
+    });
+
+    return new THREE.Line(lineGeometry, lineMaterial);
+  }, [start, end, connectionColor, opacity]);
+
+  return <primitive object={lineObject} />;
 };

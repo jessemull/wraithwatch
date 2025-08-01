@@ -130,3 +130,86 @@ export const CONTROL_PANEL_CONFIG = {
   },
   helpText: ['Mouse wheel: Zoom', 'Left drag: Rotate', 'Right drag: Pan'],
 } as const;
+
+export const NETWORK_NODE_CONFIG = {
+  entityColors: {
+    System: '#45b7d1',
+    User: '#feca57',
+    AI_Agent: '#4ecdc4',
+    Threat: '#ff6b6b',
+    Network_Node: '#96ceb4',
+  } as const,
+  nodeSizes: {
+    selected: 0.4,
+    default: 0.3,
+  } as const,
+  intensities: {
+    selected: 0.8,
+    default: 0.4,
+  } as const,
+  sphereSegments: 32,
+  threatHaloOffset: 0.1,
+  threatHighlightOffset: 0.05,
+  labelOffset: 0.3,
+  labelFontSize: 0.15,
+  labelMaxWidth: 2,
+  labelOutlineWidth: 0.01,
+} as const;
+
+export const CONNECTION_LINE_CONFIG = {
+  colors: {
+    agent: '#4ecdc4',
+    location: '#6c5ce7',
+    network: '#00b894',
+    type: '#ff7675',
+  } as const,
+  defaultStrength: 0.5,
+  defaultType: 'type' as const,
+  opacityRange: {
+    min: 0.6,
+    strengthMultiplier: 0.4,
+  } as const,
+} as const;
+
+export const NETWORK_SCENE_CONFIG = {
+  entityLevels: {
+    threats: { y: 3, radius: 6 },
+    aiAgents: { y: 1.5, radius: 8 },
+    systems: { y: 0, radius: 5 },
+    networkNodes: { y: -1.5, radius: 7 },
+    users: { y: -3, radius: 10 },
+    default: { y: 0.5, radius: 4 },
+  } as const,
+  connectionRules: {
+    aiAgentToSystem: { strength: 0.8, type: 'agent' as const },
+    userToSystem: { strength: 0.6, type: 'network' as const },
+    threatToSystem: { strength: 0.9, type: 'type' as const },
+    networkNodeToSystem: { strength: 0.5, type: 'network' as const },
+    userToNetworkNode: { strength: 0.4, type: 'network' as const },
+  } as const,
+  fallbackConnections: [
+    { strength: 1.0, type: 'type' as const },
+    { strength: 0.8, type: 'network' as const },
+    { strength: 0.6, type: 'agent' as const },
+    { strength: 0.7, type: 'network' as const },
+  ] as const,
+} as const;
+
+export const CONNECTION_PARTICLE_CONFIG = {
+  defaultSpeed: 0.5,
+  defaultParticleCount: 3,
+  defaultParticleSize: 0.05,
+  speedVariation: { min: 0.8, max: 1.2 },
+  delayRange: { min: 0, max: 2 },
+  resetDelayRange: { min: 1, max: 4 },
+  particleGeometry: { radius: 0.05, segments: 8 },
+  particleMaterial: {
+    emissiveIntensity: 0.8,
+    opacity: 0.7,
+    transparent: true,
+  },
+  animation: {
+    progressIncrement: 0.01,
+    maxProgress: 1.0,
+  },
+} as const;
