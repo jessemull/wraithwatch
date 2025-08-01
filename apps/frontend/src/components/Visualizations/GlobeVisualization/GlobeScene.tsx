@@ -36,7 +36,8 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
         </mesh>
       ))}
       {entities.map((entity, index) => {
-        // Position entities on the globe surface
+        // Position entities on the globe surface...
+
         const lat = (index / entities.length) * Math.PI - Math.PI / 2; // -90 to 90 degrees
         const lon = (index * 2.4) % (Math.PI * 2); // Distribute around longitude
         const radius = 3.2; // Slightly above globe surface

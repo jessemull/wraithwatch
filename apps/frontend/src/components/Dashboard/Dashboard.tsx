@@ -76,8 +76,6 @@ export const Dashboard: React.FC = () => {
           </p>
           <p className="text-sm text-gray-400 mt-4">{config.app.tagline}</p>
         </div>
-
-        {/* 3D Visualization Section */}
         <div className="mb-8">
           <div className="px-6 py-4 border-b border-gray-800">
             <div className="flex justify-between items-center">
@@ -90,8 +88,6 @@ export const Dashboard: React.FC = () => {
                   {entities.length} entities, {changes.length} changes)
                 </p>
               </div>
-
-              {/* Visualization Type Selector */}
               <div className="flex space-x-2">
                 <button
                   onClick={() => setVisualizationType('timeline')}
@@ -140,14 +136,10 @@ export const Dashboard: React.FC = () => {
             {renderVisualization()}
           </div>
         </div>
-
-        {/* Entity List */}
         <EntitiesList
           entities={entities}
           lastUpdate={new Date().toISOString()}
         />
-
-        {/* Connection Status - Disabled for now */}
         <div className="text-center text-gray-400 text-sm">
           Static data mode - Real-time updates disabled
         </div>

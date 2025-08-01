@@ -25,12 +25,9 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
         style={{ background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)' }}
       >
         <Suspense fallback={null}>
-          {/* Lighting */}
           <ambientLight intensity={0.6} />
           <pointLight position={[10, 10, 10]} intensity={1} />
           <pointLight position={[-10, -10, -10]} intensity={0.5} />
-
-          {/* Controls */}
           <OrbitControls
             enablePan={true}
             enableZoom={true}
@@ -38,16 +35,12 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
             maxDistance={50}
             minDistance={5}
           />
-
-          {/* 3D Network Graph */}
           <NetworkScene
             entities={entities}
             changes={changes}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />
-
-          {/* Stats for performance monitoring */}
           <Stats />
         </Suspense>
       </Canvas>
