@@ -2,7 +2,7 @@ import React from 'react';
 import { EntityChange } from '../../types/api';
 import { KPICard } from './KPICard';
 import { ChartCard } from './ChartCard';
-import { BarChart, PieChart } from './Charts';
+import { BarChart, PieChart, LineChart, DoughnutChart, HorizontalBarChart } from './Charts';
 import { useAggregatedData } from '../../hooks/useAggregatedData';
 
 interface DashboardMetricsProps {
@@ -17,9 +17,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   const metrics = useAggregatedData(changes);
 
   return (
-    <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+      {/* KPI Cards - Stacked on the left */}
+      <div className="xl:col-span-1 space-y-6">
         <KPICard
           title="Active Threats"
           value={metrics.activeThreats}
@@ -46,11 +46,11 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         />
       </div>
 
-      {/* Chart Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Chart Cards - 2x2 grid on the right */}
+      <div className="xl:col-span-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard title="Threat Severity Distribution">
           <div className="h-full">
-            <BarChart 
+            <HorizontalBarChart 
               data={metrics.threatSeverityDistribution}
               title="Threat Severity"
               backgroundColor="rgba(239, 68, 68, 0.8)"
@@ -59,20 +59,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           </div>
         </ChartCard>
 
-        <ChartCard title="AI Agent Activity">
-          <div className="h-full">
-            <BarChart 
-              data={metrics.aiAgentActivity}
-              title="AI Agent Activity"
-              backgroundColor="rgba(59, 130, 246, 0.8)"
-              borderColor="rgba(59, 130, 246, 1)"
-            />
-          </div>
-        </ChartCard>
-
         <ChartCard title="Network Status Distribution">
           <div className="h-full">
-            <PieChart 
+            <DoughnutChart 
               data={metrics.protocolUsage}
               title="Network Status"
             />
@@ -81,11 +70,22 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
         <ChartCard title="Entity Changes">
           <div className="h-full">
-            <BarChart 
+            <LineChart 
               data={metrics.entityChangesByDay}
               title="Entity Changes"
-              backgroundColor="rgba(168, 85, 247, 0.8)"
+              backgroundColor="rgba(168, 85, 247, 0.2)"
               borderColor="rgba(168, 85, 247, 1)"
+            />
+          </div>
+        </ChartCard>
+
+        <ChartCard title="AI Agent Activity">
+          <div className="h-full">
+            <HorizontalBarChart 
+              data={metrics.aiAgentActivity}
+              title="AI Agent Activity"
+              backgroundColor="rgba(59, 130, 246, 0.8)"
+              borderColor="rgba(59, 130, 246, 1)"
             />
           </div>
         </ChartCard>

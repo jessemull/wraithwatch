@@ -3,34 +3,36 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
 );
 
-interface BarChartProps {
+interface LineChartProps {
   data: Record<string, number>;
   title: string;
   backgroundColor?: string;
   borderColor?: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({
+export const LineChart: React.FC<LineChartProps> = ({
   data,
   title,
-  backgroundColor = 'rgba(59, 130, 246, 0.8)',
-  borderColor = 'rgba(59, 130, 246, 1)',
+  backgroundColor = 'rgba(168, 85, 247, 0.2)',
+  borderColor = 'rgba(168, 85, 247, 1)',
 }) => {
   const chartData = {
     labels: Object.keys(data),
@@ -40,9 +42,13 @@ export const BarChart: React.FC<BarChartProps> = ({
         data: Object.values(data),
         backgroundColor,
         borderColor,
-        borderWidth: 1,
-        barThickness: 'flex',
-        maxBarThickness: 30,
+        borderWidth: 2,
+        pointBackgroundColor: borderColor,
+        pointBorderColor: borderColor,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.4,
+        fill: true,
       },
     ],
   };
@@ -70,26 +76,14 @@ export const BarChart: React.FC<BarChartProps> = ({
       },
       x: {
         grid: {
-          display: false,
+          color: 'rgba(75, 85, 99, 0.2)',
         },
         ticks: {
           color: 'rgba(156, 163, 175, 1)',
         },
       },
     },
-    elements: {
-      bar: {
-        borderRadius: 4,
-        borderSkipped: false,
-      },
-    },
-    layout: {
-      padding: {
-        left: 20,
-        right: 20,
-      },
-    },
   };
 
-  return <Bar data={chartData} options={options} />;
+  return <Line data={chartData} options={options} />;
 }; 

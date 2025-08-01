@@ -19,16 +19,16 @@ export const KPICard: React.FC<KPICardProps> = ({
   icon,
 }) => {
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-gray-400 text-sm font-medium">{title}</h3>
+    <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 shadow-lg">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-gray-300 text-sm font-semibold uppercase tracking-wide">{title}</h3>
         {icon && <div className="text-gray-400">{icon}</div>}
       </div>
       
       <div className="flex items-baseline space-x-2">
-        <span className="text-3xl font-bold text-white">{value}</span>
+        <span className="text-2xl font-bold text-white">{value}</span>
         {change && (
-          <div className={`flex items-center text-sm ${
+          <div className={`flex items-center text-xs font-medium ${
             change.isPositive ? 'text-green-400' : 'text-red-400'
           }`}>
             <span className="mr-1">
@@ -40,7 +40,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       </div>
       
       {comparison && (
-        <p className="text-gray-500 text-sm mt-2">{comparison}</p>
+        <p className="text-gray-500 text-xs mt-2">{comparison}</p>
       )}
     </div>
   );

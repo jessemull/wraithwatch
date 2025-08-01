@@ -12,9 +12,9 @@ export const ChartCard: React.FC<ChartCardProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`bg-gray-900 border border-gray-700 rounded-lg p-6 ${className}`}>
-      <h3 className="text-gray-400 text-sm font-medium mb-4">{title}</h3>
-      <div className="h-64">
+    <div className={`bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg ${className}`}>
+      <h3 className="text-gray-300 text-sm font-semibold mb-3 uppercase tracking-wide">{title}</h3>
+      <div className="h-48">
         {children}
       </div>
     </div>

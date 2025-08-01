@@ -19,14 +19,14 @@ ChartJS.register(
   Legend
 );
 
-interface BarChartProps {
+interface HorizontalBarChartProps {
   data: Record<string, number>;
   title: string;
   backgroundColor?: string;
   borderColor?: string;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({
+export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
   data,
   title,
   backgroundColor = 'rgba(59, 130, 246, 0.8)',
@@ -41,13 +41,14 @@ export const BarChart: React.FC<BarChartProps> = ({
         backgroundColor,
         borderColor,
         borderWidth: 1,
-        barThickness: 'flex',
-        maxBarThickness: 30,
+        borderRadius: 4,
+        barThickness: 12,
       },
     ],
   };
 
   const options = {
+    indexAxis: 'y' as const,
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -59,7 +60,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       },
     },
     scales: {
-      y: {
+      x: {
         beginAtZero: true,
         grid: {
           color: 'rgba(75, 85, 99, 0.2)',
@@ -68,7 +69,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           color: 'rgba(156, 163, 175, 1)',
         },
       },
-      x: {
+      y: {
         grid: {
           display: false,
         },
@@ -77,16 +78,16 @@ export const BarChart: React.FC<BarChartProps> = ({
         },
       },
     },
-    elements: {
-      bar: {
-        borderRadius: 4,
-        borderSkipped: false,
-      },
-    },
     layout: {
       padding: {
-        left: 20,
-        right: 20,
+        left: 10,
+        right: 10,
+      },
+    },
+    elements: {
+      bar: {
+        borderRadius: 2,
+        borderSkipped: false,
       },
     },
   };
