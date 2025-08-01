@@ -2,6 +2,8 @@ import {
   DynamoDBClient,
   QueryCommand,
   ScanCommand,
+  ScanCommandOutput,
+  AttributeValue,
 } from '@aws-sdk/client-dynamodb';
 import { AWS_REGION, DYNAMODB_TABLE_NAME } from '../constants';
 import { EntityChange } from '../types/dynamodb';
@@ -16,30 +18,45 @@ export class DynamoDBService {
   private tableName = DYNAMODB_TABLE_NAME;
 
   // Use GSI1 for diverse entity queries
-  async getAllData(limit: number = 10): Promise<EntityChange[]> {
-    // Use GSI1 to get diverse entities by querying a specific hash partition
-    // We'll use the hash we know exists from the data
-    const command = new QueryCommand({
-      TableName: this.tableName,
-      IndexName: 'EntityHashTimestampIndex',
-      KeyConditionExpression: 'GSI1PK = :pk',
-      ExpressionAttributeValues: {
-        ':pk': { S: 'ENTITY_HASH#023bc35d' }, // Use the hash we know exists
-      },
-      ScanIndexForward: false, // Most recent first
-      Limit: limit,
-    });
+  async getAllData(limit: number = 10000): Promise<EntityChange[]> {
+    // Use Scan with pagination to get all data from the table
+    const allItems: EntityChange[] = [];
+    let lastEvaluatedKey: Record<string, AttributeValue> | undefined =
+      undefined;
 
     try {
-      const response = await client.send(command);
-      const items = (response.Items || []).map(item =>
-        unmarshall(item)
-      ) as EntityChange[];
+      do {
+        const command = new ScanCommand({
+          TableName: this.tableName,
+          Limit: Math.min(1000, limit - allItems.length), // DynamoDB scan limit is 1000
+          ExclusiveStartKey: lastEvaluatedKey,
+        });
 
-      logger.info({ count: items.length }, 'GSI query found items');
-      return items;
+        const response: ScanCommandOutput = await client.send(command);
+        const items = (response.Items || []).map(item =>
+          unmarshall(item)
+        ) as EntityChange[];
+
+        allItems.push(...items);
+        lastEvaluatedKey = response.LastEvaluatedKey;
+
+        logger.info(
+          {
+            batchCount: items.length,
+            totalCount: allItems.length,
+            hasMore: !!lastEvaluatedKey,
+          },
+          'Scan batch completed'
+        );
+      } while (lastEvaluatedKey && allItems.length < limit);
+
+      logger.info(
+        { totalCount: allItems.length },
+        'Scan completed, total items found'
+      );
+      return allItems;
     } catch (error) {
-      logger.error({ error }, 'Error querying GSI1 for diverse data');
+      logger.error({ error }, 'Error scanning table for all data');
       throw error;
     }
   }

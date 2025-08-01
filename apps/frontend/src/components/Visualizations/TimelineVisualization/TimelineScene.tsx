@@ -21,7 +21,8 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  // Memoize timeline bounds and entity positions
+  // Memoize timeline bounds and entity positions...
+
   const { entityPositions } = useMemo(() => {
     const sortedChanges = [...allChanges].sort(
       (a, b) =>
@@ -32,13 +33,15 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
       sortedChanges[sortedChanges.length - 1].timestamp
     ).getTime();
 
-    // Calculate all entity positions
+    // Calculate all entity positions...
+
     const positions = entities.map((entity, index) => {
-      // Distribute entities vertically along the y-axis based on their index
-      // This ensures entities are spread across the entire timeline height
+      // Ensures entities are spread across the entire timeline height...
+
       const entityY = (index / (entities.length - 1) - 0.5) * 16; // Spread across -8 to +8
 
-      // Position entities randomly around the timeline instead of in a perfect circle
+      // Position entities randomly around the timeline instead of in a perfect circle...
+
       const angle = Math.random() * Math.PI * 2; // Random angle
       const radius = 2 + Math.random() * 4; // Random radius between 2-6
       const x = Math.cos(angle) * radius;
@@ -83,13 +86,16 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
       ))}
       {selectedEntity &&
         changes.map((change, index) => {
-          // Find the selected entity's position
+          // Find the selected entity's position...
+
           const selectedEntityIndex = entities.findIndex(
             e => e.id === selectedEntity.id
           );
+
           const entityPosition = entityPositions[selectedEntityIndex];
 
-          // Position change particles centered around the entity's position
+          // Position change particles centered around the entity's position...
+
           const angle = Math.random() * Math.PI * 2;
           const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
           const x = entityPosition[0] + Math.cos(angle) * radius;

@@ -3,7 +3,7 @@ import {
   DynamoDBDocumentClient,
   BatchWriteCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { subDays, addMinutes, format } from 'date-fns';
+import { subDays, format } from 'date-fns';
 import { createHash } from 'crypto';
 
 const client = new DynamoDBClient({ region: 'us-east-1' });
@@ -53,9 +53,489 @@ interface EnumConfig {
 
 type PropertyConfig = NumericConfig | EnumConfig;
 
-// Entity configurations...
+interface EntityConfig {
+  id: string;
+  type: string;
+  name: string;
+  characteristics: {
+    load?: 'high' | 'medium' | 'low';
+    criticality?: 'critical' | 'high' | 'medium' | 'low';
+    specialization?: string;
+    accuracy?: 'high' | 'medium' | 'low';
+    severity?: 'critical' | 'high' | 'medium' | 'low';
+    persistence?: 'high' | 'medium' | 'low';
+    role?: string;
+    traffic?: 'high' | 'medium' | 'low';
+    activity?: 'high' | 'medium' | 'low' | 'very_low';
+  };
+}
 
-const entities = [
+// Function to get property config based on entity characteristics
+function getPropertyConfig(
+  entityType: string,
+  entity: EntityConfig
+): Record<string, PropertyConfig> {
+  const baseConfigs = {
+    System: {
+      cpu_usage: { min: 10, max: 95, changeRate: 0.8, volatility: 0.15 },
+      memory_usage: { min: 20, max: 90, changeRate: 0.6, volatility: 0.12 },
+      network_connections: {
+        min: 50,
+        max: 2000,
+        changeRate: 0.9,
+        volatility: 0.2,
+      },
+      disk_usage: { min: 30, max: 85, changeRate: 0.3, volatility: 0.05 },
+      response_time: { min: 10, max: 500, changeRate: 0.7, volatility: 0.25 },
+      status: {
+        values: [
+          'online',
+          'offline',
+          'maintenance',
+          'degraded',
+          'overloaded',
+          'recovering',
+        ],
+        changeRate: 0.02,
+      },
+    },
+    AI_Agent: {
+      confidence_score: {
+        min: 0.5,
+        max: 0.99,
+        changeRate: 0.5,
+        volatility: 0.1,
+      },
+      response_time: { min: 20, max: 300, changeRate: 0.6, volatility: 0.2 },
+      active_requests: { min: 5, max: 500, changeRate: 0.8, volatility: 0.3 },
+      model_version: {
+        values: ['v1.2.3', 'v1.2.4', 'v1.3.0', 'v1.3.1', 'v1.4.0'],
+        changeRate: 0.01,
+      },
+      accuracy: { min: 0.7, max: 0.98, changeRate: 0.4, volatility: 0.08 },
+      training_status: {
+        values: ['idle', 'training', 'evaluating', 'deploying', 'failed'],
+        changeRate: 0.05,
+      },
+    },
+    Threat: {
+      threat_score: { min: 0.1, max: 0.95, changeRate: 0.3, volatility: 0.15 },
+      severity: {
+        values: ['low', 'medium', 'high', 'critical', 'emergency'],
+        changeRate: 0.1,
+      },
+      detection_count: { min: 1, max: 100, changeRate: 0.4, volatility: 0.2 },
+      source_ip: {
+        values: [
+          '192.168.1.100',
+          '10.0.0.50',
+          '172.16.0.25',
+          '203.0.113.45',
+          '198.51.100.123',
+        ],
+        changeRate: 0.05,
+      },
+      attack_type: {
+        values: [
+          'ddos',
+          'malware',
+          'phishing',
+          'sql_injection',
+          'xss',
+          'brute_force',
+        ],
+        changeRate: 0.02,
+      },
+      mitigation_status: {
+        values: [
+          'detected',
+          'investigating',
+          'mitigating',
+          'resolved',
+          'false_positive',
+        ],
+        changeRate: 0.08,
+      },
+    },
+    Network_Node: {
+      bandwidth_usage: {
+        min: 100,
+        max: 2000,
+        changeRate: 0.7,
+        volatility: 0.25,
+      },
+      connection_count: { min: 10, max: 500, changeRate: 0.8, volatility: 0.3 },
+      latency: { min: 1, max: 200, changeRate: 0.6, volatility: 0.2 },
+      packet_loss: { min: 0, max: 10, changeRate: 0.4, volatility: 0.15 },
+      error_rate: { min: 0, max: 5, changeRate: 0.3, volatility: 0.1 },
+      routing_status: {
+        values: ['optimal', 'congested', 'rerouting', 'failed', 'maintenance'],
+        changeRate: 0.03,
+      },
+    },
+    User: {
+      login_count: { min: 0, max: 50, changeRate: 0.2, volatility: 0.1 },
+      last_activity: {
+        values: ['active', 'idle', 'away', 'offline', 'suspended', 'locked'],
+        changeRate: 0.3,
+      },
+      session_duration: { min: 0, max: 480, changeRate: 0.4, volatility: 0.2 },
+      permission_level: {
+        values: ['guest', 'user', 'admin', 'super_admin', 'read_only'],
+        changeRate: 0.01,
+      },
+      failed_login_attempts: {
+        min: 0,
+        max: 10,
+        changeRate: 0.1,
+        volatility: 0.05,
+      },
+    },
+  };
+
+  const config = {
+    ...baseConfigs[entityType as keyof typeof baseConfigs],
+  } as Record<string, PropertyConfig>;
+
+  // Adjust configs based on entity characteristics
+  if (entityType === 'System') {
+    if (entity.characteristics.load === 'high') {
+      const systemConfig = config as Record<string, PropertyConfig>;
+      systemConfig.cpu_usage = {
+        ...systemConfig.cpu_usage,
+        min: 40,
+        max: 98,
+        changeRate: 0.9,
+      };
+      systemConfig.memory_usage = {
+        ...systemConfig.memory_usage,
+        min: 50,
+        max: 95,
+        changeRate: 0.8,
+      };
+    } else if (entity.characteristics.load === 'low') {
+      const systemConfig = config as Record<string, PropertyConfig>;
+      systemConfig.cpu_usage = {
+        ...systemConfig.cpu_usage,
+        min: 5,
+        max: 60,
+        changeRate: 0.4,
+      };
+      systemConfig.memory_usage = {
+        ...systemConfig.memory_usage,
+        min: 15,
+        max: 70,
+        changeRate: 0.3,
+      };
+    }
+  } else if (entityType === 'AI_Agent') {
+    if (entity.characteristics.accuracy === 'high') {
+      const aiConfig = config as Record<string, PropertyConfig>;
+      aiConfig.confidence_score = {
+        ...aiConfig.confidence_score,
+        min: 0.8,
+        max: 0.99,
+      };
+      aiConfig.accuracy = { ...aiConfig.accuracy, min: 0.9, max: 0.98 };
+    } else if (entity.characteristics.accuracy === 'low') {
+      const aiConfig = config as Record<string, PropertyConfig>;
+      aiConfig.confidence_score = {
+        ...aiConfig.confidence_score,
+        min: 0.3,
+        max: 0.7,
+      };
+      aiConfig.accuracy = { ...aiConfig.accuracy, min: 0.5, max: 0.8 };
+    }
+  } else if (entityType === 'Threat') {
+    if (entity.characteristics.severity === 'critical') {
+      const threatConfig = config as Record<string, PropertyConfig>;
+      threatConfig.threat_score = {
+        ...threatConfig.threat_score,
+        min: 0.7,
+        max: 0.99,
+        changeRate: 0.5,
+      };
+      threatConfig.severity = {
+        ...threatConfig.severity,
+        values: ['high', 'critical', 'emergency'],
+      };
+    } else if (entity.characteristics.severity === 'low') {
+      const threatConfig = config as Record<string, PropertyConfig>;
+      threatConfig.threat_score = {
+        ...threatConfig.threat_score,
+        min: 0.1,
+        max: 0.4,
+        changeRate: 0.1,
+      };
+      threatConfig.severity = {
+        ...threatConfig.severity,
+        values: ['low', 'medium'],
+      };
+    }
+  } else if (entityType === 'Network_Node') {
+    if (entity.characteristics.traffic === 'high') {
+      const networkConfig = config as Record<string, PropertyConfig>;
+      networkConfig.bandwidth_usage = {
+        ...networkConfig.bandwidth_usage,
+        min: 500,
+        max: 3000,
+        changeRate: 0.9,
+      };
+      networkConfig.connection_count = {
+        ...networkConfig.connection_count,
+        min: 100,
+        max: 1000,
+        changeRate: 0.9,
+      };
+    } else if (entity.characteristics.traffic === 'low') {
+      const networkConfig = config as Record<string, PropertyConfig>;
+      networkConfig.bandwidth_usage = {
+        ...networkConfig.bandwidth_usage,
+        min: 10,
+        max: 500,
+        changeRate: 0.3,
+      };
+      networkConfig.connection_count = {
+        ...networkConfig.connection_count,
+        min: 5,
+        max: 100,
+        changeRate: 0.4,
+      };
+    }
+  } else if (entityType === 'User') {
+    if (entity.characteristics.activity === 'high') {
+      const userConfig = config as Record<string, PropertyConfig>;
+      userConfig.login_count = {
+        ...userConfig.login_count,
+        min: 10,
+        max: 100,
+        changeRate: 0.4,
+      };
+      userConfig.last_activity = {
+        ...userConfig.last_activity,
+        values: ['active', 'idle'],
+        changeRate: 0.5,
+      };
+    } else if (entity.characteristics.activity === 'very_low') {
+      const userConfig = config as Record<string, PropertyConfig>;
+      userConfig.login_count = {
+        ...userConfig.login_count,
+        min: 0,
+        max: 5,
+        changeRate: 0.05,
+      };
+      userConfig.last_activity = {
+        ...userConfig.last_activity,
+        values: ['away', 'offline'],
+        changeRate: 0.1,
+      };
+    }
+  }
+
+  return config;
+}
+
+// Helper function to check if config is enum...
+
+function isEnumConfig(config: PropertyConfig): config is EnumConfig {
+  return 'values' in config;
+}
+
+function generateValue(
+  config: PropertyConfig,
+  previousValue?: string | number
+): string | number {
+  if (isEnumConfig(config)) {
+    // For enum-like properties - truly random selection...
+
+    const shouldChange = Math.random() < config.changeRate;
+    if (!shouldChange && previousValue !== undefined) {
+      return previousValue;
+    }
+
+    // Randomly select a value, potentially different from previous...
+
+    const availableValues = config.values.filter(v => v !== previousValue);
+    if (availableValues.length === 0) {
+      return config.values[Math.floor(Math.random() * config.values.length)];
+    }
+    return availableValues[Math.floor(Math.random() * availableValues.length)];
+  } else {
+    // For numeric properties with volatility...
+
+    const shouldChange = Math.random() < config.changeRate;
+    if (!shouldChange && previousValue !== undefined) {
+      return previousValue;
+    }
+
+    // Generate random value within range with volatility...
+    let value: number;
+    if (
+      previousValue !== undefined &&
+      typeof previousValue === 'number' &&
+      config.volatility
+    ) {
+      // Change based on previous value and volatility
+      const change =
+        (Math.random() - 0.5) *
+        2 *
+        config.volatility *
+        (config.max - config.min);
+      value = Number(previousValue) + change;
+    } else {
+      // Initial random value
+      value = Math.random() * (config.max - config.min) + config.min;
+    }
+
+    // Clamp to min/max range
+    value = Math.max(config.min, Math.min(config.max, value));
+    return Math.round(value * 100) / 100; // Round to 2 decimal places
+  }
+}
+
+function generateChangeType(
+  newValue: string | number,
+  previousValue: string | number
+): 'increase' | 'decrease' | 'change' {
+  if (typeof newValue === 'number' && typeof previousValue === 'number') {
+    return newValue > previousValue ? 'increase' : 'decrease';
+  }
+  return 'change';
+}
+
+async function generateTimeSeriesData(): Promise<EntityChange[]> {
+  const changes: EntityChange[] = [];
+  const startDate = subDays(new Date(), 7);
+  const endDate = new Date();
+
+  for (const entity of entities) {
+    const config = getPropertyConfig(entity.type, entity);
+    if (!config) continue;
+
+    const properties = Object.keys(config);
+    const currentValues: Record<string, string | number> = {};
+
+    // Initialize current values with random starting points
+    for (const prop of properties) {
+      const propConfig = config[prop];
+      if (isEnumConfig(propConfig)) {
+        currentValues[prop] =
+          propConfig.values[
+            Math.floor(Math.random() * propConfig.values.length)
+          ];
+      } else {
+        currentValues[prop] =
+          Math.random() * (propConfig.max - propConfig.min) + propConfig.min;
+        currentValues[prop] = Math.round(currentValues[prop] * 100) / 100;
+      }
+    }
+
+    // Generate changes over time with the same distribution logic as client
+    const timeSpan = endDate.getTime() - startDate.getTime();
+
+    // Create truly random timestamps across the entire timeline (like client)
+    const timestamps: Date[] = [];
+    const eventCount = Math.floor(Math.random() * 101) + 100; // 100-200 events per entity
+
+    for (let i = 0; i < eventCount; i++) {
+      // Generate random timestamp across the entire time span
+      const randomTime = startDate.getTime() + Math.random() * timeSpan;
+      timestamps.push(new Date(randomTime));
+    }
+
+    // Sort timestamps to ensure chronological order
+    timestamps.sort((a, b) => a.getTime() - b.getTime());
+
+    for (let i = 0; i < eventCount; i++) {
+      const currentTime = timestamps[i];
+
+      // Randomly select a property to change (like client)
+      const propertiesToCheck = properties.filter(() => Math.random() < 0.3);
+
+      for (const prop of propertiesToCheck) {
+        const propConfig = config[prop];
+        const previousValue = currentValues[prop];
+        const newValue = generateValue(propConfig, previousValue);
+
+        if (newValue !== previousValue) {
+          const timestamp = format(currentTime, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+          const ttl =
+            Math.floor(currentTime.getTime() / 1000) + 30 * 24 * 60 * 60; // 30 days
+
+          // Generate GSI fields
+          const entityHash = generateEntityHash(entity.id);
+          const timeBucket = generateTimeBucket(timestamp);
+          const gsi1Sk = `${timestamp}#${entity.id}#${prop}`;
+          const gsi2Sk = `${timestamp}#${entity.id}#${prop}`;
+
+          changes.push({
+            PK: `ENTITY#${entity.id}`,
+            SK: `${timestamp}#${prop}`,
+            GSI1PK: `ENTITY_HASH#${entityHash}`,
+            GSI1SK: gsi1Sk,
+            GSI2PK: `TIME_BUCKET#${timeBucket}`,
+            GSI2SK: gsi2Sk,
+            entity_id: entity.id,
+            entity_type: entity.type,
+            property_name: prop,
+            value: newValue,
+            previous_value: previousValue,
+            change_type: generateChangeType(newValue, previousValue),
+            timestamp,
+            TTL: ttl,
+          });
+
+          currentValues[prop] = newValue;
+        }
+      }
+    }
+  }
+
+  return changes;
+}
+
+async function loadDataToDynamoDB(changes: EntityChange[]): Promise<void> {
+  const batchSize = 25; // DynamoDB batch write limit
+
+  for (let i = 0; i < changes.length; i += batchSize) {
+    const batch = changes.slice(i, i + batchSize);
+    const writeRequests = batch.map(change => ({
+      PutRequest: {
+        Item: change,
+      },
+    }));
+
+    try {
+      await docClient.send(
+        new BatchWriteCommand({
+          RequestItems: {
+            'wraithwatch-entity-changes': writeRequests,
+          },
+        })
+      );
+      console.log(
+        `Loaded batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(changes.length / batchSize)}`
+      );
+    } catch (error) {
+      console.error('Error loading batch:', error);
+    }
+  }
+}
+
+async function main() {
+  console.log('Generating time-series data...');
+  const changes = await generateTimeSeriesData();
+  console.log(`Generated ${changes.length} changes`);
+
+  console.log('Loading data to DynamoDB...');
+  await loadDataToDynamoDB(changes);
+  console.log('Data loading complete!');
+}
+
+main().catch(console.error);
+
+// Entity configurations...
+const entities: EntityConfig[] = [
   // Systems with different characteristics
   {
     id: 'system-001',
@@ -194,479 +674,3 @@ const entities = [
 ];
 
 // Property configurations with high-frequency changes for realistic cybersecurity monitoring...
-
-// Function to get property config based on entity characteristics
-function getPropertyConfig(
-  entityType: string,
-  entity: any
-): Record<string, PropertyConfig> {
-  const baseConfigs = {
-    System: {
-      cpu_usage: { min: 10, max: 95, changeRate: 0.8, volatility: 0.15 },
-      memory_usage: { min: 20, max: 90, changeRate: 0.6, volatility: 0.12 },
-      network_connections: {
-        min: 50,
-        max: 2000,
-        changeRate: 0.9,
-        volatility: 0.2,
-      },
-      disk_usage: { min: 30, max: 85, changeRate: 0.3, volatility: 0.05 },
-      response_time: { min: 10, max: 500, changeRate: 0.7, volatility: 0.25 },
-      status: {
-        values: [
-          'online',
-          'offline',
-          'maintenance',
-          'degraded',
-          'overloaded',
-          'recovering',
-        ],
-        changeRate: 0.02,
-      },
-    },
-    AI_Agent: {
-      confidence_score: {
-        min: 0.5,
-        max: 0.99,
-        changeRate: 0.5,
-        volatility: 0.1,
-      },
-      response_time: { min: 20, max: 300, changeRate: 0.6, volatility: 0.2 },
-      active_requests: { min: 5, max: 500, changeRate: 0.8, volatility: 0.3 },
-      model_version: {
-        values: ['v1.2.3', 'v1.2.4', 'v1.3.0', 'v1.3.1', 'v1.4.0'],
-        changeRate: 0.01,
-      },
-      accuracy: { min: 0.7, max: 0.98, changeRate: 0.4, volatility: 0.08 },
-      training_status: {
-        values: ['idle', 'training', 'evaluating', 'deploying', 'failed'],
-        changeRate: 0.05,
-      },
-    },
-    Threat: {
-      threat_score: { min: 0.1, max: 0.95, changeRate: 0.3, volatility: 0.15 },
-      severity: {
-        values: ['low', 'medium', 'high', 'critical', 'emergency'],
-        changeRate: 0.1,
-      },
-      detection_count: { min: 1, max: 100, changeRate: 0.4, volatility: 0.2 },
-      source_ip: {
-        values: [
-          '192.168.1.100',
-          '10.0.0.50',
-          '172.16.0.25',
-          '203.0.113.45',
-          '198.51.100.123',
-        ],
-        changeRate: 0.05,
-      },
-      attack_type: {
-        values: [
-          'ddos',
-          'malware',
-          'phishing',
-          'sql_injection',
-          'xss',
-          'brute_force',
-        ],
-        changeRate: 0.02,
-      },
-      mitigation_status: {
-        values: [
-          'detected',
-          'investigating',
-          'mitigating',
-          'resolved',
-          'false_positive',
-        ],
-        changeRate: 0.08,
-      },
-    },
-    Network_Node: {
-      bandwidth_usage: {
-        min: 100,
-        max: 2000,
-        changeRate: 0.7,
-        volatility: 0.25,
-      },
-      connection_count: { min: 10, max: 500, changeRate: 0.8, volatility: 0.3 },
-      latency: { min: 1, max: 200, changeRate: 0.6, volatility: 0.2 },
-      packet_loss: { min: 0, max: 10, changeRate: 0.4, volatility: 0.15 },
-      error_rate: { min: 0, max: 5, changeRate: 0.3, volatility: 0.1 },
-      routing_status: {
-        values: ['optimal', 'congested', 'rerouting', 'failed', 'maintenance'],
-        changeRate: 0.03,
-      },
-    },
-    User: {
-      login_count: { min: 0, max: 50, changeRate: 0.2, volatility: 0.1 },
-      last_activity: {
-        values: ['active', 'idle', 'away', 'offline', 'suspended', 'locked'],
-        changeRate: 0.3,
-      },
-      session_duration: { min: 0, max: 480, changeRate: 0.4, volatility: 0.2 },
-      permission_level: {
-        values: ['guest', 'user', 'admin', 'super_admin', 'read_only'],
-        changeRate: 0.01,
-      },
-      failed_login_attempts: {
-        min: 0,
-        max: 10,
-        changeRate: 0.1,
-        volatility: 0.05,
-      },
-    },
-  };
-
-  const config = {
-    ...baseConfigs[entityType as keyof typeof baseConfigs],
-  } as Record<string, PropertyConfig>;
-
-  // Adjust configs based on entity characteristics
-  if (entityType === 'System') {
-    if (entity.characteristics.load === 'high') {
-      (config as any).cpu_usage = {
-        ...(config as any).cpu_usage,
-        min: 40,
-        max: 98,
-        changeRate: 0.9,
-      };
-      (config as any).memory_usage = {
-        ...(config as any).memory_usage,
-        min: 50,
-        max: 95,
-        changeRate: 0.8,
-      };
-    } else if (entity.characteristics.load === 'low') {
-      (config as any).cpu_usage = {
-        ...(config as any).cpu_usage,
-        min: 5,
-        max: 60,
-        changeRate: 0.4,
-      };
-      (config as any).memory_usage = {
-        ...(config as any).memory_usage,
-        min: 15,
-        max: 70,
-        changeRate: 0.3,
-      };
-    }
-  } else if (entityType === 'AI_Agent') {
-    if (entity.characteristics.accuracy === 'high') {
-      (config as any).confidence_score = {
-        ...(config as any).confidence_score,
-        min: 0.8,
-        max: 0.99,
-      };
-      (config as any).accuracy = {
-        ...(config as any).accuracy,
-        min: 0.9,
-        max: 0.98,
-      };
-    } else if (entity.characteristics.accuracy === 'low') {
-      (config as any).confidence_score = {
-        ...(config as any).confidence_score,
-        min: 0.3,
-        max: 0.7,
-      };
-      (config as any).accuracy = {
-        ...(config as any).accuracy,
-        min: 0.5,
-        max: 0.8,
-      };
-    }
-  } else if (entityType === 'Threat') {
-    if (entity.characteristics.severity === 'critical') {
-      (config as any).threat_score = {
-        ...(config as any).threat_score,
-        min: 0.7,
-        max: 0.99,
-        changeRate: 0.5,
-      };
-      (config as any).severity = {
-        ...(config as any).severity,
-        values: ['high', 'critical', 'emergency'],
-      };
-    } else if (entity.characteristics.severity === 'low') {
-      (config as any).threat_score = {
-        ...(config as any).threat_score,
-        min: 0.1,
-        max: 0.4,
-        changeRate: 0.1,
-      };
-      (config as any).severity = {
-        ...(config as any).severity,
-        values: ['low', 'medium'],
-      };
-    }
-  } else if (entityType === 'Network_Node') {
-    if (entity.characteristics.traffic === 'high') {
-      (config as any).bandwidth_usage = {
-        ...(config as any).bandwidth_usage,
-        min: 500,
-        max: 3000,
-        changeRate: 0.9,
-      };
-      (config as any).connection_count = {
-        ...(config as any).connection_count,
-        min: 100,
-        max: 1000,
-        changeRate: 0.9,
-      };
-    } else if (entity.characteristics.traffic === 'low') {
-      (config as any).bandwidth_usage = {
-        ...(config as any).bandwidth_usage,
-        min: 10,
-        max: 500,
-        changeRate: 0.3,
-      };
-      (config as any).connection_count = {
-        ...(config as any).connection_count,
-        min: 5,
-        max: 100,
-        changeRate: 0.4,
-      };
-    }
-  } else if (entityType === 'User') {
-    if (entity.characteristics.activity === 'high') {
-      (config as any).login_count = {
-        ...(config as any).login_count,
-        min: 10,
-        max: 100,
-        changeRate: 0.4,
-      };
-      (config as any).last_activity = {
-        ...(config as any).last_activity,
-        values: ['active', 'idle'],
-        changeRate: 0.5,
-      };
-    } else if (entity.characteristics.activity === 'very_low') {
-      (config as any).login_count = {
-        ...(config as any).login_count,
-        min: 0,
-        max: 5,
-        changeRate: 0.05,
-      };
-      (config as any).last_activity = {
-        ...(config as any).last_activity,
-        values: ['away', 'offline'],
-        changeRate: 0.1,
-      };
-    }
-  }
-
-  return config;
-}
-
-// Helper function to check if config is enum...
-
-function isEnumConfig(config: PropertyConfig): config is EnumConfig {
-  return 'values' in config;
-}
-
-function generateValue(
-  config: PropertyConfig,
-  previousValue?: string | number
-): string | number {
-  if (isEnumConfig(config)) {
-    // For enum-like properties - truly random selection...
-
-    const shouldChange = Math.random() < config.changeRate;
-    if (!shouldChange && previousValue !== undefined) {
-      return previousValue;
-    }
-
-    // Randomly select a value, potentially different from previous...
-
-    const availableValues = config.values.filter(v => v !== previousValue);
-    if (availableValues.length === 0) {
-      return config.values[Math.floor(Math.random() * config.values.length)];
-    }
-    return availableValues[Math.floor(Math.random() * availableValues.length)];
-  } else {
-    // For numeric properties with volatility...
-
-    const shouldChange = Math.random() < config.changeRate;
-    if (!shouldChange && previousValue !== undefined) {
-      return previousValue;
-    }
-
-    // Generate random value within range with volatility...
-    let value: number;
-    if (
-      previousValue !== undefined &&
-      typeof previousValue === 'number' &&
-      config.volatility
-    ) {
-      // Change based on previous value and volatility
-      const change =
-        (Math.random() - 0.5) *
-        2 *
-        config.volatility *
-        (config.max - config.min);
-      value = Number(previousValue) + change;
-    } else {
-      // Initial random value
-      value = Math.random() * (config.max - config.min) + config.min;
-    }
-
-    // Clamp to min/max range
-    value = Math.max(config.min, Math.min(config.max, value));
-    return Math.round(value * 100) / 100; // Round to 2 decimal places
-  }
-}
-
-function generateChangeType(
-  newValue: string | number,
-  previousValue: string | number
-): 'increase' | 'decrease' | 'change' {
-  if (typeof newValue === 'number' && typeof previousValue === 'number') {
-    return newValue > previousValue ? 'increase' : 'decrease';
-  }
-  return 'change';
-}
-
-async function generateTimeSeriesData(): Promise<EntityChange[]> {
-  const changes: EntityChange[] = [];
-  const startDate = subDays(new Date(), 7);
-  const endDate = new Date();
-
-  for (const entity of entities) {
-    const config = getPropertyConfig(entity.type, entity);
-    if (!config) continue;
-
-    const properties = Object.keys(config);
-    const currentValues: Record<string, string | number> = {};
-
-    // Initialize current values with random starting points...
-
-    for (const prop of properties) {
-      const propConfig = config[prop];
-      if (isEnumConfig(propConfig)) {
-        currentValues[prop] =
-          propConfig.values[
-            Math.floor(Math.random() * propConfig.values.length)
-          ];
-      } else {
-        currentValues[prop] =
-          Math.random() * (propConfig.max - propConfig.min) + propConfig.min;
-        currentValues[prop] = Math.round(currentValues[prop] * 100) / 100;
-      }
-    }
-
-    // Generate changes over time with more realistic patterns...
-    // Add randomization to when each entity starts generating changes
-    const entityStartOffset = Math.floor(Math.random() * 7 * 24 * 60); // Random offset up to 7 days in minutes
-    let currentTime = addMinutes(startDate, entityStartOffset);
-
-    // Add some burst patterns and quiet periods for realism
-    let burstMode = Math.random() < 0.2; // 20% chance to start in burst mode
-    let burstCounter = 0;
-    while (currentTime <= endDate) {
-      // Randomize which properties to check for changes (not all properties change at the same time)
-      const propertiesToCheck = properties.filter(() => Math.random() < 0.3); // Only check 30% of properties each iteration
-
-      for (const prop of propertiesToCheck) {
-        const propConfig = config[prop];
-        const previousValue = currentValues[prop];
-        const newValue = generateValue(propConfig, previousValue);
-
-        if (newValue !== previousValue) {
-          const timestamp = format(currentTime, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-          const ttl =
-            Math.floor(currentTime.getTime() / 1000) + 30 * 24 * 60 * 60; // 30 days
-
-          // Generate GSI fields
-          const entityHash = generateEntityHash(entity.id);
-          const timeBucket = generateTimeBucket(timestamp);
-          const gsi1Sk = `${timestamp}#${entity.id}#${prop}`;
-          const gsi2Sk = `${timestamp}#${entity.id}#${prop}`;
-
-          changes.push({
-            PK: `ENTITY#${entity.id}`,
-            SK: `${timestamp}#${prop}`,
-            GSI1PK: `ENTITY_HASH#${entityHash}`,
-            GSI1SK: gsi1Sk,
-            GSI2PK: `TIME_BUCKET#${timeBucket}`,
-            GSI2SK: gsi2Sk,
-            entity_id: entity.id,
-            entity_type: entity.type,
-            property_name: prop,
-            value: newValue,
-            previous_value: previousValue,
-            change_type: generateChangeType(newValue, previousValue),
-            timestamp,
-            TTL: ttl,
-          });
-
-          currentValues[prop] = newValue;
-        }
-      }
-
-      // Randomize time intervals with burst patterns
-      let timeOffset;
-      if (burstMode) {
-        // Burst mode: rapid changes
-        timeOffset = Math.floor(Math.random() * 2) + 1; // 1-2 minutes
-        burstCounter++;
-        if (burstCounter > 10) {
-          // End burst after 10 rapid changes
-          burstMode = false;
-          burstCounter = 0;
-        }
-      } else {
-        // Normal mode: slower changes
-        timeOffset = Math.floor(Math.random() * 5) + 2; // 2-6 minutes
-        // Occasionally enter burst mode
-        if (Math.random() < 0.05) {
-          // 5% chance to enter burst mode
-          burstMode = true;
-          burstCounter = 0;
-        }
-      }
-      currentTime = addMinutes(currentTime, timeOffset);
-    }
-  }
-
-  return changes;
-}
-
-async function loadDataToDynamoDB(changes: EntityChange[]): Promise<void> {
-  const batchSize = 25; // DynamoDB batch write limit
-
-  for (let i = 0; i < changes.length; i += batchSize) {
-    const batch = changes.slice(i, i + batchSize);
-    const writeRequests = batch.map(change => ({
-      PutRequest: {
-        Item: change,
-      },
-    }));
-
-    try {
-      await docClient.send(
-        new BatchWriteCommand({
-          RequestItems: {
-            'wraithwatch-entity-changes': writeRequests,
-          },
-        })
-      );
-      console.log(
-        `Loaded batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(changes.length / batchSize)}`
-      );
-    } catch (error) {
-      console.error('Error loading batch:', error);
-    }
-  }
-}
-
-async function main() {
-  console.log('Generating time-series data...');
-  const changes = await generateTimeSeriesData();
-  console.log(`Generated ${changes.length} changes`);
-
-  console.log('Loading data to DynamoDB...');
-  await loadDataToDynamoDB(changes);
-  console.log('Data loading complete!');
-}
-
-main().catch(console.error);

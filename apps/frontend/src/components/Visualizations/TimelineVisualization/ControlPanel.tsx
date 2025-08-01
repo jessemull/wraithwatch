@@ -4,8 +4,8 @@ interface ControlPanelProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onReset: () => void;
-  onRotateLeft: () => void;
-  onRotateRight: () => void;
+  onRotateLeft?: () => void;
+  onRotateRight?: () => void;
 }
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -37,20 +37,26 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         >
           Reset View
         </button>
-        <div className="flex gap-1">
-          <button
-            onClick={onRotateLeft}
-            className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
-          >
-            ↶
-          </button>
-          <button
-            onClick={onRotateRight}
-            className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
-          >
-            ↷
-          </button>
-        </div>
+        {(onRotateLeft || onRotateRight) && (
+          <div className="flex gap-1">
+            {onRotateLeft && (
+              <button
+                onClick={onRotateLeft}
+                className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
+              >
+                ↶
+              </button>
+            )}
+            {onRotateRight && (
+              <button
+                onClick={onRotateRight}
+                className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
+              >
+                ↷
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <div className="text-xs text-gray-400 mt-2">
         Mouse wheel: Zoom

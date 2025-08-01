@@ -2,7 +2,6 @@ import { Entity } from '../types/entity';
 import { EntityChange, HistoryQuery } from '../types/api';
 import { config } from '../config';
 import { useState, useEffect, useCallback } from 'react';
-import { mockEntityChanges } from '../data/mock-entity-changes';
 
 export const useEntityData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
@@ -53,13 +52,26 @@ export const useEntityData = () => {
       setLoading(true);
       setError(null);
 
-      // Use mock data for now
-      setChanges(mockEntityChanges);
-      const transformedEntities = transformChangesToEntities(mockEntityChanges);
+      const response = await fetch(
+        `${config.api.baseUrl}/api/test/data?limit=10000`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (!result.success || !result.data) {
+        throw new Error('Invalid response from API');
+      }
+
+      setChanges(result.data);
+
+      const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
     } catch (err) {
-      console.error('Error loading mock data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load mock data');
+      console.error('Error loading data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
       setLoading(false);
     }

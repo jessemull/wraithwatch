@@ -1,10 +1,11 @@
 import React, { Suspense, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { ControlPanel } from './ControlPanel';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { OrbitControls, Stats } from '@react-three/drei';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { TimelineScene } from './TimelineScene';
-import { ControlPanel } from './ControlPanel';
 
 interface TimelineVisualizationProps {
   entities: Entity[];
@@ -19,8 +20,7 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
 
   const selectedEntityChanges = selectedEntity
     ? changes.filter(change => change.entity_id === selectedEntity.id)
@@ -45,20 +45,6 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   const handleReset = () => {
     if (controlsRef.current) {
       controlsRef.current.reset();
-    }
-  };
-
-  const handleRotateLeft = () => {
-    if (controlsRef.current) {
-      controlsRef.current.rotateY(0.5);
-      controlsRef.current.update();
-    }
-  };
-
-  const handleRotateRight = () => {
-    if (controlsRef.current) {
-      controlsRef.current.rotateY(-0.5);
-      controlsRef.current.update();
     }
   };
 
@@ -94,8 +80,6 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onReset={handleReset}
-        onRotateLeft={handleRotateLeft}
-        onRotateRight={handleRotateRight}
       />
     </div>
   );
