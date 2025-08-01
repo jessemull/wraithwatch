@@ -8,6 +8,7 @@ module.exports = {
     path: path.resolve(__dirname, 'bundle'),
     filename: 'server.js',
     clean: true,
+    libraryTarget: 'commonjs2',
   },
   optimization: {
     minimize: true,
@@ -16,6 +17,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.ts'],
+  },
+  externals: {
+    // Exclude node modules from bundling
+    ws: 'commonjs ws',
+    cors: 'commonjs cors',
   },
   module: {
     rules: [
