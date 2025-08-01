@@ -170,3 +170,27 @@ export const CONNECTION_LINE_CONFIG = {
     strengthMultiplier: 0.4,
   } as const,
 } as const;
+
+export const NETWORK_SCENE_CONFIG = {
+  entityLevels: {
+    threats: { y: 3, radius: 6 },
+    aiAgents: { y: 1.5, radius: 8 },
+    systems: { y: 0, radius: 5 },
+    networkNodes: { y: -1.5, radius: 7 },
+    users: { y: -3, radius: 10 },
+    default: { y: 0.5, radius: 4 },
+  } as const,
+  connectionRules: {
+    aiAgentToSystem: { strength: 0.8, type: 'agent' as const },
+    userToSystem: { strength: 0.6, type: 'network' as const },
+    threatToSystem: { strength: 0.9, type: 'type' as const },
+    networkNodeToSystem: { strength: 0.5, type: 'network' as const },
+    userToNetworkNode: { strength: 0.4, type: 'network' as const },
+  } as const,
+  fallbackConnections: [
+    { strength: 1.0, type: 'type' as const },
+    { strength: 0.8, type: 'network' as const },
+    { strength: 0.6, type: 'agent' as const },
+    { strength: 0.7, type: 'network' as const },
+  ] as const,
+} as const;

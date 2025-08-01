@@ -168,3 +168,22 @@ export interface ConnectionLineProps {
   strength?: number;
   type?: 'location' | 'agent' | 'network' | 'type';
 }
+
+export interface NetworkSceneProps {
+  entities: Entity[];
+  changes: EntityChange[];
+  selectedEntity?: Entity;
+  onEntitySelect?: (entity: Entity) => void;
+}
+
+export interface NetworkConnection {
+  from: Entity;
+  to: Entity;
+  strength: number;
+  type: 'location' | 'agent' | 'network' | 'type';
+}
+
+export interface NetworkLayout {
+  entityPositions: Map<string, [number, number, number]>;
+  connections: NetworkConnection[];
+}
