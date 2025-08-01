@@ -1,48 +1,37 @@
-import React from 'react';
 import * as THREE from 'three';
-
-interface ConnectionLineProps {
-  start: [number, number, number];
-  end: [number, number, number];
-  strength?: number;
-  type?: 'location' | 'agent' | 'network' | 'type';
-}
+import React, { useMemo } from 'react';
+import { CONNECTION_LINE_CONFIG } from '../../../constants/visualization';
+import { ConnectionLineProps } from '../../../types/visualization';
 
 export const ConnectionLine: React.FC<ConnectionLineProps> = ({
   start,
   end,
-  strength = 0.5,
-  type = 'type',
+  strength = CONNECTION_LINE_CONFIG.defaultStrength,
+  type = CONNECTION_LINE_CONFIG.defaultType,
 }) => {
-  // Color based on connection type
-  const getConnectionColor = () => {
-    switch (type) {
-      case 'agent':
-        return '#4ecdc4'; // AI agent connections
-      case 'location':
-        return '#6c5ce7'; // Location-based connections
-      case 'network':
-        return '#00b894'; // Network connections
-      case 'type':
-      default:
-        return '#ff7675'; // Type-based connections
-    }
-  };
+  const connectionColor = useMemo(() => {
+    return CONNECTION_LINE_CONFIG.colors[type] || CONNECTION_LINE_CONFIG.colors.type;
+  }, [type]);
 
-  // Create a line geometry that properly connects the two points
-  const points = [
-    new THREE.Vector3(start[0], start[1], start[2]),
-    new THREE.Vector3(end[0], end[1], end[2])
-  ];
+  const opacity = useMemo(() => {
+    return CONNECTION_LINE_CONFIG.opacityRange.min + (strength * CONNECTION_LINE_CONFIG.opacityRange.strengthMultiplier);
+  }, [strength]);
 
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-  const lineMaterial = new THREE.LineBasicMaterial({
-    color: getConnectionColor(),
-    transparent: true,
-    opacity: 0.6 + (strength * 0.4),
-  });
+  const lineObject = useMemo(() => {
+    const points = [
+      new THREE.Vector3(start[0], start[1], start[2]),
+      new THREE.Vector3(end[0], end[1], end[2])
+    ];
 
-  return (
-    <primitive object={new THREE.Line(lineGeometry, lineMaterial)} />
-  );
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: connectionColor,
+      transparent: true,
+      opacity,
+    });
+
+    return new THREE.Line(lineGeometry, lineMaterial);
+  }, [start, end, connectionColor, opacity]);
+
+  return <primitive object={lineObject} />;
 };

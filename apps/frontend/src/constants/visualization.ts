@@ -155,3 +155,18 @@ export const NETWORK_NODE_CONFIG = {
   labelMaxWidth: 2,
   labelOutlineWidth: 0.01,
 } as const;
+
+export const CONNECTION_LINE_CONFIG = {
+  colors: {
+    agent: '#4ecdc4',
+    location: '#6c5ce7',
+    network: '#00b894',
+    type: '#ff7675',
+  } as const,
+  defaultStrength: 0.5,
+  defaultType: 'type' as const,
+  opacityRange: {
+    min: 0.6,
+    strengthMultiplier: 0.4,
+  } as const,
+} as const;

@@ -161,3 +161,10 @@ export interface NetworkNodeProps {
   isSelected: boolean;
   onClick: () => void;
 }
+
+export interface ConnectionLineProps {
+  start: [number, number, number];
+  end: [number, number, number];
+  strength?: number;
+  type?: 'location' | 'agent' | 'network' | 'type';
+}
