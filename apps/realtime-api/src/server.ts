@@ -35,7 +35,7 @@ export async function createServer() {
 
   const dynamoDBService = new DynamoDBService();
   const websocketManager = new WebSocketManager();
-  const entityManager = new EntityManager(websocketManager);
+  const entityManager = new EntityManager(websocketManager, dynamoDBService);
 
   // Register WebSocket plugin...
 
@@ -52,6 +52,7 @@ export async function createServer() {
 
   // Start generating entity updates...
 
+  await entityManager.initializeFromDatabase();
   entityManager.startUpdateGeneration(2000);
 
   return fastify;
