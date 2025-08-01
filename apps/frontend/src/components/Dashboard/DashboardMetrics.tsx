@@ -78,8 +78,8 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               <LineChart 
                 data={metrics.entityChangesByDay}
                 title="Entity Changes"
-                backgroundColor="rgba(168, 85, 247, 0.2)"
-                borderColor="rgba(168, 85, 247, 1)"
+                backgroundColor="rgba(74, 222, 128, 0.2)"
+                borderColor="rgba(74, 222, 128, 1)"
               />
             </div>
           </ChartCard>

@@ -31,8 +31,8 @@ interface LineChartProps {
 export const LineChart: React.FC<LineChartProps> = ({
   data,
   title,
-  backgroundColor = 'rgba(168, 85, 247, 0.2)',
-  borderColor = 'rgba(168, 85, 247, 1)',
+  backgroundColor = 'rgba(74, 222, 128, 0.2)',
+  borderColor = 'rgba(74, 222, 128, 1)',
 }) => {
   const chartData = {
     labels: Object.keys(data),
@@ -43,11 +43,11 @@ export const LineChart: React.FC<LineChartProps> = ({
         backgroundColor,
         borderColor,
         borderWidth: 2,
-        pointBackgroundColor: borderColor,
-        pointBorderColor: borderColor,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        tension: 0.4,
+        pointBackgroundColor: 'rgba(74, 222, 128, 0.5)', // Transparent green fill
+        pointBorderColor: 'rgba(74, 222, 128, 1)', // Solid green border
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        tension: 0,
         fill: true,
       },
     ],
