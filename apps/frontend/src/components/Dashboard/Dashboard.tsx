@@ -86,10 +86,9 @@ export const Dashboard: React.FC = () => {
                     <h2 className="text-lg font-semibold text-white">
                       3D Entity Visualization
                     </h2>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Interactive 3D view of entity changes over time (
-                      {entities.length} entities, {changes.length} changes)
-                    </p>
+                                      <p className="text-sm text-gray-400 mt-1">
+                    {entities.length} Entities, {changes.length} Changes
+                  </p>
                   </div>
                   <div className="flex space-x-2">
                     <button
