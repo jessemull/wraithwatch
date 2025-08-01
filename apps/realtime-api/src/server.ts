@@ -1,16 +1,31 @@
 import * as routes from './routes';
 import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import { DynamoDBService, EntityManager, WebSocketManager } from './services';
-import { corsPlugin, websocketPlugin } from './plugins';
+import { websocketPlugin } from './plugins';
 
 export async function createServer() {
   const fastify = Fastify({
     logger: true,
   });
 
-  // Register CORS plugin...
-
-  await fastify.register(corsPlugin);
+  // Register CORS directly...
+  
+  await fastify.register(cors, {
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization', 
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'Cache-Control',
+      'X-File-Name'
+    ],
+    exposedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   // Initialize services...
 
