@@ -11,10 +11,9 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface PieChartProps {
   data: Record<string, number>;
-  title: string;
 }
 
-export const PieChart: React.FC<PieChartProps> = ({ data, title }) => {
+export const PieChart: React.FC<PieChartProps> = ({ data }) => {
   const colors = [
     'rgba(59, 130, 246, 0.8)',   // Blue
     'rgba(34, 197, 94, 0.8)',    // Green

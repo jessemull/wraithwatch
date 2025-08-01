@@ -11,10 +11,9 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface DoughnutChartProps {
   data: Record<string, number>;
-  title: string;
 }
 
-export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data, title }) => {
+export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data }) => {
   const colors = [
     'rgba(59, 130, 246, 0.5)',   // Blue
     'rgba(34, 197, 94, 0.5)',    // Green

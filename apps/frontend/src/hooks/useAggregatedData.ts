@@ -1,19 +1,7 @@
 import { useMemo } from 'react';
 import { EntityChange } from '../types/api';
 
-interface AggregatedData {
-  // KPI Metrics
-  activeThreats: number;
-  threatScore: string;
-  aiConfidence: number;
-  totalConnections: number;
-  
-  // Chart Data
-  threatSeverityDistribution: Record<string, number>;
-  aiAgentActivity: Record<string, number>;
-  protocolUsage: Record<string, number>;
-  entityChangesByDay: Record<string, number>;
-}
+
 
 export const useAggregatedData = (changes: EntityChange[]) => {
   return useMemo(() => {
@@ -28,7 +16,7 @@ export const useAggregatedData = (changes: EntityChange[]) => {
     });
 
     // Get the most recent change for each property of each entity
-    const currentEntityState = new Map<string, Record<string, any>>();
+    const currentEntityState = new Map<string, Record<string, string | number>>();
     
     entityMap.forEach((entityChanges, entityId) => {
       const propertyMap = new Map<string, EntityChange>();
@@ -44,14 +32,14 @@ export const useAggregatedData = (changes: EntityChange[]) => {
       });
       
       // Convert to object
-      const entityState: Record<string, any> = {};
+      const entityState: Record<string, string | number> = {};
       propertyMap.forEach((change, propertyName) => {
         entityState[propertyName] = change.value;
       });
       
       // Add entity_type to the state
       if (entityChanges.length > 0) {
-        entityState.entity_type = entityChanges[0].entity_type;
+        entityState.entity_type = entityChanges[0].entity_type as string;
       }
       
       currentEntityState.set(entityId, entityState);
@@ -59,14 +47,14 @@ export const useAggregatedData = (changes: EntityChange[]) => {
     
     // Calculate KPI metrics
     const threats = Array.from(currentEntityState.entries())
-      .filter(([_, state]) => state.entity_type === 'Threat');
+      .filter(([, state]) => state.entity_type === 'Threat');
     
     const activeThreats = threats.length;
     
     // Calculate average threat score
     const threatScores = Array.from(currentEntityState.values())
       .filter(state => state.threat_score !== undefined)
-      .map(state => parseFloat(state.threat_score));
+      .map(state => parseFloat(state.threat_score as string));
     
     const avgThreatScore = threatScores.length > 0 
       ? (threatScores.reduce((a, b) => a + b, 0) / threatScores.length).toFixed(2)
@@ -75,7 +63,7 @@ export const useAggregatedData = (changes: EntityChange[]) => {
     // Calculate AI confidence (using confidence_score)
     const aiConfidences = Array.from(currentEntityState.values())
       .filter(state => state.confidence_score !== undefined)
-      .map(state => parseFloat(state.confidence_score));
+      .map(state => parseFloat(state.confidence_score as string));
     
     const avgConfidence = aiConfidences.length > 0
       ? Math.round((aiConfidences.reduce((a, b) => a + b, 0) / aiConfidences.length) * 100)
@@ -85,8 +73,8 @@ export const useAggregatedData = (changes: EntityChange[]) => {
     const totalConnections = Array.from(currentEntityState.values())
       .filter(state => state.connection_count !== undefined || state.network_connections !== undefined)
       .reduce((total, state) => {
-        const connectionCount = state.connection_count ? parseFloat(state.connection_count) : 0;
-        const networkConnections = state.network_connections ? parseFloat(state.network_connections) : 0;
+        const connectionCount = state.connection_count ? parseFloat(state.connection_count as string) : 0;
+        const networkConnections = state.network_connections ? parseFloat(state.network_connections as string) : 0;
         return total + connectionCount + networkConnections;
       }, 0);
 

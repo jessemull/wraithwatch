@@ -196,7 +196,7 @@ export const Dashboard: React.FC = () => {
 
                             {/* Type-specific properties */}
                             {(() => {
-                              const renderProperty = (key: string, property: any) => {
+                              const renderProperty = (key: string, property: { currentValue: string | number }) => {
                                 const value = property.currentValue;
                                 const isNumber = typeof value === 'number';
                                 const isString = typeof value === 'string';

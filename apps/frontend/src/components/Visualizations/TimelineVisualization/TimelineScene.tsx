@@ -3,7 +3,7 @@ import { ChangeParticle } from './ChangeParticle';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { EntityNode } from './EntityNode';
-import { Text } from '@react-three/drei';
+
 import { TimeScale } from './TimeScale';
 
 interface TimelineSceneProps {

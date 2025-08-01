@@ -2,16 +2,15 @@ import React from 'react';
 import { EntityChange } from '../../types/api';
 import { KPICard } from './KPICard';
 import { ChartCard } from './ChartCard';
-import { BarChart, PieChart, LineChart, DoughnutChart, HorizontalBarChart } from './Charts';
+import { BarChart, LineChart, DoughnutChart, HorizontalBarChart } from './Charts';
 import { useAggregatedData } from '../../hooks/useAggregatedData';
 
 interface DashboardMetricsProps {
-  entities: any[];
+  entities: unknown[];
   changes: EntityChange[];
 }
 
 export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
-  entities,
   changes,
 }) => {
   const metrics = useAggregatedData(changes);
@@ -65,7 +64,6 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
             <div className="h-full">
               <DoughnutChart 
                 data={metrics.protocolUsage}
-                title="Network Status"
               />
             </div>
           </ChartCard>
