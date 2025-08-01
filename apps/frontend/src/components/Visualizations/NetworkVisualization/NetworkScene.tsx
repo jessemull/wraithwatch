@@ -29,14 +29,16 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  // Calculate network layout for all entities
+  // Calculate network layout for all entities...
+
   const networkLayout = useMemo((): NetworkLayout => {
     const entityPositions = new Map<string, [number, number, number]>();
     const connections: NetworkConnection[] = [];
 
     console.log('Building network layout for entities:', entities.map(e => ({ id: e.id, type: e.type })));
 
-    // Group entities by type for better layout
+    // Group entities by type for better layout...
+
     const aiAgents = entities.filter(e => e.type === 'AI_Agent');
     const systems = entities.filter(e => e.type === 'System');
     const users = entities.filter(e => e.type === 'User');
@@ -51,27 +53,30 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       networkNodes: networkNodes.length
     });
 
-    // Position AI agents at the top (monitoring level)
-    aiAgents.forEach((agent, i) => {
-      const angle = (i / Math.max(aiAgents.length, 1)) * Math.PI * 2;
+    // Position threats at the top (external attackers)...
+
+    threats.forEach((threat, i) => {
+      const angle = (i / Math.max(threats.length, 1)) * Math.PI * 2;
       const radius = 6;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 3; // AI agents at top level
-      entityPositions.set(agent.id, [x, y, z]);
+      const y = 3; // Threats at top level
+      entityPositions.set(threat.id, [x, y, z]);
     });
 
-    // Position users in upper middle
-    users.forEach((user, i) => {
-      const angle = (i / Math.max(users.length, 1)) * Math.PI * 2;
+    // Position AI agents monitoring the infrastructure...
+
+    aiAgents.forEach((agent, i) => {
+      const angle = (i / Math.max(aiAgents.length, 1)) * Math.PI * 2;
       const radius = 8;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 1.5; // Users at upper middle level
-      entityPositions.set(user.id, [x, y, z]);
+      const y = 1.5; // AI agents monitoring level
+      entityPositions.set(agent.id, [x, y, z]);
     });
 
-    // Position systems in the center (infrastructure level)
+    // Position systems in the center (infrastructure level)...
+
     systems.forEach((system, i) => {
       const angle = (i / Math.max(systems.length, 1)) * Math.PI * 2;
       const radius = 5;
@@ -81,7 +86,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       entityPositions.set(system.id, [x, y, z]);
     });
 
-    // Position network nodes in lower middle
+    // Position network nodes supporting infrastructure...
+
     networkNodes.forEach((node, i) => {
       const angle = (i / Math.max(networkNodes.length, 1)) * Math.PI * 2;
       const radius = 7;
@@ -91,17 +97,19 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       entityPositions.set(node.id, [x, y, z]);
     });
 
-    // Position threats at the bottom (threat level)
-    threats.forEach((threat, i) => {
-      const angle = (i / Math.max(threats.length, 1)) * Math.PI * 2;
-      const radius = 6;
+    // Position users at the bottom (end users)...
+
+    users.forEach((user, i) => {
+      const angle = (i / Math.max(users.length, 1)) * Math.PI * 2;
+      const radius = 10;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = -3; // Threats at bottom level
-      entityPositions.set(threat.id, [x, y, z]);
+      const y = -3; // Users at bottom level
+      entityPositions.set(user.id, [x, y, z]);
     });
 
-    // Position any remaining entities that weren't categorized
+    // Position any remaining entities that weren't categorized...
+
     const positionedEntities = new Set(entityPositions.keys());
     const unpositionedEntities = entities.filter(e => !positionedEntities.has(e.id));
     
@@ -116,9 +124,11 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       entityPositions.set(entity.id, [x, y, z]);
     });
 
-    // Create connections based on entity types and relationships
+    // Create connections based on entity types and relationships...
+
     entities.forEach(entity => {
-      // Connect AI agents to systems (monitoring relationship)
+      // Connect AI agents to systems (monitoring relationship)...
+
       if (entity.type === 'AI_Agent') {
         systems.forEach(system => {
           connections.push({
@@ -130,7 +140,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         });
       }
 
-      // Connect users to systems (access relationship)
+      // Connect users to systems (access relationship)...
+
       if (entity.type === 'User') {
         systems.forEach(system => {
           connections.push({
@@ -142,7 +153,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         });
       }
 
-      // Connect threats to systems (target relationship)
+      // Connect threats to systems (target relationship)...
+
       if (entity.type === 'Threat') {
         systems.forEach(system => {
           connections.push({
@@ -154,19 +166,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         });
       }
 
-      // Connect AI agents to users (monitoring relationship)
-      if (entity.type === 'AI_Agent') {
-        users.forEach(user => {
-          connections.push({
-            from: entity,
-            to: user,
-            strength: 0.7,
-            type: 'agent'
-          });
-        });
-      }
+      // Connect network nodes to systems (infrastructure relationship)...
 
-      // Connect network nodes to systems (infrastructure relationship)
       if (entity.type === 'Network_Node') {
         systems.forEach(system => {
           connections.push({
@@ -178,7 +179,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         });
       }
 
-      // Connect users to network nodes (access relationship)
+      // Connect users to network nodes (access relationship)...
+
       if (entity.type === 'User') {
         networkNodes.forEach(node => {
           connections.push({
@@ -191,9 +193,11 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       }
     });
 
-    // Add fallback connections to ensure we see multiple connections
+    // Add fallback connections to ensure we see multiple connections...
+
     if (entities.length >= 2) {
-      // Connect first entity to second entity
+      // Connect first entity to second entity...
+
       connections.push({
         from: entities[0],
         to: entities[1],
@@ -203,7 +207,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     }
 
     if (entities.length >= 3) {
-      // Connect second entity to third entity
+      // Connect second entity to third entity...
+
       connections.push({
         from: entities[1],
         to: entities[2],
@@ -213,7 +218,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     }
 
     if (entities.length >= 4) {
-      // Connect third entity to fourth entity
+      // Connect third entity to fourth entity...
+
       connections.push({
         from: entities[2],
         to: entities[3],
@@ -223,7 +229,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     }
 
     if (entities.length >= 5) {
-      // Connect fourth entity to fifth entity
+      // Connect fourth entity to fifth entity...
+
       connections.push({
         from: entities[3],
         to: entities[4],
@@ -231,10 +238,6 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         type: 'network'
       });
     }
-
-    console.log('Created connections:', connections.length);
-    console.log('Connection details:', connections.map(c => `${c.from.id} -> ${c.to.id} (${c.type})`));
-    console.log('Entity positions:', Array.from(entityPositions.entries()));
 
     return { entityPositions, connections };
   }, [entities]);
@@ -245,7 +248,6 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
 
   return (
     <group>
-      {/* Render entities */}
       {entities.map((entity) => {
         const position = networkLayout.entityPositions.get(entity.id);
         if (!position) {
@@ -264,7 +266,6 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         );
       })}
 
-      {/* Render connections */}
       {networkLayout.connections.map((connection, index) => {
         const fromPos = networkLayout.entityPositions.get(connection.from.id);
         const toPos = networkLayout.entityPositions.get(connection.to.id);

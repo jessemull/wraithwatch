@@ -63,7 +63,6 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
 
   return (
     <group position={position}>
-      {/* Halo effect for threats */}
       {isThreat && (
         <mesh>
           <sphereGeometry args={[nodeStyle.size + 0.1, 32, 32]} />
@@ -76,8 +75,6 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           />
         </mesh>
       )}
-      
-      {/* Main spherical node */}
       <mesh onClick={onClick}>
         <sphereGeometry args={[nodeStyle.size, 32, 32]} />
         <meshStandardMaterial
@@ -88,8 +85,6 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           roughness={0.1}
         />
       </mesh>
-      
-      {/* Additional highlight for threats */}
       {isThreat && (
         <mesh>
           <sphereGeometry args={[nodeStyle.size + 0.05, 32, 32]} />
@@ -102,8 +97,6 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           />
         </mesh>
       )}
-      
-      {/* Entity label */}
       <Text
         position={[0, nodeStyle.size + 0.3, 0]}
         fontSize={0.15}
