@@ -1,5 +1,6 @@
 import React from 'react';
 import { EntityChange } from '../../../types/api';
+import { PARTICLE_STYLES } from '../../../constants/visualization';
 
 interface ChangeParticleProps {
   change: EntityChange;
@@ -7,13 +8,14 @@ interface ChangeParticleProps {
 }
 
 export const ChangeParticle: React.FC<ChangeParticleProps> = ({ position }) => {
+  const particleStyle = PARTICLE_STYLES.change;
   return (
     <mesh position={position}>
-      <sphereGeometry args={[0.08, 8, 8]} />
+      <sphereGeometry args={[particleStyle.size, 8, 8]} />
       <meshStandardMaterial
-        color="#ffd93d"
-        emissive="#ffd93d"
-        emissiveIntensity={0.6}
+        color={particleStyle.color}
+        emissive={particleStyle.emissive}
+        emissiveIntensity={particleStyle.emissiveIntensity}
       />
     </mesh>
   );

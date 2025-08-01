@@ -1,0 +1,132 @@
+export const ENTITY_STYLES = {
+  Threat: {
+    base: { color: '#ff6b6b', textColor: '#ffffff', pulse: true },
+    selected: { color: '#ff4444', emissiveIntensity: 1.0, size: 0.5 },
+    default: { emissiveIntensity: 0.8, size: 0.4 },
+  },
+  AI_Agent: {
+    base: { color: '#4ecdc4', textColor: '#ffffff', pulse: false },
+    selected: { emissiveIntensity: 0.8, size: 0.4 },
+    default: { emissiveIntensity: 0.4, size: 0.3 },
+  },
+  System: {
+    base: { color: '#45b7d1', textColor: '#ffffff', pulse: false },
+    selected: { emissiveIntensity: 0.8, size: 0.4 },
+    default: { emissiveIntensity: 0.4, size: 0.3 },
+  },
+  Network_Node: {
+    base: { color: '#96ceb4', textColor: '#ffffff', pulse: false },
+    selected: { emissiveIntensity: 0.8, size: 0.4 },
+    default: { emissiveIntensity: 0.4, size: 0.3 },
+  },
+  User: {
+    base: { color: '#feca57', textColor: '#000000', pulse: false },
+    selected: { emissiveIntensity: 0.8, size: 0.4 },
+    default: { emissiveIntensity: 0.4, size: 0.3 },
+  },
+} as const;
+
+export const DEFAULT_ENTITY_STYLE = {
+  base: { color: '#4ecdc4', textColor: '#ffffff', pulse: false },
+  selected: { emissiveIntensity: 0.8, size: 0.4 },
+  default: { emissiveIntensity: 0.4, size: 0.3 },
+} as const;
+
+export const PARTICLE_STYLES = {
+  increase: {
+    color: '#4ecdc4',
+    emissive: '#4ecdc4',
+    emissiveIntensity: 0.8,
+    size: 0.1,
+  },
+  decrease: {
+    color: '#ff6b6b',
+    emissive: '#ff6b6b',
+    emissiveIntensity: 0.8,
+    size: 0.1,
+  },
+  change: {
+    color: '#ffd93d',
+    emissive: '#ffd93d',
+    emissiveIntensity: 0.6,
+    size: 0.08,
+  },
+} as const;
+
+export const TIMELINE_CONFIG = {
+  entityDistribution: {
+    heightSpread: 16,
+    baseRadius: 2,
+    radiusIncrement: 1.5,
+    maxRadiusMultiplier: 3,
+  },
+  particleDistribution: {
+    baseRadius: 1,
+    radiusIncrement: 0.8,
+    maxRadiusMultiplier: 4,
+    verticalSpread: 8,
+  },
+  markers: {
+    count: 20,
+    spacing: 1,
+    offset: 10,
+    geometry: { radius: 0.1, segments: 8 },
+    material: { color: '#ffd93d', emissive: '#ffd93d', emissiveIntensity: 0.5 },
+  },
+  axis: {
+    geometry: { radius: 0.05, height: 20, segments: 8 },
+    material: { color: '#4a90e2', emissive: '#4a90e2', emissiveIntensity: 0.3 },
+  },
+  text: {
+    fontSize: 0.3,
+    outlineWidth: 0.02,
+    outlineColor: 'black',
+    infoText: {
+      fontSize: 1.0,
+      color: '#00ff00',
+      outlineWidth: 0.1,
+    },
+  },
+  pulse: {
+    scaleMultiplier: 1.5,
+    opacity: 0.3,
+    emissiveIntensity: 0.2,
+  },
+} as const;
+
+export const CAMERA_CONFIG = {
+  position: [0, 0, 35] as [number, number, number],
+  fov: 35,
+} as const;
+
+export const LIGHTING_CONFIG = {
+  ambient: { intensity: 0.6 },
+  pointLights: [
+    { position: [10, 10, 10] as [number, number, number], intensity: 1 },
+    { position: [-10, -10, -10] as [number, number, number], intensity: 0.5 },
+  ],
+} as const;
+
+export const CONTROLS_CONFIG = {
+  enablePan: true,
+  enableZoom: true,
+  enableRotate: true,
+  maxDistance: 60,
+  minDistance: 15,
+  zoomFactor: 1.2,
+} as const;
+
+export const CANVAS_STYLE = {
+  background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)',
+} as const;
+
+export const CONTROL_PANEL_CONFIG = {
+  position: 'absolute top-4 right-4',
+  styling: 'bg-black/80 backdrop-blur-sm rounded-lg p-3 text-white',
+  buttonClasses: {
+    zoom: 'bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs',
+    reset: 'bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-xs',
+    rotate: 'bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs',
+  },
+  helpText: ['Mouse wheel: Zoom', 'Left drag: Rotate', 'Right drag: Pan'],
+} as const;

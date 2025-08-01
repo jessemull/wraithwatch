@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { ChangeParticle } from './ChangeParticle';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { EntityNode } from './EntityNode';
 import { Text } from '@react-three/drei';
+import { TimeScale } from './TimeScale';
 
 interface TimelineSceneProps {
   entities: Entity[];
   changes: EntityChange[];
+  allChanges: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
@@ -15,21 +17,74 @@ interface TimelineSceneProps {
 export const TimelineScene: React.FC<TimelineSceneProps> = ({
   entities,
   changes,
+  allChanges,
   selectedEntity,
   onEntitySelect,
 }) => {
+  // Memoize timeline bounds and entity positions...
+
+  const { entityPositions } = useMemo(() => {
+    const sortedChanges = [...allChanges].sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+
+    const startTime = new Date(sortedChanges[0].timestamp).getTime();
+
+    const endTime = new Date(
+      sortedChanges[sortedChanges.length - 1].timestamp
+    ).getTime();
+
+    // Calculate all entity positions...
+
+    const positions = entities.map((entity, index) => {
+      // This ensures entities are spread across the entire timeline height...
+
+      const entityY = (index / (entities.length - 1) - 0.5) * 16; // Spread across -8 to +8
+
+      // Position entities randomly around the timeline instead of in a perfect circle...
+
+      const angle = Math.random() * Math.PI * 2; // Random angle
+      const radius = 2 + Math.random() * 4; // Random radius between 2-6
+
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+
+      return [x, entityY, z] as [number, number, number];
+    });
+
+    return {
+      timelineBounds: { startTime, endTime },
+      entityPositions: positions,
+    };
+  }, [allChanges, entities]);
+
+  const handleEntityClick = useCallback(
+    (entity: Entity) => {
+      onEntitySelect?.(entity);
+    },
+    [onEntitySelect]
+  );
+
+  const timelineText = useMemo(() => {
+    if (selectedEntity) {
+      return `${selectedEntity.name}: ${changes.length} changes`;
+    }
+    return `Click an entity to view its changes (${entities.length} entities)`;
+  }, [selectedEntity, changes.length, entities.length]);
+
   return (
     <group>
       <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.05, 0.05, 10, 8]} />
+        <cylinderGeometry args={[0.05, 0.05, 20, 8]} />
         <meshStandardMaterial
           color="#4a90e2"
           emissive="#4a90e2"
           emissiveIntensity={0.3}
         />
       </mesh>
-      {Array.from({ length: 10 }, (_, i) => (
-        <mesh key={i} position={[0, (i - 5) * 1, 0]}>
+      {Array.from({ length: 20 }, (_, i) => (
+        <mesh key={i} position={[0, (i - 10) * 1, 0]}>
           <sphereGeometry args={[0.1, 8, 8]} />
           <meshStandardMaterial
             color="#ffd93d"
@@ -38,47 +93,54 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           />
         </mesh>
       ))}
-      {entities.map((entity, index) => {
-        const angle = (index / entities.length) * Math.PI * 2;
-        const radius = 4;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const y = (Math.random() - 0.5) * 2;
+      {entities.map((entity, index) => (
+        <EntityNode
+          key={entity.id}
+          entity={entity}
+          position={entityPositions[index]}
+          isSelected={selectedEntity?.id === entity.id}
+          onClick={() => handleEntityClick(entity)}
+        />
+      ))}
+      {selectedEntity &&
+        changes.map((change, index) => {
+          // Find the selected entity's position...
 
-        return (
-          <EntityNode
-            key={entity.id}
-            entity={entity}
-            position={[x, y, z]}
-            isSelected={selectedEntity?.id === entity.id}
-            onClick={() => onEntitySelect?.(entity)}
-          />
-        );
-      })}
-      {changes.slice(0, 50).map((change, index) => {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 2 + Math.random() * 3;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const y = (Math.random() - 0.5) * 4;
+          const selectedEntityIndex = entities.findIndex(
+            e => e.id === selectedEntity.id
+          );
 
-        return (
-          <ChangeParticle
-            key={`${change.entity_id}-${change.timestamp}-${index}`}
-            change={change}
-            position={[x, y, z]}
-          />
-        );
-      })}
+          const entityPosition = entityPositions[selectedEntityIndex];
+
+          // Position change particles centered around the entity's position...
+
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
+
+          const x = entityPosition[0] + Math.cos(angle) * radius;
+          const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
+          const z = entityPosition[2] + Math.sin(angle) * radius;
+
+          return (
+            <ChangeParticle
+              key={`${change.entity_id}-${change.timestamp}-${index}`}
+              change={change}
+              position={[x, y, z]}
+            />
+          );
+        })}
       <Text
-        position={[0, 6, 0]}
-        fontSize={0.5}
-        color="white"
+        position={[0, 10, 0]}
+        fontSize={1.0}
+        color="#00ff00"
         anchorX="center"
         anchorY="middle"
+        outlineWidth={0.1}
+        outlineColor="black"
       >
-        {`Entities: ${entities.length} | Changes: ${changes.length}`}
+        {timelineText}
       </Text>
+      {selectedEntity && <TimeScale changes={changes} position={[0, 0, 0]} />}
     </group>
   );
 };

@@ -53,22 +53,25 @@ export const useEntityData = () => {
       setError(null);
 
       const response = await fetch(
-        `${config.api.baseUrl}/api/history/recent?limit=100`
+        `${config.api.baseUrl}/api/test/data?limit=10000`
       );
 
-      if (!response.ok) throw new Error('Failed to fetch data');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
       const result = await response.json();
-      const changes = result.data;
+      if (!result.success || !result.data) {
+        throw new Error('Invalid response from API');
+      }
 
-      setChanges(changes);
+      setChanges(result.data);
 
-      const transformedEntities = transformChangesToEntities(changes);
-
+      const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
     } catch (err) {
-      console.error('Error fetching data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      console.error('Error loading data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
       setLoading(false);
     }

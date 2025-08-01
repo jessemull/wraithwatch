@@ -1,6 +1,10 @@
 export interface EntityChange {
   PK: string;
   SK: string;
+  GSI1PK: string;
+  GSI1SK: string;
+  GSI2PK: string;
+  GSI2SK: string;
   entity_id: string;
   entity_type: string;
   property_name: string;
@@ -18,4 +22,29 @@ export interface HistoricalDataQuery {
   startTime?: string;
   endTime?: string;
   limit?: number;
+}
+
+export interface QueryOptions {
+  propertyName?: string;
+  startTime?: string;
+  endTime?: string;
+  limit?: number;
+}
+
+export interface RecentChangesOptions {
+  entityType?: string;
+  limit?: number;
+  hours?: number;
+}
+
+export interface EntitySummary {
+  entityId: string;
+  entityType: string;
+  properties: Record<string, PropertySummary>;
+}
+
+export interface PropertySummary {
+  currentValue: string | number;
+  changeCount: number;
+  lastChange: string;
 }

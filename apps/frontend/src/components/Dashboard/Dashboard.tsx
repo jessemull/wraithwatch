@@ -132,7 +132,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="h-96 bg-black rounded-lg overflow-hidden">
+          <div className="h-[600px] bg-black rounded-lg overflow-hidden">
             {renderVisualization()}
           </div>
         </div>

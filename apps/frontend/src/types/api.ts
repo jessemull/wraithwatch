@@ -21,6 +21,10 @@ export interface RecentChangesQuery {
 export interface EntityChange {
   PK: string;
   SK: string;
+  GSI1PK: string;
+  GSI1SK: string;
+  GSI2PK: string;
+  GSI2SK: string;
   entity_id: string;
   entity_type: string;
   property_name: string;
