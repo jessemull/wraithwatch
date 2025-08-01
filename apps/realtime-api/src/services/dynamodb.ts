@@ -63,7 +63,6 @@ export class DynamoDBService {
     // Add property filter if specified...
 
     if (propertyName) {
-
       // For property-specific queries with time range...
 
       if (startTime) {
@@ -148,7 +147,7 @@ export class DynamoDBService {
       throw error;
     }
   }
-  
+
   // Get recent changes across all entities...
 
   async getRecentChanges(options?: {

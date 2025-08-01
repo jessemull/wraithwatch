@@ -1,13 +1,35 @@
 'use client';
 
-import { config } from '../../config';
-import { useWebSocket } from '../../hooks/useWebSocket';
 import { VisualizationHub, ConnectionStatus, EntitiesList } from '../index';
+import { config } from '../../config';
+import { useEntityData } from '../../hooks/useEntityData';
+import { useWebSocket } from '../../hooks/useWebSocket';
 
 export const Dashboard: React.FC = () => {
-  const { entities, isConnected, lastUpdate } = useWebSocket(
-    config.websocket.url
-  );
+  const { entities: apiEntities, loading, error } = useEntityData();
+  const {
+    entities: wsEntities,
+    isConnected,
+    lastUpdate,
+  } = useWebSocket(config.websocket.url);
+
+  const entities = wsEntities.length > 0 ? wsEntities : apiEntities;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-white text-xl">Loading entity data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-400 text-xl">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative">
