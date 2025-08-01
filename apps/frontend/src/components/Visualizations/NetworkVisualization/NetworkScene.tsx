@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { ConnectionLine } from './ConnectionLine';
+import { ConnectionParticle } from './ConnectionParticle';
 import { NetworkNode } from './NetworkNode';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
@@ -170,13 +171,23 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         }
 
         return (
-          <ConnectionLine
+          <React.Fragment
             key={`${connection.from.id}-${connection.to.id}-${index}`}
-            start={fromPos}
-            end={toPos}
-            strength={connection.strength}
-            type={connection.type}
-          />
+          >
+            <ConnectionLine
+              start={fromPos}
+              end={toPos}
+              strength={connection.strength}
+              type={connection.type}
+            />
+            <ConnectionParticle
+              start={fromPos}
+              end={toPos}
+              type={connection.type}
+              speed={0.3 + Math.random() * 0.4} // Random speed variation per connection
+              particleCount={2 + Math.floor(Math.random() * 3)} // Random particle count (2-4)
+            />
+          </React.Fragment>
         );
       })}
     </group>

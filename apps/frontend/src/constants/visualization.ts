@@ -194,3 +194,18 @@ export const NETWORK_SCENE_CONFIG = {
     { strength: 0.7, type: 'network' as const },
   ] as const,
 } as const;
+
+export const CONNECTION_PARTICLE_CONFIG = {
+  defaultSpeed: 0.5,
+  defaultParticleCount: 3,
+  defaultParticleSize: 0.05,
+  speedVariation: { min: 0.8, max: 1.2 },
+  delayRange: { min: 0, max: 2 },
+  resetDelayRange: { min: 1, max: 4 },
+  particleGeometry: { radius: 0.05, segments: 8 },
+  particleMaterial: {
+    emissiveIntensity: 0.8,
+    opacity: 0.7,
+    transparent: true,
+  },
+} as const;
