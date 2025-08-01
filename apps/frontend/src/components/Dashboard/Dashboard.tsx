@@ -20,14 +20,6 @@ export const Dashboard: React.FC = () => {
   const [visualizationType, setVisualizationType] =
     useState<VisualizationType>('timeline');
 
-  // Debug logging
-  console.log('Dashboard render:', {
-    entities: entities.length,
-    changes: changes.length,
-    loading,
-    error,
-  });
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

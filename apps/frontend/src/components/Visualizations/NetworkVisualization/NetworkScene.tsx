@@ -1,9 +1,9 @@
 import React from 'react';
+import { ChangeParticle } from './ChangeParticle';
+import { ConnectionLine } from './ConnectionLine';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { NetworkNode } from './NetworkNode';
-import { ConnectionLine } from './ConnectionLine';
-import { ChangeParticle } from './ChangeParticle';
 
 interface NetworkSceneProps {
   entities: Entity[];
@@ -18,18 +18,12 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  console.log('NetworkScene render:', {
-    entities: entities.length,
-    changes: changes.length,
-  });
-
   return (
     <group>
-      {/* Network nodes - arrange in a force-directed-like pattern */}
       {entities.map((entity, index) => {
-        // Create a more interesting layout - nodes in a network pattern
         const angle = (index / entities.length) * Math.PI * 2;
         const radius = 3 + Math.random() * 2;
+
         const x = Math.cos(angle) * radius;
         const z = Math.sin(angle) * radius;
         const y = (Math.random() - 0.5) * 3;
@@ -44,8 +38,6 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
           />
         );
       })}
-
-      {/* Connection lines between nodes */}
       {entities.map((entity, index) => {
         if (index === entities.length - 1) return null; // Skip last entity
 
@@ -74,15 +66,12 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
           />
         );
       })}
-
-      {/* Change particles floating around */}
       {changes.slice(0, 30).map((change, index) => {
         const angle = Math.random() * Math.PI * 2;
         const radius = 2 + Math.random() * 4;
         const x = Math.cos(angle) * radius;
         const z = Math.sin(angle) * radius;
         const y = (Math.random() - 0.5) * 4;
-
         return (
           <ChangeParticle
             key={`${change.entity_id}-${change.timestamp}-${index}`}

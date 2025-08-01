@@ -1,9 +1,9 @@
 import React from 'react';
+import { DataFlowLine } from './DataFlowLine';
+import { DataParticle } from './DataParticle';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { MatrixNode } from './MatrixNode';
-import { DataFlowLine } from './DataFlowLine';
-import { DataParticle } from './DataParticle';
 
 interface MatrixSceneProps {
   entities: Entity[];
@@ -18,17 +18,10 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  console.log('MatrixScene render:', {
-    entities: entities.length,
-    changes: changes.length,
-  });
-
   return (
     <group>
-      {/* Grid lines for matrix effect */}
       {Array.from({ length: 10 }, (_, i) => (
         <group key={`grid-${i}`}>
-          {/* Horizontal lines */}
           <mesh position={[0, (i - 5) * 1, 0]}>
             <boxGeometry args={[10, 0.02, 0.02]} />
             <meshStandardMaterial
@@ -37,7 +30,6 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
               emissiveIntensity={0.3}
             />
           </mesh>
-          {/* Vertical lines */}
           <mesh position={[(i - 5) * 1, 0, 0]}>
             <boxGeometry args={[0.02, 10, 0.02]} />
             <meshStandardMaterial
@@ -48,10 +40,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           </mesh>
         </group>
       ))}
-
-      {/* Entity nodes arranged in a matrix pattern */}
       {entities.map((entity, index) => {
-        // Arrange entities in a grid pattern
         const gridSize = Math.ceil(Math.sqrt(entities.length));
         const row = Math.floor(index / gridSize);
         const col = index % gridSize;
@@ -70,8 +59,6 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           />
         );
       })}
-
-      {/* Data flow lines between entities */}
       {entities.map((entity, index) => {
         if (index === entities.length - 1) return null;
 
@@ -101,8 +88,6 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           />
         );
       })}
-
-      {/* Animated data particles */}
       {changes.slice(0, 30).map((change, index) => {
         const time = Date.now() * 0.001 + index * 0.1;
         const x = Math.sin(time) * 5;

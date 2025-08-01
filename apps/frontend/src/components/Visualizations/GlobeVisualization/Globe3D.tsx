@@ -2,8 +2,8 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
-import { OrbitControls, Stats } from '@react-three/drei';
 import { GlobeScene } from './GlobeScene';
+import { OrbitControls, Stats } from '@react-three/drei';
 
 interface Globe3DProps {
   entities: Entity[];

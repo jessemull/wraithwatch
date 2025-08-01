@@ -17,10 +17,6 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  console.log('GlobeScene render:', {
-    entities: entities.length,
-    changes: changes.length,
-  });
   return (
     <group>
       <mesh>

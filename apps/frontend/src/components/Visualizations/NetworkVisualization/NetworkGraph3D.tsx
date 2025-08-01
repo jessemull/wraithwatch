@@ -18,11 +18,6 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  console.log('NetworkGraph3D render:', {
-    entities: entities.length,
-    changes: changes.length,
-  });
-
   return (
     <div className="w-full h-full bg-black">
       <Canvas

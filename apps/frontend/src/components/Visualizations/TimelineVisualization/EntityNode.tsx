@@ -25,8 +25,6 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
           emissiveIntensity={isSelected ? 0.8 : 0.4}
         />
       </mesh>
-
-      {/* Entity label */}
       <Text
         position={[0, 0.5, 0]}
         fontSize={0.2}

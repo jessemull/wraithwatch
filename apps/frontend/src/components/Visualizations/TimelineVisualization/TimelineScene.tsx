@@ -1,9 +1,9 @@
 import React from 'react';
+import { ChangeParticle } from './ChangeParticle';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
-import { Text } from '@react-three/drei';
 import { EntityNode } from './EntityNode';
-import { ChangeParticle } from './ChangeParticle';
+import { Text } from '@react-three/drei';
 
 interface TimelineSceneProps {
   entities: Entity[];
@@ -18,14 +18,8 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
   selectedEntity,
   onEntitySelect,
 }) => {
-  console.log('TimelineScene render:', {
-    entities: entities.length,
-    changes: changes.length,
-  });
-
   return (
     <group>
-      {/* Central timeline axis */}
       <mesh position={[0, 0, 0]}>
         <cylinderGeometry args={[0.05, 0.05, 10, 8]} />
         <meshStandardMaterial
@@ -34,8 +28,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           emissiveIntensity={0.3}
         />
       </mesh>
-
-      {/* Timeline markers */}
       {Array.from({ length: 10 }, (_, i) => (
         <mesh key={i} position={[0, (i - 5) * 1, 0]}>
           <sphereGeometry args={[0.1, 8, 8]} />
@@ -46,8 +38,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           />
         </mesh>
       ))}
-
-      {/* Entity nodes - arrange in a circle */}
       {entities.map((entity, index) => {
         const angle = (index / entities.length) * Math.PI * 2;
         const radius = 4;
@@ -65,8 +55,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           />
         );
       })}
-
-      {/* Change particles - more visible */}
       {changes.slice(0, 50).map((change, index) => {
         const angle = Math.random() * Math.PI * 2;
         const radius = 2 + Math.random() * 3;
@@ -82,8 +70,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           />
         );
       })}
-
-      {/* Debug text */}
       <Text
         position={[0, 6, 0]}
         fontSize={0.5}

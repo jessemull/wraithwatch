@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
 import { Entity } from '../types/entity';
 import { EntityChange, HistoryQuery } from '../types/api';
 import { config } from '../config';
+import { useState, useEffect, useCallback } from 'react';
 
 export const useEntityData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
@@ -11,11 +11,6 @@ export const useEntityData = () => {
 
   const transformChangesToEntities = (changes: EntityChange[]): Entity[] => {
     const entityMap = new Map<string, Entity>();
-
-    // Debug: Log unique entity IDs
-    const uniqueEntityIds = [...new Set(changes.map(c => c.entity_id))];
-    console.log('Unique entity IDs:', uniqueEntityIds);
-    console.log('Total changes:', changes.length);
 
     changes.forEach(change => {
       if (!entityMap.has(change.entity_id)) {
@@ -60,19 +55,16 @@ export const useEntityData = () => {
       const response = await fetch(
         `${config.api.baseUrl}/api/history/recent?limit=100`
       );
+
       if (!response.ok) throw new Error('Failed to fetch data');
 
       const result = await response.json();
       const changes = result.data;
 
-      console.log('API Response:', result);
-      console.log('Changes received:', changes.length);
-      console.log('First change:', changes[0]);
-
       setChanges(changes);
+
       const transformedEntities = transformChangesToEntities(changes);
-      console.log('Transformed entities:', transformedEntities.length);
-      console.log('First entity:', transformedEntities[0]);
+
       setEntities(transformedEntities);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -87,6 +79,7 @@ export const useEntityData = () => {
     options: HistoryQuery = {}
   ) => {
     const params = new URLSearchParams();
+
     if (options.propertyName)
       params.append('propertyName', options.propertyName);
     if (options.startTime) params.append('startTime', options.startTime);
@@ -96,6 +89,7 @@ export const useEntityData = () => {
     const response = await fetch(
       `${config.api.baseUrl}/api/history/entity/${entityId}?${params}`
     );
+
     if (!response.ok) throw new Error('Failed to fetch entity history');
 
     const result = await response.json();
@@ -108,6 +102,7 @@ export const useEntityData = () => {
     options: HistoryQuery = {}
   ) => {
     const params = new URLSearchParams();
+
     if (options.startTime) params.append('startTime', options.startTime);
     if (options.endTime) params.append('endTime', options.endTime);
     if (options.limit) params.append('limit', options.limit.toString());
@@ -115,9 +110,11 @@ export const useEntityData = () => {
     const response = await fetch(
       `${config.api.baseUrl}/api/history/entity/${entityId}/property/${propertyName}?${params}`
     );
+
     if (!response.ok) throw new Error('Failed to fetch property history');
 
     const result = await response.json();
+
     return result.data;
   };
 
