@@ -6,9 +6,7 @@ import {
 import { subDays, format } from 'date-fns';
 import { createHash } from 'crypto';
 
-// ============================================================================
-// TYPES AND INTERFACES
-// ============================================================================
+// Types and interfaces...
 
 interface EntityChange {
   PK: string;
@@ -60,9 +58,7 @@ interface EntityConfig {
   characteristics: EntityCharacteristics;
 }
 
-// ============================================================================
-// CONFIGURATION DATA
-// ============================================================================
+// Configuration data...
 
 const ENTITY_CONFIGURATIONS: EntityConfig[] = [
   // Systems
@@ -202,9 +198,7 @@ const ENTITY_CONFIGURATIONS: EntityConfig[] = [
   },
 ];
 
-// ============================================================================
-// PROPERTY CONFIGURATIONS
-// ============================================================================
+// Property configurations...
 
 const BASE_PROPERTY_CONFIGS = {
   System: {
@@ -324,9 +318,7 @@ const BASE_PROPERTY_CONFIGS = {
   },
 };
 
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
+// Utility functions...
 
 function generateEntityHash(entityId: string): string {
   return createHash('md5').update(entityId).digest('hex').substring(0, 8);
@@ -352,9 +344,7 @@ function generateChangeType(
   return 'change';
 }
 
-// ============================================================================
-// PROPERTY VALUE GENERATION
-// ============================================================================
+// Property value generation...
 
 function generateValue(
   config: PropertyConfig,
@@ -418,9 +408,7 @@ function generateNumericValue(
   return Math.round(value * 100) / 100;
 }
 
-// ============================================================================
-// CONFIGURATION MANAGEMENT
-// ============================================================================
+// Configuration management...
 
 function getPropertyConfig(
   entityType: string,
@@ -618,9 +606,7 @@ function adjustUserConfig(
   }
 }
 
-// ============================================================================
-// DATA GENERATION
-// ============================================================================
+// Data generation...
 
 function generateRandomTimestamps(startDate: Date, endDate: Date): Date[] {
   const timeSpan = endDate.getTime() - startDate.getTime();
@@ -736,9 +722,7 @@ async function generateTimeSeriesData(): Promise<EntityChange[]> {
   return changes;
 }
 
-// ============================================================================
-// DATABASE OPERATIONS
-// ============================================================================
+// Database operations...
 
 class DynamoDBService {
   private docClient: DynamoDBDocumentClient;
@@ -785,9 +769,7 @@ class DynamoDBService {
   }
 }
 
-// ============================================================================
-// MAIN EXECUTION
-// ============================================================================
+// Main execution...
 
 async function main(): Promise<void> {
   console.log('Generating time-series data...');
