@@ -4,6 +4,7 @@ import {
   BatchWriteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { subDays, addMinutes, format } from 'date-fns';
+import { createHash } from 'crypto';
 
 const client = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(client);
@@ -11,6 +12,10 @@ const docClient = DynamoDBDocumentClient.from(client);
 interface EntityChange {
   PK: string;
   SK: string;
+  GSI1PK: string; // Entity Hash for diverse queries
+  GSI1SK: string; // Timestamp + Entity + Property
+  GSI2PK: string; // Time Bucket for time-based queries
+  GSI2SK: string; // Timestamp + Entity + Property
   entity_id: string;
   entity_type: string;
   property_name: string;
@@ -19,6 +24,17 @@ interface EntityChange {
   change_type: 'increase' | 'decrease' | 'change';
   timestamp: string;
   TTL: number;
+}
+
+// Helper function to generate hash for entity distribution
+function generateEntityHash(entityId: string): string {
+  return createHash('md5').update(entityId).digest('hex').substring(0, 8);
+}
+
+// Helper function to generate time bucket (YYYY-MM-DD-HH)
+function generateTimeBucket(timestamp: string): string {
+  const date = new Date(timestamp);
+  return format(date, 'yyyy-MM-dd-HH');
 }
 
 // Property configuration types...
@@ -178,9 +194,19 @@ async function generateTimeSeriesData(): Promise<EntityChange[]> {
           const ttl =
             Math.floor(currentTime.getTime() / 1000) + 30 * 24 * 60 * 60; // 30 days
 
+          // Generate GSI fields
+          const entityHash = generateEntityHash(entity.id);
+          const timeBucket = generateTimeBucket(timestamp);
+          const gsi1Sk = `${timestamp}#${entity.id}#${prop}`;
+          const gsi2Sk = `${timestamp}#${entity.id}#${prop}`;
+
           changes.push({
             PK: `ENTITY#${entity.id}`,
             SK: `${timestamp}#${prop}`,
+            GSI1PK: `ENTITY_HASH#${entityHash}`,
+            GSI1SK: gsi1Sk,
+            GSI2PK: `TIME_BUCKET#${timeBucket}`,
+            GSI2SK: gsi2Sk,
             entity_id: entity.id,
             entity_type: entity.type,
             property_name: prop,

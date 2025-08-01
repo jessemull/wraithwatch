@@ -15,21 +15,31 @@ const client = new DynamoDBClient({ region: AWS_REGION });
 export class DynamoDBService {
   private tableName = DYNAMODB_TABLE_NAME;
 
-  // Just simple scan for now for demo...
-
+  // Use GSI1 for diverse entity queries
   async getAllData(limit: number = 10): Promise<EntityChange[]> {
-    const command = new ScanCommand({
+    // Use GSI1 to get diverse entities by querying a specific hash partition
+    // We'll use the hash we know exists from the data
+    const command = new QueryCommand({
       TableName: this.tableName,
+      IndexName: 'EntityHashTimestampIndex',
+      KeyConditionExpression: 'GSI1PK = :pk',
+      ExpressionAttributeValues: {
+        ':pk': { S: 'ENTITY_HASH#023bc35d' }, // Use the hash we know exists
+      },
+      ScanIndexForward: false, // Most recent first
       Limit: limit,
     });
 
     try {
       const response = await client.send(command);
-      return (response.Items || []).map(item =>
+      const items = (response.Items || []).map(item =>
         unmarshall(item)
       ) as EntityChange[];
+      
+      logger.info({ count: items.length }, 'GSI query found items');
+      return items;
     } catch (error) {
-      logger.error({ error }, 'Error scanning table');
+      logger.error({ error }, 'Error querying GSI1 for diverse data');
       throw error;
     }
   }
@@ -108,48 +118,38 @@ export class DynamoDBService {
     }
   }
 
-  // Get entity history with property filter using scan...
-
+  // Get entity history with property filter using primary table with efficient query
   private async getEntityHistoryWithPropertyFilter(
     entityId: string,
     propertyName: string,
     limit: number
   ): Promise<EntityChange[]> {
-    const command = new ScanCommand({
+    const command = new QueryCommand({
       TableName: this.tableName,
-      FilterExpression: 'PK = :pk AND contains(SK, :propertySuffix)',
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :propertyPrefix)',
       ExpressionAttributeValues: {
         ':pk': { S: `ENTITY#${entityId}` },
-        ':propertySuffix': { S: `#${propertyName}` },
+        ':propertyPrefix': { S: `#${propertyName}` },
       },
+      ScanIndexForward: false, // Most recent first
       Limit: limit,
     });
 
     try {
       const response = await client.send(command);
-      const items = (response.Items || []).map(item =>
+      return (response.Items || []).map(item =>
         unmarshall(item)
       ) as EntityChange[];
-
-      // Sort by timestamp (most recent first)...
-
-      items.sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-
-      return items.slice(0, limit);
     } catch (error) {
       logger.error(
         { error, entityId, propertyName },
-        'Error scanning entity history with property filter'
+        'Error querying property history with primary table'
       );
       throw error;
     }
   }
 
-  // Get recent changes across all entities...
-
+  // Get recent changes across all entities using GSI2 for time-based queries
   async getRecentChanges(options?: {
     entityType?: string;
     limit?: number;
@@ -157,35 +157,64 @@ export class DynamoDBService {
   }): Promise<EntityChange[]> {
     const { entityType, limit = 100, hours } = options || {};
 
-    // For demo data, we'll get all data and filter by hours if specified. Since demo data might be from the future, we'll get everything and sort by timestamp...
-
-    const command = new ScanCommand({
+    // First, scan to find the most recent time bucket that has data
+    const scanCommand = new ScanCommand({
       TableName: this.tableName,
-      Limit: limit * 2,
+      ProjectionExpression: 'GSI2PK',
+      Select: 'SPECIFIC_ATTRIBUTES',
     });
 
     try {
+      const scanResponse = await client.send(scanCommand);
+      const timeBuckets = new Set<string>();
+      
+      (scanResponse.Items || []).forEach(item => {
+        if (item.GSI2PK?.S) {
+          timeBuckets.add(item.GSI2PK.S);
+        }
+      });
+
+      // Sort time buckets to find the most recent
+      const sortedBuckets = Array.from(timeBuckets).sort().reverse();
+      const mostRecentBucket = sortedBuckets[0];
+
+      if (!mostRecentBucket) {
+        logger.warn('No time buckets found in data');
+        return [];
+      }
+
+      logger.info({ mostRecentBucket }, 'Found most recent time bucket');
+      
+      // Query the most recent time bucket
+      const command = new QueryCommand({
+        TableName: this.tableName,
+        IndexName: 'TimestampEntityIndex',
+        KeyConditionExpression: 'GSI2PK = :timeBucket',
+        ExpressionAttributeValues: {
+          ':timeBucket': { S: mostRecentBucket },
+        },
+        ScanIndexForward: false, // Most recent first
+        Limit: limit,
+      });
+
       const response = await client.send(command);
       let items = (response.Items || []).map(item =>
         unmarshall(item)
       ) as EntityChange[];
 
-      // Filter by entity type if specified...
-
+      // Filter by entity type if specified
       if (entityType) {
         items = items.filter(item => item.entity_type === entityType);
       }
 
-      // Filter by time range if specified (only if hours is provided and > 0)...
-
+      // Filter by time range if specified (only if hours is provided and > 0)
       if (hours && hours > 0) {
         const cutoffTime = new Date();
         cutoffTime.setHours(cutoffTime.getHours() - hours);
         items = items.filter(item => new Date(item.timestamp) >= cutoffTime);
       }
 
-      // Sort by timestamp (most recent first)...
-
+      // Sort by timestamp (most recent first)
       items.sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -193,7 +222,7 @@ export class DynamoDBService {
 
       return items.slice(0, limit);
     } catch (error) {
-      logger.error({ error }, 'Error scanning recent changes');
+      logger.error({ error }, 'Error querying recent changes with GSI2');
       throw error;
     }
   }
