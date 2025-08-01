@@ -1,4 +1,5 @@
 import { EntityChange } from './api';
+import { Entity } from './entity';
 
 export interface EntityStyle {
   color: string;
@@ -152,4 +153,11 @@ export interface ControlPanelConfig {
     rotate: string;
   };
   helpText: string[];
+}
+
+export interface NetworkNodeProps {
+  entity: Entity;
+  position: [number, number, number];
+  isSelected: boolean;
+  onClick: () => void;
 }

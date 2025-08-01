@@ -1,13 +1,7 @@
 import React, { useMemo } from 'react';
-import { Entity } from '../../../types/entity';
 import { Text } from '@react-three/drei';
-
-interface NetworkNodeProps {
-  entity: Entity;
-  isSelected: boolean;
-  onClick: () => void;
-  position: [number, number, number];
-}
+import { NETWORK_NODE_CONFIG } from '../../../constants/visualization';
+import { NetworkNodeProps } from '../../../types/visualization';
 
 export const NetworkNode: React.FC<NetworkNodeProps> = ({
   entity,
@@ -16,67 +10,52 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
   onClick,
 }) => {
   const nodeStyle = useMemo(() => {
-    const baseSize = isSelected ? 0.4 : 0.3;
-    const baseIntensity = isSelected ? 0.8 : 0.4;
-
-    switch (entity.type) {
-      case 'System':
-        return {
-          color: isSelected ? '#45b7d1' : '#45b7d1',
-          size: baseSize,
-          emissiveIntensity: baseIntensity,
-        };
-      case 'User':
-        return {
-          color: isSelected ? '#feca57' : '#feca57',
-          size: baseSize,
-          emissiveIntensity: baseIntensity,
-        };
-      case 'AI_Agent':
-        return {
-          color: isSelected ? '#4ecdc4' : '#4ecdc4',
-          size: baseSize,
-          emissiveIntensity: baseIntensity,
-        };
-      case 'Threat':
-        return {
-          color: isSelected ? '#ff6b6b' : '#ff6b6b',
-          size: baseSize,
-          emissiveIntensity: baseIntensity,
-        };
-      case 'Network_Node':
-        return {
-          color: isSelected ? '#96ceb4' : '#96ceb4',
-          size: baseSize,
-          emissiveIntensity: baseIntensity,
-        };
-      default:
-        return {
-          color: isSelected ? '#ff6b6b' : '#4ecdc4',
-          size: baseSize,
-          emissiveIntensity: baseIntensity,
-        };
-    }
+    const size = isSelected ? NETWORK_NODE_CONFIG.nodeSizes.selected : NETWORK_NODE_CONFIG.nodeSizes.default;
+    const intensity = isSelected ? NETWORK_NODE_CONFIG.intensities.selected : NETWORK_NODE_CONFIG.intensities.default;
+    const color = NETWORK_NODE_CONFIG.entityColors[entity.type as keyof typeof NETWORK_NODE_CONFIG.entityColors] || NETWORK_NODE_CONFIG.entityColors.Threat;
+    return {
+      color,
+      size,
+      emissiveIntensity: intensity,
+    };
   }, [entity.type, isSelected]);
 
   const isThreat = entity.type === 'Threat';
 
-  return (
-    <group position={position}>
-      {isThreat && (
+  const threatHalo = useMemo(() => {
+    if (!isThreat) return null;
+
+    return (
+      <>
         <mesh>
-          <sphereGeometry args={[nodeStyle.size + 0.1, 32, 32]} />
+          <sphereGeometry args={[nodeStyle.size + NETWORK_NODE_CONFIG.threatHaloOffset, NETWORK_NODE_CONFIG.sphereSegments, NETWORK_NODE_CONFIG.sphereSegments]} />
           <meshStandardMaterial
-            color="#ff6b6b"
+            color={NETWORK_NODE_CONFIG.entityColors.Threat}
             transparent
             opacity={0.3}
-            emissive="#ff6b6b"
+            emissive={NETWORK_NODE_CONFIG.entityColors.Threat}
             emissiveIntensity={0.2}
           />
         </mesh>
-      )}
+        <mesh>
+          <sphereGeometry args={[nodeStyle.size + NETWORK_NODE_CONFIG.threatHighlightOffset, NETWORK_NODE_CONFIG.sphereSegments, NETWORK_NODE_CONFIG.sphereSegments]} />
+          <meshStandardMaterial
+            color={NETWORK_NODE_CONFIG.entityColors.Threat}
+            transparent
+            opacity={0.2}
+            emissive={NETWORK_NODE_CONFIG.entityColors.Threat}
+            emissiveIntensity={0.1}
+          />
+        </mesh>
+      </>
+    );
+  }, [isThreat, nodeStyle.size]);
+
+  return (
+    <group position={position}>
+      {threatHalo}
       <mesh onClick={onClick}>
-        <sphereGeometry args={[nodeStyle.size, 32, 32]} />
+        <sphereGeometry args={[nodeStyle.size, NETWORK_NODE_CONFIG.sphereSegments, NETWORK_NODE_CONFIG.sphereSegments]} />
         <meshStandardMaterial
           color={nodeStyle.color}
           emissive={nodeStyle.color}
@@ -85,27 +64,15 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           roughness={0.1}
         />
       </mesh>
-      {isThreat && (
-        <mesh>
-          <sphereGeometry args={[nodeStyle.size + 0.05, 32, 32]} />
-          <meshStandardMaterial
-            color="#ff6b6b"
-            transparent
-            opacity={0.2}
-            emissive="#ff6b6b"
-            emissiveIntensity={0.1}
-          />
-        </mesh>
-      )}
       <Text
-        position={[0, nodeStyle.size + 0.3, 0]}
-        fontSize={0.15}
+        position={[0, nodeStyle.size + NETWORK_NODE_CONFIG.labelOffset, 0]}
+        fontSize={NETWORK_NODE_CONFIG.labelFontSize}
         color="white"
         anchorX="center"
         anchorY="bottom"
-        maxWidth={2}
+        maxWidth={NETWORK_NODE_CONFIG.labelMaxWidth}
         textAlign="center"
-        outlineWidth={0.01}
+        outlineWidth={NETWORK_NODE_CONFIG.labelOutlineWidth}
         outlineColor="#000000"
       >
         {entity.name}

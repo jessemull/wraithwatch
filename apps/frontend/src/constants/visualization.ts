@@ -130,3 +130,28 @@ export const CONTROL_PANEL_CONFIG = {
   },
   helpText: ['Mouse wheel: Zoom', 'Left drag: Rotate', 'Right drag: Pan'],
 } as const;
+
+export const NETWORK_NODE_CONFIG = {
+  entityColors: {
+    System: '#45b7d1',
+    User: '#feca57',
+    AI_Agent: '#4ecdc4',
+    Threat: '#ff6b6b',
+    Network_Node: '#96ceb4',
+  } as const,
+  nodeSizes: {
+    selected: 0.4,
+    default: 0.3,
+  } as const,
+  intensities: {
+    selected: 0.8,
+    default: 0.4,
+  } as const,
+  sphereSegments: 32,
+  threatHaloOffset: 0.1,
+  threatHighlightOffset: 0.05,
+  labelOffset: 0.3,
+  labelFontSize: 0.15,
+  labelMaxWidth: 2,
+  labelOutlineWidth: 0.01,
+} as const;
