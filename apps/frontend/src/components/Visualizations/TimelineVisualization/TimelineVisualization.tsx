@@ -39,14 +39,14 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
 
   const handleZoomIn = useCallback(() => {
     if (controlsRef.current) {
-      controlsRef.current.dollyIn(CONTROLS_CONFIG.zoomFactor);
+      controlsRef.current.dollyOut(CONTROLS_CONFIG.zoomFactor);
       controlsRef.current.update();
     }
   }, []);
 
   const handleZoomOut = useCallback(() => {
     if (controlsRef.current) {
-      controlsRef.current.dollyOut(CONTROLS_CONFIG.zoomFactor);
+      controlsRef.current.dollyIn(CONTROLS_CONFIG.zoomFactor);
       controlsRef.current.update();
     }
   }, []);
