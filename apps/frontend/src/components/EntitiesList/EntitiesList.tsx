@@ -68,8 +68,8 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
   };
 
   return (
-    <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl">
-      <div className="px-6 py-4 border-b border-gray-800">
+    <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl h-full flex flex-col">
+      <div className="px-6 py-4 border-b border-gray-800 flex-shrink-0">
         <h2 className="text-lg font-semibold text-white">Entities</h2>
         <p className="text-sm text-gray-400 mt-1">
           {entities.length} total entities
@@ -80,7 +80,7 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
           )}
         </p>
       </div>
-      <div className="divide-y divide-gray-800">
+      <div className="divide-y divide-gray-800 flex-1 overflow-y-auto">
         {aggregatedData.map(({ type, entities, totalChanges, lastSeen }) => (
           <div key={type}>
             {/* Accordion Header */}

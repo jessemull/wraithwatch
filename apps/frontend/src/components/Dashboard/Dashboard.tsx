@@ -140,12 +140,97 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Entities List */}
-          <div className="xl:col-span-1">
-            <EntitiesList
-              entities={entities}
-              lastUpdate={new Date().toISOString()}
-            />
+          {/* Right Column - Entity Details and Entities List */}
+          <div className="xl:col-span-1 flex flex-col h-[600px]">
+            {/* Entity Details Widget */}
+            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl mb-6">
+              <div className="px-6 py-4 border-b border-gray-800">
+                <h2 className="text-lg font-semibold text-white">
+                  Entity Details
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">
+                  Select an entity to view detailed information
+                </p>
+              </div>
+              <div className="p-6">
+                {selectedEntity ? (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-md font-medium text-white mb-2">
+                        {selectedEntity.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        Type: {selectedEntity.type}
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">
+                          Changes Today
+                        </p>
+                        <p className="text-lg font-semibold text-white">
+                          {selectedEntity.changesToday}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">
+                          Last Seen
+                        </p>
+                        <p className="text-sm text-gray-300">
+                          {new Date(selectedEntity.lastSeen).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedEntity.threatScore && (
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                          Threat Score
+                        </p>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-red-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${selectedEntity.threatScore * 100}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {(selectedEntity.threatScore * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    )}
+                    {selectedEntity.confidence && (
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                          AI Confidence
+                        </p>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${selectedEntity.confidence * 100}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {(selectedEntity.confidence * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400 text-sm">
+                      Click on an entity in the visualization to view details
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Entities List with remaining height */}
+            <div className="flex-1 overflow-hidden">
+              <EntitiesList
+                entities={entities}
+                lastUpdate={new Date().toISOString()}
+              />
+            </div>
           </div>
         </div>
 
