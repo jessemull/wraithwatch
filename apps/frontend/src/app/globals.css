@@ -30,8 +30,6 @@ body {
   min-height: 100vh;
 }
 
-
-
 /* Custom condensed font styling */
 .condensed-text {
   font-family: var(--font-roboto-condensed), sans-serif;

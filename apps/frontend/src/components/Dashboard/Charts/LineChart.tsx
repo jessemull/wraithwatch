@@ -86,4 +86,4 @@ export const LineChart: React.FC<LineChartProps> = ({
   };
 
   return <Line data={chartData} options={options} />;
-}; 
+};

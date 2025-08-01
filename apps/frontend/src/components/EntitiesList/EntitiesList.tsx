@@ -32,18 +32,24 @@ const getEntityTypeColor = (entityType: string): string => {
 };
 
 const aggregateEntitiesByType = (entities: Entity[]) => {
-  const aggregated = entities.reduce((acc, entity) => {
-    if (!acc[entity.type]) {
-      acc[entity.type] = [];
-    }
-    acc[entity.type].push(entity);
-    return acc;
-  }, {} as Record<string, Entity[]>);
+  const aggregated = entities.reduce(
+    (acc, entity) => {
+      if (!acc[entity.type]) {
+        acc[entity.type] = [];
+      }
+      acc[entity.type].push(entity);
+      return acc;
+    },
+    {} as Record<string, Entity[]>
+  );
 
   return Object.entries(aggregated).map(([type, entities]) => ({
     type,
     entities,
-    totalChanges: entities.reduce((sum, entity) => sum + entity.changesToday, 0),
+    totalChanges: entities.reduce(
+      (sum, entity) => sum + entity.changesToday,
+      0
+    ),
     lastSeen: entities.reduce((latest, entity) => {
       const entityDate = new Date(entity.lastSeen);
       const latestDate = latest ? new Date(latest) : new Date(0);
@@ -98,7 +104,8 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
                       {type.replace('_', ' ')}
                     </h3>
                     <p className="text-xs text-gray-400">
-                      {entities.length} {entities.length === 1 ? 'entity' : 'entities'}
+                      {entities.length}{' '}
+                      {entities.length === 1 ? 'entity' : 'entities'}
                     </p>
                   </div>
                 </div>
@@ -112,9 +119,11 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
                       Last seen: {new Date(lastSeen).toLocaleTimeString()}
                     </p>
                   </div>
-                  <div className={`transform transition-transform duration-200 ${
-                    expandedType === type ? 'rotate-180' : ''
-                  }`}>
+                  <div
+                    className={`transform transition-transform duration-200 ${
+                      expandedType === type ? 'rotate-180' : ''
+                    }`}
+                  >
                     <svg
                       className="w-4 h-4 text-gray-400"
                       fill="none"
@@ -151,7 +160,9 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
                             <h4 className="text-sm font-medium text-white">
                               {entity.name}
                             </h4>
-                            <p className="text-xs text-gray-400">{entity.type}</p>
+                            <p className="text-xs text-gray-400">
+                              {entity.type}
+                            </p>
                           </div>
                         </div>
 
@@ -160,7 +171,8 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
                             {entity.changesToday} changes today
                           </p>
                           <p className="text-xs text-gray-400">
-                            Last seen: {new Date(entity.lastSeen).toLocaleTimeString()}
+                            Last seen:{' '}
+                            {new Date(entity.lastSeen).toLocaleTimeString()}
                           </p>
                         </div>
                       </div>

@@ -92,4 +92,4 @@ export const BarChart: React.FC<BarChartProps> = ({
   };
 
   return <Bar data={chartData} options={options} />;
-}; 
+};

@@ -93,4 +93,4 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
   };
 
   return <Bar data={chartData} options={options} />;
-}; 
+};

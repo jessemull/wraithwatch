@@ -60,7 +60,7 @@ export const ConnectionParticle: React.FC<ConnectionParticleProps> = ({
 
   useEffect(() => {
     // Initialize particles with random delays and speeds...
-    
+
     particles.current = Array.from({ length: particleCount }, () =>
       createParticle(speed)
     );

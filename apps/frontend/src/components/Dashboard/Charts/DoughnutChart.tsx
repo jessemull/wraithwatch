@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -15,12 +10,12 @@ interface DoughnutChartProps {
 
 export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data }) => {
   const colors = [
-    'rgba(59, 130, 246, 0.5)',   // Blue
-    'rgba(34, 197, 94, 0.5)',    // Green
-    'rgba(251, 191, 36, 0.5)',   // Yellow
-    'rgba(168, 85, 247, 0.5)',   // Purple
-    'rgba(239, 68, 68, 0.5)',    // Red
-    'rgba(14, 165, 233, 0.5)',   // Sky Blue
+    'rgba(59, 130, 246, 0.5)', // Blue
+    'rgba(34, 197, 94, 0.5)', // Green
+    'rgba(251, 191, 36, 0.5)', // Yellow
+    'rgba(168, 85, 247, 0.5)', // Purple
+    'rgba(239, 68, 68, 0.5)', // Red
+    'rgba(14, 165, 233, 0.5)', // Sky Blue
   ];
 
   const chartData = {
@@ -30,12 +25,12 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data }) => {
         data: Object.values(data),
         backgroundColor: colors.slice(0, Object.keys(data).length),
         borderColor: [
-          'rgba(59, 130, 246, 1)',   // Blue border
-          'rgba(34, 197, 94, 1)',    // Green border
-          'rgba(251, 191, 36, 1)',   // Yellow border
-          'rgba(168, 85, 247, 1)',   // Purple border
-          'rgba(239, 68, 68, 1)',    // Red border
-          'rgba(14, 165, 233, 1)',   // Sky Blue border
+          'rgba(59, 130, 246, 1)', // Blue border
+          'rgba(34, 197, 94, 1)', // Green border
+          'rgba(251, 191, 36, 1)', // Yellow border
+          'rgba(168, 85, 247, 1)', // Purple border
+          'rgba(239, 68, 68, 1)', // Red border
+          'rgba(14, 165, 233, 1)', // Sky Blue border
         ].slice(0, Object.keys(data).length),
         borderWidth: 1,
         cutout: '40%',
@@ -82,4 +77,4 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data }) => {
   };
 
   return <Doughnut data={chartData} options={options} />;
-}; 
+};

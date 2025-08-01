@@ -66,8 +66,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
     [onEntitySelect]
   );
 
-
-
   return (
     <group>
       <mesh position={[0, 0, 0]}>
