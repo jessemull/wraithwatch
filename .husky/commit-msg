@@ -1,3 +1,5 @@
 #!/usr/bin/env sh
 
-npx --no -- commitlint --edit "$1" || true 
+# Temporarily disabled due to Node.js 22 compatibility issues
+# npx --no -- commitlint --edit "$1" 2>/dev/null || true
+true 
