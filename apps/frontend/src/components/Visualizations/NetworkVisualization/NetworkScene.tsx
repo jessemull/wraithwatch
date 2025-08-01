@@ -51,54 +51,54 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       networkNodes: networkNodes.length
     });
 
-    // Position AI agents at the top (monitoring level) - more spread out
+    // Position AI agents at the top (monitoring level)
     aiAgents.forEach((agent, i) => {
       const angle = (i / Math.max(aiAgents.length, 1)) * Math.PI * 2;
-      const radius = 8;
+      const radius = 6;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 4; // AI agents at highest level
+      const y = 3; // AI agents at top level
       entityPositions.set(agent.id, [x, y, z]);
     });
 
-    // Position systems in the center (infrastructure level) - more distributed
+    // Position users in upper middle
+    users.forEach((user, i) => {
+      const angle = (i / Math.max(users.length, 1)) * Math.PI * 2;
+      const radius = 8;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      const y = 1.5; // Users at upper middle level
+      entityPositions.set(user.id, [x, y, z]);
+    });
+
+    // Position systems in the center (infrastructure level)
     systems.forEach((system, i) => {
       const angle = (i / Math.max(systems.length, 1)) * Math.PI * 2;
-      const radius = 6;
+      const radius = 5;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       const y = 0; // Systems at center level
       entityPositions.set(system.id, [x, y, z]);
     });
 
-    // Position users around systems (user level) - wider distribution
-    users.forEach((user, i) => {
-      const angle = (i / Math.max(users.length, 1)) * Math.PI * 2;
-      const radius = 10;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      const y = 2; // Users at user level
-      entityPositions.set(user.id, [x, y, z]);
-    });
-
-    // Position threats at the bottom (threat level) - more spread out
-    threats.forEach((threat, i) => {
-      const angle = (i / Math.max(threats.length, 1)) * Math.PI * 2;
+    // Position network nodes in lower middle
+    networkNodes.forEach((node, i) => {
+      const angle = (i / Math.max(networkNodes.length, 1)) * Math.PI * 2;
       const radius = 7;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = -3; // Threats at lowest level
-      entityPositions.set(threat.id, [x, y, z]);
+      const y = -1.5; // Network nodes at lower middle level
+      entityPositions.set(node.id, [x, y, z]);
     });
 
-    // Position network nodes around systems (infrastructure level) - distributed
-    networkNodes.forEach((node, i) => {
-      const angle = (i / Math.max(networkNodes.length, 1)) * Math.PI * 2;
-      const radius = 9;
+    // Position threats at the bottom (threat level)
+    threats.forEach((threat, i) => {
+      const angle = (i / Math.max(threats.length, 1)) * Math.PI * 2;
+      const radius = 6;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = -1; // Network nodes at lower center level
-      entityPositions.set(node.id, [x, y, z]);
+      const y = -3; // Threats at bottom level
+      entityPositions.set(threat.id, [x, y, z]);
     });
 
     // Position any remaining entities that weren't categorized
@@ -109,10 +109,10 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     
     unpositionedEntities.forEach((entity, i) => {
       const angle = (i / unpositionedEntities.length) * Math.PI * 2;
-      const radius = 5;
+      const radius = 4;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      const y = 1; // Default level
+      const y = 0.5; // Default to middle level
       entityPositions.set(entity.id, [x, y, z]);
     });
 
@@ -173,6 +173,18 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
             from: entity,
             to: system,
             strength: 0.5,
+            type: 'network'
+          });
+        });
+      }
+
+      // Connect users to network nodes (access relationship)
+      if (entity.type === 'User') {
+        networkNodes.forEach(node => {
+          connections.push({
+            from: entity,
+            to: node,
+            strength: 0.4,
             type: 'network'
           });
         });
