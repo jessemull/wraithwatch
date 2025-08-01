@@ -1,7 +1,14 @@
 import React, { useMemo } from 'react';
 import { Text } from '@react-three/drei';
+import { Entity } from '../../../types/entity';
 import { NETWORK_NODE_CONFIG } from '../../../constants/visualization';
-import { NetworkNodeProps } from '../../../types/visualization';
+
+interface NetworkNodeProps {
+  entity: Entity;
+  position: [number, number, number];
+  isSelected: boolean;
+  onClick: () => void;
+}
 
 export const NetworkNode: React.FC<NetworkNodeProps> = ({
   entity,
@@ -10,9 +17,16 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
   onClick,
 }) => {
   const nodeStyle = useMemo(() => {
-    const size = isSelected ? NETWORK_NODE_CONFIG.nodeSizes.selected : NETWORK_NODE_CONFIG.nodeSizes.default;
-    const intensity = isSelected ? NETWORK_NODE_CONFIG.intensities.selected : NETWORK_NODE_CONFIG.intensities.default;
-    const color = NETWORK_NODE_CONFIG.entityColors[entity.type as keyof typeof NETWORK_NODE_CONFIG.entityColors] || NETWORK_NODE_CONFIG.entityColors.Threat;
+    const size = isSelected
+      ? NETWORK_NODE_CONFIG.nodeSizes.selected
+      : NETWORK_NODE_CONFIG.nodeSizes.default;
+    const intensity = isSelected
+      ? NETWORK_NODE_CONFIG.intensities.selected
+      : NETWORK_NODE_CONFIG.intensities.default;
+    const color =
+      NETWORK_NODE_CONFIG.entityColors[
+        entity.type as keyof typeof NETWORK_NODE_CONFIG.entityColors
+      ] || NETWORK_NODE_CONFIG.entityColors.Threat;
     return {
       color,
       size,
@@ -28,7 +42,13 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
     return (
       <>
         <mesh>
-          <sphereGeometry args={[nodeStyle.size + NETWORK_NODE_CONFIG.threatHaloOffset, NETWORK_NODE_CONFIG.sphereSegments, NETWORK_NODE_CONFIG.sphereSegments]} />
+          <sphereGeometry
+            args={[
+              nodeStyle.size + NETWORK_NODE_CONFIG.threatHaloOffset,
+              NETWORK_NODE_CONFIG.sphereSegments,
+              NETWORK_NODE_CONFIG.sphereSegments,
+            ]}
+          />
           <meshStandardMaterial
             color={NETWORK_NODE_CONFIG.entityColors.Threat}
             transparent
@@ -38,7 +58,13 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           />
         </mesh>
         <mesh>
-          <sphereGeometry args={[nodeStyle.size + NETWORK_NODE_CONFIG.threatHighlightOffset, NETWORK_NODE_CONFIG.sphereSegments, NETWORK_NODE_CONFIG.sphereSegments]} />
+          <sphereGeometry
+            args={[
+              nodeStyle.size + NETWORK_NODE_CONFIG.threatHighlightOffset,
+              NETWORK_NODE_CONFIG.sphereSegments,
+              NETWORK_NODE_CONFIG.sphereSegments,
+            ]}
+          />
           <meshStandardMaterial
             color={NETWORK_NODE_CONFIG.entityColors.Threat}
             transparent
@@ -55,7 +81,13 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
     <group position={position}>
       {threatHalo}
       <mesh onClick={onClick}>
-        <sphereGeometry args={[nodeStyle.size, NETWORK_NODE_CONFIG.sphereSegments, NETWORK_NODE_CONFIG.sphereSegments]} />
+        <sphereGeometry
+          args={[
+            nodeStyle.size,
+            NETWORK_NODE_CONFIG.sphereSegments,
+            NETWORK_NODE_CONFIG.sphereSegments,
+          ]}
+        />
         <meshStandardMaterial
           color={nodeStyle.color}
           emissive={nodeStyle.color}

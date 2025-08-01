@@ -2,26 +2,40 @@ import React, { useMemo, useCallback } from 'react';
 import { ConnectionLine } from './ConnectionLine';
 import { NetworkNode } from './NetworkNode';
 import { Entity } from '../../../types/entity';
+import { EntityChange } from '../../../types/api';
 import { NETWORK_SCENE_CONFIG } from '../../../constants/visualization';
-import { NetworkSceneProps, NetworkLayout, NetworkConnection } from '../../../types/visualization';
+import { NetworkLayout, NetworkConnection } from '../../../types/visualization';
+
+interface NetworkSceneProps {
+  entities: Entity[];
+  changes: EntityChange[];
+  selectedEntity?: Entity;
+  onEntitySelect?: (entity: Entity) => void;
+}
 
 export const NetworkScene: React.FC<NetworkSceneProps> = ({
   entities,
   selectedEntity,
   onEntitySelect,
 }) => {
-  const entityGroups = useMemo(() => ({
-    aiAgents: entities.filter(e => e.type === 'AI_Agent'),
-    systems: entities.filter(e => e.type === 'System'),
-    users: entities.filter(e => e.type === 'User'),
-    threats: entities.filter(e => e.type === 'Threat'),
-    networkNodes: entities.filter(e => e.type === 'Network_Node'),
-  }), [entities]);
+  const entityGroups = useMemo(
+    () => ({
+      aiAgents: entities.filter(e => e.type === 'AI_Agent'),
+      systems: entities.filter(e => e.type === 'System'),
+      users: entities.filter(e => e.type === 'User'),
+      threats: entities.filter(e => e.type === 'Threat'),
+      networkNodes: entities.filter(e => e.type === 'Network_Node'),
+    }),
+    [entities]
+  );
 
   const entityPositions = useMemo(() => {
     const positions = new Map<string, [number, number, number]>();
 
-    const positionEntities = (entityList: Entity[], level: keyof typeof NETWORK_SCENE_CONFIG.entityLevels) => {
+    const positionEntities = (
+      entityList: Entity[],
+      level: keyof typeof NETWORK_SCENE_CONFIG.entityLevels
+    ) => {
       const config = NETWORK_SCENE_CONFIG.entityLevels[level];
       entityList.forEach((entity, i) => {
         const angle = (i / Math.max(entityList.length, 1)) * Math.PI * 2;
@@ -39,7 +53,9 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     positionEntities(entityGroups.users, 'users');
 
     const positionedEntities = new Set(positions.keys());
-    const unpositionedEntities = entities.filter(e => !positionedEntities.has(e.id));
+    const unpositionedEntities = entities.filter(
+      e => !positionedEntities.has(e.id)
+    );
     positionEntities(unpositionedEntities, 'default');
 
     return positions;
@@ -48,7 +64,11 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   const connections = useMemo(() => {
     const connectionList: NetworkConnection[] = [];
 
-    const createConnections = (fromEntities: Entity[], toEntities: Entity[], rule: keyof typeof NETWORK_SCENE_CONFIG.connectionRules) => {
+    const createConnections = (
+      fromEntities: Entity[],
+      toEntities: Entity[],
+      rule: keyof typeof NETWORK_SCENE_CONFIG.connectionRules
+    ) => {
       const config = NETWORK_SCENE_CONFIG.connectionRules[rule];
       fromEntities.forEach(fromEntity => {
         toEntities.forEach(toEntity => {
@@ -62,14 +82,34 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       });
     };
 
-    createConnections(entityGroups.aiAgents, entityGroups.systems, 'aiAgentToSystem');
+    createConnections(
+      entityGroups.aiAgents,
+      entityGroups.systems,
+      'aiAgentToSystem'
+    );
     createConnections(entityGroups.users, entityGroups.systems, 'userToSystem');
-    createConnections(entityGroups.threats, entityGroups.systems, 'threatToSystem');
-    createConnections(entityGroups.networkNodes, entityGroups.systems, 'networkNodeToSystem');
-    createConnections(entityGroups.users, entityGroups.networkNodes, 'userToNetworkNode');
+    createConnections(
+      entityGroups.threats,
+      entityGroups.systems,
+      'threatToSystem'
+    );
+    createConnections(
+      entityGroups.networkNodes,
+      entityGroups.systems,
+      'networkNodeToSystem'
+    );
+    createConnections(
+      entityGroups.users,
+      entityGroups.networkNodes,
+      'userToNetworkNode'
+    );
 
     const fallbackConnections = NETWORK_SCENE_CONFIG.fallbackConnections;
-    for (let i = 0; i < Math.min(entities.length - 1, fallbackConnections.length); i++) {
+    for (
+      let i = 0;
+      i < Math.min(entities.length - 1, fallbackConnections.length);
+      i++
+    ) {
       connectionList.push({
         from: entities[i],
         to: entities[i + 1],
@@ -81,18 +121,24 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
     return connectionList;
   }, [entities, entityGroups]);
 
-  const networkLayout = useMemo((): NetworkLayout => ({
-    entityPositions,
-    connections,
-  }), [entityPositions, connections]);
+  const networkLayout = useMemo(
+    (): NetworkLayout => ({
+      entityPositions,
+      connections,
+    }),
+    [entityPositions, connections]
+  );
 
-  const handleEntityClick = useCallback((entity: Entity) => {
-    onEntitySelect?.(entity);
-  }, [onEntitySelect]);
+  const handleEntityClick = useCallback(
+    (entity: Entity) => {
+      onEntitySelect?.(entity);
+    },
+    [onEntitySelect]
+  );
 
   return (
     <group>
-      {entities.map((entity) => {
+      {entities.map(entity => {
         const position = networkLayout.entityPositions.get(entity.id);
         if (!position) {
           console.log('No position found for entity:', entity.id);
@@ -114,7 +160,12 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         const fromPos = networkLayout.entityPositions.get(connection.from.id);
         const toPos = networkLayout.entityPositions.get(connection.to.id);
         if (!fromPos || !toPos) {
-          console.log('Missing position for connection:', connection.from.id, '->', connection.to.id);
+          console.log(
+            'Missing position for connection:',
+            connection.from.id,
+            '->',
+            connection.to.id
+          );
           return null;
         }
 

@@ -155,27 +155,6 @@ export interface ControlPanelConfig {
   helpText: string[];
 }
 
-export interface NetworkNodeProps {
-  entity: Entity;
-  position: [number, number, number];
-  isSelected: boolean;
-  onClick: () => void;
-}
-
-export interface ConnectionLineProps {
-  start: [number, number, number];
-  end: [number, number, number];
-  strength?: number;
-  type?: 'location' | 'agent' | 'network' | 'type';
-}
-
-export interface NetworkSceneProps {
-  entities: Entity[];
-  changes: EntityChange[];
-  selectedEntity?: Entity;
-  onEntitySelect?: (entity: Entity) => void;
-}
-
 export interface NetworkConnection {
   from: Entity;
   to: Entity;
