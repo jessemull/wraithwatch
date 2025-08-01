@@ -9,8 +9,6 @@ export async function createServer() {
     logger: true,
   });
 
-  // Register CORS directly...
-
   await fastify.register(cors, {
     origin: [
       'http://localhost:3000',
@@ -31,27 +29,20 @@ export async function createServer() {
     exposedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  // Initialize services...
-
   const dynamoDBService = new DynamoDBService();
   const websocketManager = new WebSocketManager();
-  const entityManager = new EntityManager(websocketManager);
-
-  // Register WebSocket plugin...
+  const entityManager = new EntityManager(websocketManager, dynamoDBService);
 
   await fastify.register(websocketPlugin, {
     websocketManager,
     entityManager,
   });
 
-  // Register routes...
-
   await fastify.register(routes.default, {
     dynamoDBService,
   });
 
-  // Start generating entity updates...
-
+  await entityManager.initializeFromDatabase();
   entityManager.startUpdateGeneration(2000);
 
   return fastify;
