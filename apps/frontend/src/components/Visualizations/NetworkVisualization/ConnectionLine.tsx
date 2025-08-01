@@ -40,10 +40,9 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
     color: getConnectionColor(),
     transparent: true,
     opacity: 0.6 + (strength * 0.4),
-    linewidth: 2 + (strength * 3), // Note: linewidth doesn't work in WebGL, but we'll use it for reference
   });
 
   return (
-    <line geometry={lineGeometry} material={lineMaterial} />
+    <primitive object={new THREE.Line(lineGeometry, lineMaterial)} />
   );
 };

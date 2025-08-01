@@ -1,15 +1,15 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stats } from '@react-three/drei';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { NetworkScene } from './NetworkScene';
+import { OrbitControls, Stats } from '@react-three/drei';
 
 interface NetworkGraph3DProps {
-  entities: Entity[];
   changes: EntityChange[];
-  selectedEntity?: Entity;
+  entities: Entity[];
   onEntitySelect?: (entity: Entity) => void;
+  selectedEntity?: Entity;
 }
 
 export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({

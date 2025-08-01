@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import { Text } from '@react-three/drei';
 import { Entity } from '../../../types/entity';
+import { Text } from '@react-three/drei';
 
 interface NetworkNodeProps {
   entity: Entity;
-  position: [number, number, number];
   isSelected: boolean;
   onClick: () => void;
+  position: [number, number, number];
 }
 
 export const NetworkNode: React.FC<NetworkNodeProps> = ({
@@ -19,7 +19,6 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
     const baseSize = isSelected ? 0.4 : 0.3;
     const baseIntensity = isSelected ? 0.8 : 0.4;
 
-    // Color based on entity type
     switch (entity.type) {
       case 'System':
         return {
@@ -87,8 +86,6 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           emissiveIntensity={nodeStyle.emissiveIntensity}
           metalness={0.4}
           roughness={0.1}
-          clearcoat={0.5}
-          clearcoatRoughness={0.1}
         />
       </mesh>
       
