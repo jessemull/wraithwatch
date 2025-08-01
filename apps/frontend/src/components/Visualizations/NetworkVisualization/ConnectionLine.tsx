@@ -1,34 +1,49 @@
 import React from 'react';
+import * as THREE from 'three';
 
 interface ConnectionLineProps {
   start: [number, number, number];
   end: [number, number, number];
+  strength?: number;
+  type?: 'location' | 'agent' | 'network' | 'type';
 }
 
 export const ConnectionLine: React.FC<ConnectionLineProps> = ({
   start,
   end,
+  strength = 0.5,
+  type = 'type',
 }) => {
-  const midPoint: [number, number, number] = [
-    (start[0] + end[0]) / 2,
-    (start[1] + end[1]) / 2,
-    (start[2] + end[2]) / 2,
+  // Color based on connection type
+  const getConnectionColor = () => {
+    switch (type) {
+      case 'agent':
+        return '#4ecdc4'; // AI agent connections
+      case 'location':
+        return '#6c5ce7'; // Location-based connections
+      case 'network':
+        return '#00b894'; // Network connections
+      case 'type':
+      default:
+        return '#ff7675'; // Type-based connections
+    }
+  };
+
+  // Create a line geometry that properly connects the two points
+  const points = [
+    new THREE.Vector3(start[0], start[1], start[2]),
+    new THREE.Vector3(end[0], end[1], end[2])
   ];
 
-  const distance = Math.sqrt(
-    Math.pow(end[0] - start[0], 2) +
-      Math.pow(end[1] - start[1], 2) +
-      Math.pow(end[2] - start[2], 2)
-  );
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: getConnectionColor(),
+    transparent: true,
+    opacity: 0.6 + (strength * 0.4),
+    linewidth: 2 + (strength * 3), // Note: linewidth doesn't work in WebGL, but we'll use it for reference
+  });
 
   return (
-    <mesh position={midPoint}>
-      <cylinderGeometry args={[0.02, 0.02, distance, 8]} />
-      <meshStandardMaterial
-        color="#6c5ce7"
-        emissive="#6c5ce7"
-        emissiveIntensity={0.3}
-      />
-    </mesh>
+    <line geometry={lineGeometry} material={lineMaterial} />
   );
 };
