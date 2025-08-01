@@ -12,6 +12,11 @@ export const useEntityData = () => {
   const transformChangesToEntities = (changes: EntityChange[]): Entity[] => {
     const entityMap = new Map<string, Entity>();
 
+    // Debug: Log unique entity IDs
+    const uniqueEntityIds = [...new Set(changes.map(c => c.entity_id))];
+    console.log('Unique entity IDs:', uniqueEntityIds);
+    console.log('Total changes:', changes.length);
+
     changes.forEach(change => {
       if (!entityMap.has(change.entity_id)) {
         entityMap.set(change.entity_id, {
@@ -53,16 +58,24 @@ export const useEntityData = () => {
       setError(null);
 
       const response = await fetch(
-        `${config.api.baseUrl}/api/history/recent?limit=100&hours=24`
+        `${config.api.baseUrl}/api/history/recent?limit=100`
       );
       if (!response.ok) throw new Error('Failed to fetch data');
 
       const result = await response.json();
       const changes = result.data;
 
+      console.log('API Response:', result);
+      console.log('Changes received:', changes.length);
+      console.log('First change:', changes[0]);
+
       setChanges(changes);
-      setEntities(transformChangesToEntities(changes));
+      const transformedEntities = transformChangesToEntities(changes);
+      console.log('Transformed entities:', transformedEntities.length);
+      console.log('First entity:', transformedEntities[0]);
+      setEntities(transformedEntities);
     } catch (err) {
+      console.error('Error fetching data:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
       setLoading(false);

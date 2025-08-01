@@ -10,19 +10,19 @@ export async function createServer() {
   });
 
   // Register CORS directly...
-  
+
   await fastify.register(cors, {
     origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: [
       'Content-Type',
-      'Authorization', 
+      'Authorization',
       'X-Requested-With',
       'Accept',
       'Origin',
       'Cache-Control',
-      'X-File-Name'
+      'X-File-Name',
     ],
     exposedHeaders: ['Content-Type', 'Authorization'],
   });
