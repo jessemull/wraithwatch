@@ -1,88 +1,186 @@
 import { useMemo } from 'react';
 import { EntityChange } from '../types/api';
 
-export const useAggregatedData = (changes: EntityChange[]) => {
+interface AggregatedMetrics {
+  activeThreats: number;
+  threatScore: string;
+  aiConfidence: number;
+  totalConnections: number;
+  threatSeverityDistribution: Record<string, number>;
+  aiAgentActivity: Record<string, number>;
+  protocolUsage: Record<string, number>;
+  entityChangesByDay: Record<string, number>;
+}
+
+interface EntityState {
+  entity_type: string;
+  [key: string]: string | number;
+}
+
+// Helper function to get the most recent change for each property...
+
+const getCurrentEntityState = (
+  changes: EntityChange[]
+): Map<string, EntityState> => {
+  const entityMap = new Map<string, EntityChange[]>();
+
+  // Group changes by entity_id...
+
+  changes.forEach(change => {
+    if (!entityMap.has(change.entity_id)) {
+      entityMap.set(change.entity_id, []);
+    }
+    entityMap.get(change.entity_id)!.push(change);
+  });
+
+  const currentEntityState = new Map<string, EntityState>();
+
+  entityMap.forEach((entityChanges, entityId) => {
+    const propertyMap = new Map<string, EntityChange>();
+
+    // Get the most recent change for each property...
+
+    entityChanges.forEach(change => {
+      const key = change.property_name;
+      const existing = propertyMap.get(key);
+
+      if (
+        !existing ||
+        new Date(change.timestamp) > new Date(existing.timestamp)
+      ) {
+        propertyMap.set(key, change);
+      }
+    });
+
+    // Convert to object...
+
+    const entityState: EntityState = {
+      entity_type: entityChanges[0]?.entity_type || 'Unknown',
+    };
+
+    propertyMap.forEach((change, propertyName) => {
+      entityState[propertyName] = change.value;
+    });
+
+    currentEntityState.set(entityId, entityState);
+  });
+
+  return currentEntityState;
+};
+
+// Helper function to calculate numeric average...
+
+const calculateAverage = (values: number[]): number => {
+  return values.length > 0
+    ? values.reduce((a, b) => a + b, 0) / values.length
+    : 0;
+};
+
+// Helper function to extract numeric values safely...
+
+const extractNumericValues = (
+  entityStates: EntityState[],
+  propertyName: string
+): number[] => {
+  return entityStates
+    .filter(state => state[propertyName] !== undefined)
+    .map(state => {
+      const value = state[propertyName];
+      return typeof value === 'string' ? parseFloat(value) : Number(value);
+    })
+    .filter(value => !isNaN(value));
+};
+
+// Helper function to count by property...
+
+const countByProperty = (
+  entityStates: EntityState[],
+  propertyName: string
+): Record<string, number> => {
+  const distribution: Record<string, number> = {};
+
+  entityStates
+    .filter(state => state[propertyName] !== undefined)
+    .forEach(state => {
+      const value = String(state[propertyName]);
+      distribution[value] = (distribution[value] || 0) + 1;
+    });
+
+  return distribution;
+};
+
+// Helper function to calculate entity changes by day...
+
+const calculateEntityChangesByDay = (
+  changes: EntityChange[]
+): Record<string, number> => {
+  const entityChangesByDay: Record<string, number> = {};
+  const now = new Date();
+
+  // Initialize last 7 days...
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    const dateStr = date.toISOString().split('T')[0];
+    entityChangesByDay[dateStr] = 0;
+  }
+
+  // Count changes by day...
+
+  changes.forEach(change => {
+    const changeDate = new Date(change.timestamp).toISOString().split('T')[0];
+    if (entityChangesByDay[changeDate] !== undefined) {
+      entityChangesByDay[changeDate]++;
+    }
+  });
+
+  return entityChangesByDay;
+};
+
+export const useAggregatedData = (
+  changes: EntityChange[]
+): AggregatedMetrics => {
   return useMemo(() => {
-    // Group changes by entity_id to get current state
-    const entityMap = new Map<string, EntityChange[]>();
+    if (!changes || changes.length === 0) {
+      return {
+        activeThreats: 0,
+        threatScore: '0.00',
+        aiConfidence: 0,
+        totalConnections: 0,
+        threatSeverityDistribution: {},
+        aiAgentActivity: {},
+        protocolUsage: {},
+        entityChangesByDay: {},
+      };
+    }
 
-    changes.forEach(change => {
-      if (!entityMap.has(change.entity_id)) {
-        entityMap.set(change.entity_id, []);
-      }
-      entityMap.get(change.entity_id)!.push(change);
-    });
+    // Get current entity state...
 
-    // Get the most recent change for each property of each entity
-    const currentEntityState = new Map<
-      string,
-      Record<string, string | number>
-    >();
+    const currentEntityState = getCurrentEntityState(changes);
+    const entityStates = Array.from(currentEntityState.values());
 
-    entityMap.forEach((entityChanges, entityId) => {
-      const propertyMap = new Map<string, EntityChange>();
+    // Calculate active threats...
 
-      // Get the most recent change for each property
-      entityChanges.forEach(change => {
-        const key = `${change.property_name}`;
-        const existing = propertyMap.get(key);
+    const activeThreats = entityStates.filter(
+      state => state.entity_type === 'Threat'
+    ).length;
 
-        if (
-          !existing ||
-          new Date(change.timestamp) > new Date(existing.timestamp)
-        ) {
-          propertyMap.set(key, change);
-        }
-      });
+    // Calculate average threat score...
 
-      // Convert to object
-      const entityState: Record<string, string | number> = {};
-      propertyMap.forEach((change, propertyName) => {
-        entityState[propertyName] = change.value;
-      });
+    const threatScores = extractNumericValues(entityStates, 'threat_score');
+    const avgThreatScore = calculateAverage(threatScores).toFixed(2);
 
-      // Add entity_type to the state
-      if (entityChanges.length > 0) {
-        entityState.entity_type = entityChanges[0].entity_type as string;
-      }
+    // Calculate AI confidence...
 
-      currentEntityState.set(entityId, entityState);
-    });
-
-    // Calculate KPI metrics
-    const threats = Array.from(currentEntityState.entries()).filter(
-      ([, state]) => state.entity_type === 'Threat'
+    const aiConfidences = extractNumericValues(
+      entityStates,
+      'confidence_score'
     );
+    const avgConfidence = Math.round(calculateAverage(aiConfidences) * 100);
 
-    const activeThreats = threats.length;
+    // Calculate total connections...
 
-    // Calculate average threat score
-    const threatScores = Array.from(currentEntityState.values())
-      .filter(state => state.threat_score !== undefined)
-      .map(state => parseFloat(state.threat_score as string));
-
-    const avgThreatScore =
-      threatScores.length > 0
-        ? (
-            threatScores.reduce((a, b) => a + b, 0) / threatScores.length
-          ).toFixed(2)
-        : '0.00';
-
-    // Calculate AI confidence (using confidence_score)
-    const aiConfidences = Array.from(currentEntityState.values())
-      .filter(state => state.confidence_score !== undefined)
-      .map(state => parseFloat(state.confidence_score as string));
-
-    const avgConfidence =
-      aiConfidences.length > 0
-        ? Math.round(
-            (aiConfidences.reduce((a, b) => a + b, 0) / aiConfidences.length) *
-              100
-          )
-        : 0;
-
-    // Calculate total connections (using connection_count and network_connections)
-    const totalConnections = Array.from(currentEntityState.values())
+    const totalConnections = entityStates
       .filter(
         state =>
           state.connection_count !== undefined ||
@@ -90,36 +188,30 @@ export const useAggregatedData = (changes: EntityChange[]) => {
       )
       .reduce((total, state) => {
         const connectionCount = state.connection_count
-          ? parseFloat(state.connection_count as string)
+          ? typeof state.connection_count === 'string'
+            ? parseFloat(state.connection_count)
+            : Number(state.connection_count)
           : 0;
         const networkConnections = state.network_connections
-          ? parseFloat(state.network_connections as string)
+          ? typeof state.network_connections === 'string'
+            ? parseFloat(state.network_connections)
+            : Number(state.network_connections)
           : 0;
         return total + connectionCount + networkConnections;
       }, 0);
 
-    // Calculate threat severity distribution
-    const threatSeverityDistribution: Record<string, number> = {};
-    Array.from(currentEntityState.values())
-      .filter(state => state.severity !== undefined)
-      .forEach(state => {
-        const severity = state.severity;
-        threatSeverityDistribution[severity] =
-          (threatSeverityDistribution[severity] || 0) + 1;
-      });
+    // Calculate distributions...
 
-    // Calculate AI agent activity by status
-    const aiAgentActivity: Record<string, number> = {};
-    Array.from(currentEntityState.values())
-      .filter(state => state.status !== undefined)
-      .forEach(state => {
-        const status = state.status;
-        aiAgentActivity[status] = (aiAgentActivity[status] || 0) + 1;
-      });
+    const threatSeverityDistribution = countByProperty(
+      entityStates,
+      'severity'
+    );
+    const aiAgentActivity = countByProperty(entityStates, 'status');
 
-    // Calculate network activity by status (since we don't have protocol data)
+    // Calculate protocol usage (using routing_status or status)...
+
     const protocolUsage: Record<string, number> = {};
-    Array.from(currentEntityState.values())
+    entityStates
       .filter(
         state =>
           state.routing_status !== undefined || state.status !== undefined
@@ -127,28 +219,14 @@ export const useAggregatedData = (changes: EntityChange[]) => {
       .forEach(state => {
         const status = state.routing_status || state.status;
         if (status) {
-          protocolUsage[status] = (protocolUsage[status] || 0) + 1;
+          const statusStr = String(status);
+          protocolUsage[statusStr] = (protocolUsage[statusStr] || 0) + 1;
         }
       });
 
-    // Calculate entity changes by day (last 7 days)
-    const entityChangesByDay: Record<string, number> = {};
-    const now = new Date();
+    // Calculate entity changes by day...
 
-    // Initialize last 7 days
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const dateStr = date.toISOString().split('T')[0];
-      entityChangesByDay[dateStr] = 0;
-    }
-
-    // Count changes by day
-    changes.forEach(change => {
-      const changeDate = new Date(change.timestamp).toISOString().split('T')[0];
-      if (entityChangesByDay[changeDate] !== undefined) {
-        entityChangesByDay[changeDate]++;
-      }
-    });
+    const entityChangesByDay = calculateEntityChangesByDay(changes);
 
     return {
       activeThreats,
