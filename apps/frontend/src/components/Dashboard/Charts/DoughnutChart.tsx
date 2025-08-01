@@ -34,7 +34,7 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data, title }) => 
           color.replace('0.8', '1')
         ),
         borderWidth: 2,
-        cutout: '60%',
+        cutout: '40%',
       },
     ],
   };
@@ -45,16 +45,16 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data, title }) => 
     plugins: {
       legend: {
         position: 'right' as const,
-        align: 'start' as const,
+        align: 'center' as const,
         labels: {
           color: 'rgba(156, 163, 175, 1)',
-          padding: 20,
+          padding: 8,
           usePointStyle: true,
           font: {
             size: 11,
           },
-          boxWidth: 12,
-          boxHeight: 12,
+          boxWidth: 8,
+          boxHeight: 8,
         },
       },
       title: {
@@ -63,10 +63,10 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({ data, title }) => 
     },
     layout: {
       padding: {
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: 16,
+        left: 8,
+        right: 8,
+        top: 8,
+        bottom: 8,
       },
     },
   };
