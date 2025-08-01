@@ -25,38 +25,45 @@ export type AgentAction =
   | 'isolating'
   | 'quarantining';
 
-export interface Entity {
-  changesToday: number;
-  id: string;
-  lastSeen: string;
-  name: string;
-  properties: Record<string, EntityProperty>;
-  type: EntityType;
-
-  // Cybersecurity fields...
-
-  threatScore?: number; // 0-1 scale
-  ipAddress?: string;
-  location?: {
-    latitude: number;
-    longitude: number;
-    city: string;
-    country: string;
-  };
-  agentId?: string; // For AI agent tracking
-  confidence?: number; // 0-1 scale for AI decisions
+export interface PropertyChange {
+  timestamp: string;
+  oldValue: string | number;
+  newValue: string | number;
+  changeType?: 'increment' | 'decrement' | 'replacement';
 }
 
 export interface EntityProperty {
-  currentValue: string | number;
-  history: PropertyChange[];
-  lastChanged: string;
   name: string;
+  currentValue: string | number;
+  lastChanged: string;
+  history: PropertyChange[];
 }
 
-export interface PropertyChange {
-  changeType?: 'decrement' | 'increment' | 'replacement';
-  newValue: string | number;
-  oldValue: string | number;
-  timestamp: string;
+export interface Entity {
+  id: string;
+  name: string;
+  type: string;
+  changesToday: number;
+  lastSeen: string;
+  properties?: Record<string, EntityProperty>;
+}
+
+export interface AggregatedEntityGroup {
+  type: string;
+  entities: Entity[];
+  totalChanges: number;
+  lastSeen: string;
+}
+
+export interface EntityGroupHeaderProps {
+  type: string;
+  entities: Entity[];
+  totalChanges: number;
+  lastSeen: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+export interface EntityItemProps {
+  entity: Entity;
 }

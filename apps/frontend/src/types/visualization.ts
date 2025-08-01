@@ -1,3 +1,4 @@
+import React from 'react';
 import { EntityChange } from './api';
 import { Entity } from './entity';
 import * as THREE from 'three';
@@ -67,7 +68,7 @@ export interface ControlButton {
   label: string;
   onClick: () => void;
   className: string;
-  icon?: string;
+  icon?: string | React.ReactElement;
 }
 
 export interface CameraConfig {
@@ -175,3 +176,5 @@ export interface Particle {
   delay: number;
   active: boolean;
 }
+
+export type VisualizationType = 'timeline' | 'network' | 'globe' | 'matrix';

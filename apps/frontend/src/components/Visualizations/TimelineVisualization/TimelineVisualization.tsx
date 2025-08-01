@@ -10,7 +10,7 @@ import { Canvas } from '@react-three/fiber';
 import { ControlPanel } from './ControlPanel';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
-import { OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { TimelineScene } from './TimelineScene';
 
 interface TimelineVisualizationProps {
@@ -58,7 +58,7 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full bg-black relative">
+    <div className="w-full h-full relative">
       <Canvas camera={CAMERA_CONFIG} style={CANVAS_STYLE}>
         <Suspense fallback={null}>
           <ambientLight intensity={LIGHTING_CONFIG.ambient.intensity} />
@@ -77,7 +77,6 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />
-          <Stats />
         </Suspense>
       </Canvas>
       <ControlPanel

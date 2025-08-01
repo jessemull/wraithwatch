@@ -1,3 +1,13 @@
+import { VisualizationType } from '../types/visualization';
+
+export const visualizationTypes: { type: VisualizationType; label: string }[] =
+  [
+    { type: 'timeline', label: 'Timeline' },
+    { type: 'network', label: 'Network' },
+    { type: 'globe', label: 'Globe' },
+    { type: 'matrix', label: 'Matrix' },
+  ];
+
 export const ENTITY_STYLES = {
   Threat: {
     base: { color: '#ff6b6b', textColor: '#ffffff', pulse: true },
@@ -117,18 +127,17 @@ export const CONTROLS_CONFIG = {
 } as const;
 
 export const CANVAS_STYLE = {
-  background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)',
+  background: 'transparent',
 } as const;
 
 export const CONTROL_PANEL_CONFIG = {
   position: 'absolute top-4 right-4',
-  styling: 'bg-black/80 backdrop-blur-sm rounded-lg p-3 text-white',
+  styling: 'text-white',
   buttonClasses: {
-    zoom: 'bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs',
-    reset: 'bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-xs',
-    rotate: 'bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs',
+    zoom: 'bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors',
+    reset: 'bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors',
+    rotate: 'bg-green-600 hover:bg-green-700 rounded-lg transition-colors',
   },
-  helpText: ['Mouse wheel: Zoom', 'Left drag: Rotate', 'Right drag: Pan'],
 } as const;
 
 export const NETWORK_NODE_CONFIG = {

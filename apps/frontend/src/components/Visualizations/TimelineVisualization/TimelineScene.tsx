@@ -3,7 +3,7 @@ import { ChangeParticle } from './ChangeParticle';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { EntityNode } from './EntityNode';
-import { Text } from '@react-three/drei';
+
 import { TimeScale } from './TimeScale';
 
 interface TimelineSceneProps {
@@ -66,13 +66,6 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
     [onEntitySelect]
   );
 
-  const timelineText = useMemo(() => {
-    if (selectedEntity) {
-      return `${selectedEntity.name}: ${changes.length} changes`;
-    }
-    return `Click an entity to view its changes (${entities.length} entities)`;
-  }, [selectedEntity, changes.length, entities.length]);
-
   return (
     <group>
       <mesh position={[0, 0, 0]}>
@@ -129,17 +122,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
             />
           );
         })}
-      <Text
-        position={[0, 10, 0]}
-        fontSize={1.0}
-        color="#00ff00"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.1}
-        outlineColor="black"
-      >
-        {timelineText}
-      </Text>
+
       {selectedEntity && <TimeScale changes={changes} position={[0, 0, 0]} />}
     </group>
   );

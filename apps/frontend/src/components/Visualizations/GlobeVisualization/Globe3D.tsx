@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { GlobeScene } from './GlobeScene';
-import { OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 
 interface Globe3DProps {
   entities: Entity[];
@@ -19,7 +19,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({
   onEntitySelect,
 }) => {
   return (
-    <div className="w-full h-full bg-black">
+    <div className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
         style={{ background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)' }}
@@ -41,7 +41,6 @@ export const Globe3D: React.FC<Globe3DProps> = ({
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />
-          <Stats />
         </Suspense>
       </Canvas>
     </div>

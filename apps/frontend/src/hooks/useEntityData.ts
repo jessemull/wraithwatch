@@ -26,6 +26,10 @@ export const useEntityData = () => {
 
       const entity = entityMap.get(change.entity_id)!;
 
+      if (!entity.properties) {
+        entity.properties = {};
+      }
+
       entity.properties[change.property_name] = {
         name: change.property_name,
         currentValue: change.value,
@@ -33,7 +37,7 @@ export const useEntityData = () => {
         history: [
           {
             timestamp: change.timestamp,
-            oldValue: change.previous_value || change.value,
+            oldValue: change.value,
             newValue: change.value,
           },
         ],
