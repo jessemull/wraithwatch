@@ -393,10 +393,7 @@ function generateNumericValue(
     config.volatility
   ) {
     const change =
-      (Math.random() - 0.5) *
-      2 *
-      config.volatility *
-      (config.max - config.min);
+      (Math.random() - 0.5) * 2 * config.volatility * (config.max - config.min);
 
     value = Number(previousValue) + change;
   } else {
@@ -631,9 +628,7 @@ function initializeEntityValues(
     const propConfig = config[prop];
     if (isEnumConfig(propConfig)) {
       currentValues[prop] =
-        propConfig.values[
-          Math.floor(Math.random() * propConfig.values.length)
-        ];
+        propConfig.values[Math.floor(Math.random() * propConfig.values.length)];
     } else {
       currentValues[prop] =
         Math.random() * (propConfig.max - propConfig.min) + propConfig.min;
@@ -651,7 +646,8 @@ function createEntityChange(
   previousValue: string | number,
   timestamp: string
 ): EntityChange {
-  const ttl = Math.floor(new Date(timestamp).getTime() / 1000) + 30 * 24 * 60 * 60; // 30 days
+  const ttl =
+    Math.floor(new Date(timestamp).getTime() / 1000) + 30 * 24 * 60 * 60; // 30 days
   const entityHash = generateEntityHash(entity.id);
   const timeBucket = generateTimeBucket(timestamp);
   const gsi1Sk = `${timestamp}#${entity.id}#${prop}`;
@@ -743,9 +739,7 @@ class DynamoDBService {
 
       try {
         await this.writeBatch(batch);
-        console.log(
-          `Loaded batch ${batchNumber}/${totalBatches}`
-        );
+        console.log(`Loaded batch ${batchNumber}/${totalBatches}`);
       } catch (error) {
         console.error(`Error loading batch ${batchNumber}:`, error);
       }
@@ -773,7 +767,7 @@ class DynamoDBService {
 
 async function main(): Promise<void> {
   console.log('Generating time-series data...');
-  
+
   const changes = await generateTimeSeriesData();
 
   console.log(`Generated ${changes.length} changes`);
