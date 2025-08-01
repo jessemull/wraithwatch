@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,6 +7,8 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
+  ChartData,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
@@ -24,6 +26,8 @@ interface BarChartProps {
   title: string;
   backgroundColor?: string;
   borderColor?: string;
+  maxBarThickness?: number;
+  borderRadius?: number;
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
@@ -31,8 +35,10 @@ export const BarChart: React.FC<BarChartProps> = ({
   title,
   backgroundColor = 'rgba(59, 130, 246, 0.8)',
   borderColor = 'rgba(59, 130, 246, 1)',
+  maxBarThickness = 30,
+  borderRadius = 3,
 }) => {
-  const chartData = {
+  const chartData: ChartData<'bar'> = useMemo(() => ({
     labels: Object.keys(data),
     datasets: [
       {
@@ -40,12 +46,12 @@ export const BarChart: React.FC<BarChartProps> = ({
         data: Object.values(data),
         backgroundColor: backgroundColor.replace('0.8', '0.3'),
         barThickness: 'flex',
-        maxBarThickness: 30,
+        maxBarThickness,
       },
     ],
-  };
+  }), [data, title, backgroundColor, maxBarThickness]);
 
-  const options = {
+  const options: ChartOptions<'bar'> = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -77,8 +83,8 @@ export const BarChart: React.FC<BarChartProps> = ({
     },
     elements: {
       bar: {
-        borderRadius: 3,
-        borderSkipped: 'start',
+        borderRadius,
+        borderSkipped: 'start' as const,
         borderWidth: 1,
         borderColor,
       },
@@ -89,7 +95,7 @@ export const BarChart: React.FC<BarChartProps> = ({
         right: 20,
       },
     },
-  };
+  }), [borderColor, borderRadius]);
 
   return <Bar data={chartData} options={options} />;
 };
