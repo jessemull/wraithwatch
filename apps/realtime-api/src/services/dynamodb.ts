@@ -8,13 +8,17 @@ import {
   QueryCommandInput,
   ScanCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { AWS_REGION, DYNAMODB_TABLE_NAME, DYNAMODB_CONSTANTS } from '../constants';
-import { 
-  EntityChange, 
-  QueryOptions, 
-  RecentChangesOptions, 
-  EntitySummary, 
-  PropertySummary 
+import {
+  AWS_REGION,
+  DYNAMODB_TABLE_NAME,
+  DYNAMODB_CONSTANTS,
+} from '../constants';
+import {
+  EntityChange,
+  QueryOptions,
+  RecentChangesOptions,
+  EntitySummary,
+  PropertySummary,
 } from '../types/dynamodb';
 import { createComponentLogger } from '../utils/logger';
 
@@ -34,7 +38,7 @@ export class DynamoDBService {
     limit: number = DYNAMODB_CONSTANTS.DEFAULT_SCAN_LIMIT
   ): Promise<EntityChange[]> {
     const allItems: EntityChange[] = [];
-    let lastEvaluatedKey: Record<string, any> | undefined = undefined;
+    let lastEvaluatedKey: Record<string, unknown> | undefined = undefined;
 
     try {
       do {
@@ -195,11 +199,11 @@ export class DynamoDBService {
   // Private helper methods...
 
   private async performScan(
-    lastEvaluatedKey: Record<string, any> | undefined,
+    lastEvaluatedKey: Record<string, unknown> | undefined,
     limit: number
   ): Promise<{
     items: EntityChange[];
-    lastEvaluatedKey?: Record<string, any>;
+    lastEvaluatedKey?: Record<string, unknown>;
   }> {
     const scanParams: ScanCommandInput = {
       TableName: this.tableName,
@@ -451,7 +455,6 @@ export class DynamoDBService {
 
   // Utility methods...
 
-
   private buildEntityKey(entityId: string): string {
     return `ENTITY#${entityId}`;
   }
@@ -491,7 +494,7 @@ export class DynamoDBService {
     );
   }
 
-  private logError(message: string, context: Record<string, any>): void {
+  private logError(message: string, context: Record<string, unknown>): void {
     logger.error(context, message);
   }
 }
@@ -500,7 +503,7 @@ export class DynamoDBService {
 
 class QueryBuilder {
   private keyConditionExpression: string;
-  private expressionAttributeValues: Record<string, any>;
+  private expressionAttributeValues: Record<string, unknown>;
   private sortKeyConditions: string[];
 
   constructor() {

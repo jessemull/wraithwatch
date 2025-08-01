@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { EntityChange } from '../../../types/api';
 import { Text } from '@react-three/drei';
+import { TimeScaleData } from '../../../types/visualization';
 
 interface TimeScaleProps {
   changes: EntityChange[];
@@ -8,34 +9,51 @@ interface TimeScaleProps {
 }
 
 export const TimeScale: React.FC<TimeScaleProps> = ({ changes, position }) => {
-  if (changes.length === 0) return null;
+  const timeScaleData = useMemo((): TimeScaleData | null => {
+    if (changes.length === 0) return null;
 
-  const sortedChanges = [...changes].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  );
+    const sortedChanges = [...changes].sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
 
-  const startTime = new Date(sortedChanges[0].timestamp);
-  const endTime = new Date(sortedChanges[sortedChanges.length - 1].timestamp);
-  const duration = endTime.getTime() - startTime.getTime();
+    const startTime = new Date(sortedChanges[0].timestamp);
+    const endTime = new Date(sortedChanges[sortedChanges.length - 1].timestamp);
+    const duration = endTime.getTime() - startTime.getTime();
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+    const formatTime = (date: Date) => {
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    };
 
-  const formatDuration = (ms: number) => {
-    const hours = Math.floor(ms / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const formatDuration = (ms: number) => {
+      const hours = Math.floor(ms / (1000 * 60 * 60));
+      const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
 
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
+      if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+      }
+      return `${minutes}m`;
+    };
+
+    return {
+      startTime,
+      endTime,
+      duration,
+      formattedStartTime: formatTime(startTime),
+      formattedEndTime: formatTime(endTime),
+      formattedDuration: formatDuration(duration),
+    };
+  }, [changes]);
+
+  if (!timeScaleData) return null;
+
+  const { formattedStartTime, formattedEndTime, formattedDuration } =
+    timeScaleData;
 
   return (
     <group position={position}>
@@ -48,7 +66,7 @@ export const TimeScale: React.FC<TimeScaleProps> = ({ changes, position }) => {
         outlineWidth={0.05}
         outlineColor="black"
       >
-        {formatTime(endTime)}
+        {formattedEndTime}
       </Text>
       <Text
         position={[0, -8, 0]}
@@ -59,7 +77,7 @@ export const TimeScale: React.FC<TimeScaleProps> = ({ changes, position }) => {
         outlineWidth={0.05}
         outlineColor="black"
       >
-        {formatTime(startTime)}
+        {formattedStartTime}
       </Text>
       <Text
         position={[0, 0, 0]}
@@ -70,7 +88,7 @@ export const TimeScale: React.FC<TimeScaleProps> = ({ changes, position }) => {
         outlineWidth={0.05}
         outlineColor="black"
       >
-        {formatDuration(duration)}
+        {formattedDuration}
       </Text>
     </group>
   );

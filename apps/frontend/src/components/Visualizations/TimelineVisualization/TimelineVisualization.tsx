@@ -1,10 +1,16 @@
-import React, { Suspense, useRef } from 'react';
+import React, { Suspense, useRef, useMemo, useCallback } from 'react';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import {
+  CAMERA_CONFIG,
+  LIGHTING_CONFIG,
+  CONTROLS_CONFIG,
+  CANVAS_STYLE,
+} from '../../../constants/visualization';
 import { Canvas } from '@react-three/fiber';
 import { ControlPanel } from './ControlPanel';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { OrbitControls, Stats } from '@react-three/drei';
-import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { TimelineScene } from './TimelineScene';
 
 interface TimelineVisualizationProps {
@@ -22,54 +28,52 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
 }) => {
   const controlsRef = useRef<OrbitControlsImpl>(null);
 
-  const selectedEntityChanges = selectedEntity
-    ? changes.filter(change => change.entity_id === selectedEntity.id)
-    : [];
+  // Memoize filtered changes to prevent unnecessary recalculations...
 
-  const allChanges = changes;
+  const selectedEntityChanges = useMemo(() => {
+    if (!selectedEntity) return [];
+    return changes.filter(change => change.entity_id === selectedEntity.id);
+  }, [selectedEntity, changes]);
 
-  const handleZoomIn = () => {
+  // Optimized control handlers with useCallback...
+
+  const handleZoomIn = useCallback(() => {
     if (controlsRef.current) {
-      controlsRef.current.dollyIn(1.2);
+      controlsRef.current.dollyIn(CONTROLS_CONFIG.zoomFactor);
       controlsRef.current.update();
     }
-  };
+  }, []);
 
-  const handleZoomOut = () => {
+  const handleZoomOut = useCallback(() => {
     if (controlsRef.current) {
-      controlsRef.current.dollyOut(1.2);
+      controlsRef.current.dollyOut(CONTROLS_CONFIG.zoomFactor);
       controlsRef.current.update();
     }
-  };
+  }, []);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (controlsRef.current) {
       controlsRef.current.reset();
     }
-  };
+  }, []);
 
   return (
     <div className="w-full h-full bg-black relative">
-      <Canvas
-        camera={{ position: [0, 0, 35], fov: 35 }}
-        style={{ background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)' }}
-      >
+      <Canvas camera={CAMERA_CONFIG} style={CANVAS_STYLE}>
         <Suspense fallback={null}>
-          <ambientLight intensity={0.6} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} />
-          <OrbitControls
-            ref={controlsRef}
-            enablePan={true}
-            enableZoom={true}
-            enableRotate={true}
-            maxDistance={60}
-            minDistance={15}
-          />
+          <ambientLight intensity={LIGHTING_CONFIG.ambient.intensity} />
+          {LIGHTING_CONFIG.pointLights.map((light, index) => (
+            <pointLight
+              key={index}
+              position={light.position}
+              intensity={light.intensity}
+            />
+          ))}
+          <OrbitControls ref={controlsRef} {...CONTROLS_CONFIG} />
           <TimelineScene
             entities={entities}
             changes={selectedEntityChanges}
-            allChanges={allChanges}
+            allChanges={changes}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />

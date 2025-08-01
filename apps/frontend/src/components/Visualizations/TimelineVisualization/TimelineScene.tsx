@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { ChangeParticle } from './ChangeParticle';
 import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
@@ -28,7 +28,9 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
+
     const startTime = new Date(sortedChanges[0].timestamp).getTime();
+
     const endTime = new Date(
       sortedChanges[sortedChanges.length - 1].timestamp
     ).getTime();
@@ -36,7 +38,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
     // Calculate all entity positions...
 
     const positions = entities.map((entity, index) => {
-      // Ensures entities are spread across the entire timeline height...
+      // This ensures entities are spread across the entire timeline height...
 
       const entityY = (index / (entities.length - 1) - 0.5) * 16; // Spread across -8 to +8
 
@@ -44,6 +46,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
 
       const angle = Math.random() * Math.PI * 2; // Random angle
       const radius = 2 + Math.random() * 4; // Random radius between 2-6
+
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
 
@@ -55,6 +58,21 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
       entityPositions: positions,
     };
   }, [allChanges, entities]);
+
+  const handleEntityClick = useCallback(
+    (entity: Entity) => {
+      onEntitySelect?.(entity);
+    },
+    [onEntitySelect]
+  );
+
+  const timelineText = useMemo(() => {
+    if (selectedEntity) {
+      return `${selectedEntity.name}: ${changes.length} changes`;
+    }
+    return `Click an entity to view its changes (${entities.length} entities)`;
+  }, [selectedEntity, changes.length, entities.length]);
+
   return (
     <group>
       <mesh position={[0, 0, 0]}>
@@ -81,7 +99,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           entity={entity}
           position={entityPositions[index]}
           isSelected={selectedEntity?.id === entity.id}
-          onClick={() => onEntitySelect?.(entity)}
+          onClick={() => handleEntityClick(entity)}
         />
       ))}
       {selectedEntity &&
@@ -98,6 +116,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
 
           const angle = Math.random() * Math.PI * 2;
           const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
+
           const x = entityPosition[0] + Math.cos(angle) * radius;
           const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
           const z = entityPosition[2] + Math.sin(angle) * radius;
@@ -119,9 +138,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
         outlineWidth={0.1}
         outlineColor="black"
       >
-        {selectedEntity
-          ? `${selectedEntity.name}: ${changes.length} changes`
-          : `Click an entity to view its changes (${entities.length} entities)`}
+        {timelineText}
       </Text>
       {selectedEntity && <TimeScale changes={changes} position={[0, 0, 0]} />}
     </group>
