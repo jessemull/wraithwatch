@@ -23,8 +23,8 @@
     "format:check": "prettier --check .",
     "generate-data": "tsx scripts/generate-time-series-data.ts",
     "install:all": "yarn install",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --format=compact && prettier --write . --silent",
-    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix > /dev/null 2>&1 && prettier --write . --silent",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --quiet && prettier --write . --silent",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --quiet --fix && prettier --write . --silent",
     "setup": "husky install"
   },
   "devDependencies": {
