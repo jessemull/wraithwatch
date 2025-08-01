@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { CONTROL_PANEL_CONFIG } from '../../../constants/visualization';
 import { ControlButton } from '../../../types/visualization';
+import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 interface ControlPanelProps {
   onZoomIn: () => void;
@@ -23,16 +24,19 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
         label: 'Zoom In',
         onClick: onZoomIn,
         className: CONTROL_PANEL_CONFIG.buttonClasses.zoom,
+        icon: <ZoomIn size={20} />,
       },
       {
         label: 'Zoom Out',
         onClick: onZoomOut,
         className: CONTROL_PANEL_CONFIG.buttonClasses.zoom,
+        icon: <ZoomOut size={20} />,
       },
       {
         label: 'Reset View',
         onClick: onReset,
         className: CONTROL_PANEL_CONFIG.buttonClasses.reset,
+        icon: <RotateCcw size={20} />,
       },
     ];
 
@@ -57,29 +61,21 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
     return buttons;
   }, [onZoomIn, onZoomOut, onReset, onRotateLeft, onRotateRight]);
 
-  const helpText = useMemo(() => CONTROL_PANEL_CONFIG.helpText, []);
-
   return (
     <div
       className={`${CONTROL_PANEL_CONFIG.position} ${CONTROL_PANEL_CONFIG.styling}`}
     >
-      <div className="text-sm font-medium mb-2">3D Controls</div>
       <div className="flex flex-col gap-2">
         {controlButtons.map((button, index) => (
           <button
             key={index}
             onClick={button.onClick}
-            className={button.className}
+            className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-2 hover:bg-gray-800/50 transition-colors cursor-pointer"
             aria-label={button.label}
             title={button.label}
           >
-            {button.icon ? button.icon : button.label}
+            {button.icon}
           </button>
-        ))}
-      </div>
-      <div className="text-xs text-gray-400 mt-2">
-        {helpText.map((text, index) => (
-          <div key={index}>{text}</div>
         ))}
       </div>
     </div>

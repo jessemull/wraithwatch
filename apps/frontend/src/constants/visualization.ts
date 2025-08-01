@@ -122,13 +122,12 @@ export const CANVAS_STYLE = {
 
 export const CONTROL_PANEL_CONFIG = {
   position: 'absolute top-4 right-4',
-  styling: 'bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 text-white border border-gray-800',
+  styling: 'text-white',
   buttonClasses: {
-    zoom: 'bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs',
-    reset: 'bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-xs',
-    rotate: 'bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs',
+    zoom: 'bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors',
+    reset: 'bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors',
+    rotate: 'bg-green-600 hover:bg-green-700 rounded-lg transition-colors',
   },
-  helpText: ['Mouse wheel: Zoom', 'Left drag: Rotate', 'Right drag: Pan'],
 } as const;
 
 export const NETWORK_NODE_CONFIG = {
