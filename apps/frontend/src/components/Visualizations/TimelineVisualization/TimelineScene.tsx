@@ -66,12 +66,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
     [onEntitySelect]
   );
 
-  const timelineText = useMemo(() => {
-    if (selectedEntity) {
-      return `${selectedEntity.name}: ${changes.length} changes`;
-    }
-    return `Click an entity to view its changes (${entities.length} entities)`;
-  }, [selectedEntity, changes.length, entities.length]);
+
 
   return (
     <group>
@@ -129,17 +124,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
             />
           );
         })}
-      <Text
-        position={[0, 10, 0]}
-        fontSize={1.0}
-        color="#00ff00"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.1}
-        outlineColor="black"
-      >
-        {timelineText}
-      </Text>
+
       {selectedEntity && <TimeScale changes={changes} position={[0, 0, 0]} />}
     </group>
   );

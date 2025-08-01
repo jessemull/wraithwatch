@@ -4,6 +4,7 @@ import { Entity } from '../../../types/entity';
 import { EntityChange } from '../../../types/api';
 import { NetworkScene } from './NetworkScene';
 import { OrbitControls } from '@react-three/drei';
+import { CANVAS_STYLE } from '../../../constants/visualization';
 
 interface NetworkGraph3DProps {
   changes: EntityChange[];
@@ -19,10 +20,10 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
   onEntitySelect,
 }) => {
   return (
-    <div className="w-full h-full bg-black">
+    <div className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0, 15], fov: 60 }}
-        style={{ background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)' }}
+        style={CANVAS_STYLE}
       >
         <Suspense fallback={null}>
           <ambientLight intensity={0.6} />

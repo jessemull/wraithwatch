@@ -79,63 +79,65 @@ export const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           {/* 3D Visualization */}
           <div className="xl:col-span-1">
-            <div className="px-6 py-4 border-b border-gray-800">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-lg font-semibold text-white">
-                    3D Entity Visualization
-                  </h2>
-                  <p className="text-sm text-gray-400 mt-1">
-                    Interactive 3D view of entity changes over time (
-                    {entities.length} entities, {changes.length} changes)
-                  </p>
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setVisualizationType('timeline')}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                      visualizationType === 'timeline'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Timeline
-                  </button>
-                  <button
-                    onClick={() => setVisualizationType('network')}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                      visualizationType === 'network'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Network
-                  </button>
-                  <button
-                    onClick={() => setVisualizationType('globe')}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                      visualizationType === 'globe'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Globe
-                  </button>
-                  <button
-                    onClick={() => setVisualizationType('matrix')}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                      visualizationType === 'matrix'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Matrix
-                  </button>
+            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl">
+              <div className="px-6 py-4 border-b border-gray-800">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">
+                      3D Entity Visualization
+                    </h2>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Interactive 3D view of entity changes over time (
+                      {entities.length} entities, {changes.length} changes)
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setVisualizationType('timeline')}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                        visualizationType === 'timeline'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Timeline
+                    </button>
+                    <button
+                      onClick={() => setVisualizationType('network')}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                        visualizationType === 'network'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Network
+                    </button>
+                    <button
+                      onClick={() => setVisualizationType('globe')}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                        visualizationType === 'globe'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Globe
+                    </button>
+                    <button
+                      onClick={() => setVisualizationType('matrix')}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                        visualizationType === 'matrix'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Matrix
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="h-[600px] bg-black rounded-lg overflow-hidden">
-              {renderVisualization()}
+              <div className="h-[600px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-hidden p-6">
+                {renderVisualization()}
+              </div>
             </div>
           </div>
 

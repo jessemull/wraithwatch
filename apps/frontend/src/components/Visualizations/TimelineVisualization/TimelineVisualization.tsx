@@ -58,7 +58,7 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full bg-black relative">
+    <div className="w-full h-full relative">
       <Canvas camera={CAMERA_CONFIG} style={CANVAS_STYLE}>
         <Suspense fallback={null}>
           <ambientLight intensity={LIGHTING_CONFIG.ambient.intensity} />

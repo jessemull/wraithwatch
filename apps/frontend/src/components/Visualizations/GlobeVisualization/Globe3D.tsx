@@ -19,7 +19,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({
   onEntitySelect,
 }) => {
   return (
-    <div className="w-full h-full bg-black">
+    <div className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
         style={{ background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)' }}

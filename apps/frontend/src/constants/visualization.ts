@@ -117,12 +117,12 @@ export const CONTROLS_CONFIG = {
 } as const;
 
 export const CANVAS_STYLE = {
-  background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)',
+  background: 'transparent',
 } as const;
 
 export const CONTROL_PANEL_CONFIG = {
   position: 'absolute top-4 right-4',
-  styling: 'bg-black/80 backdrop-blur-sm rounded-lg p-3 text-white',
+  styling: 'bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 text-white border border-gray-800',
   buttonClasses: {
     zoom: 'bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs',
     reset: 'bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-xs',
