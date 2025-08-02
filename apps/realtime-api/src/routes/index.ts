@@ -4,7 +4,7 @@ import { RouteOptions } from '../types/routes';
 import { ApiResponse } from '../types/api';
 
 const routes: FastifyPluginAsync<RouteOptions> = async (fastify, options) => {
-  const { dynamoDBService } = options;
+  const { dynamoDBService, aggregatedMetricsService } = options;
 
   await fastify.register(healthRoute);
 
@@ -17,10 +17,15 @@ const routes: FastifyPluginAsync<RouteOptions> = async (fastify, options) => {
         dynamoDBService.getAllEntityPositions(),
       ]);
 
+      // Calculate aggregated metrics from the same data...
+
+      const metrics = await aggregatedMetricsService.calculateMetrics(data);
+
       return {
         success: true,
         data,
         positions,
+        metrics,
         count: data.length,
         positionCount: positions.length,
       } as ApiResponse;
