@@ -7,6 +7,7 @@ import { createHash } from 'crypto';
 import { EntityPosition as FrontendEntityPosition } from '../apps/frontend/src/types/entity';
 
 // Types for entity positions...
+
 interface EntityPosition extends FrontendEntityPosition {
   PK: string;
   SK: string;
@@ -240,7 +241,6 @@ function generateMatrixPosition(
   const seed = generateDeterministicSeed(entity.id);
 
   if (entity.type !== 'Threat') {
-    // Place non-threat entities in a 3D grid
     const gridSize = Math.ceil(Math.cbrt(ENTITY_CONFIGURATIONS.length));
     const layer = Math.floor(index / (gridSize * gridSize));
     const row = Math.floor((index % (gridSize * gridSize)) / gridSize);
@@ -252,12 +252,14 @@ function generateMatrixPosition(
     ];
   }
 
-  // For threats, position based on severity and detection count
+  // For threats, position based on severity and detection count...
+
   const severity = entity.characteristics.severity || 'low';
   const detectionCount = deterministicRandom(seed) * 100; // 0-100 range
   const threatScore = deterministicRandom(seed, 1); // 0-1 range
 
-  // Y-axis: Severity (bottom to top) - moved up by 2 units
+  // Y-axis: Severity (bottom to top) - moved up by 2 units...
+
   let y = 0;
   switch (severity) {
     case 'critical':
@@ -276,10 +278,12 @@ function generateMatrixPosition(
       y = 2;
   }
 
-  // X-axis: Detection Count (left to right) - 0-100 range
+  // X-axis: Detection Count (left to right) - 0-100 range...
+
   const x = Math.max(-4, Math.min(4, (detectionCount / 100) * 8 - 4));
 
-  // Z-axis: Threat Score (back to front) - convert 0-1 to 0-100 scale
+  // Z-axis: Threat Score (back to front) - convert 0-1 to 0-100 scale...
+
   const threatScorePercent = threatScore * 100;
   const z = (threatScorePercent / 100) * 6 - 3;
 
@@ -357,7 +361,8 @@ function createEntityPosition(
   };
 }
 
-// Database operations
+// Database operations...
+
 class DynamoDBService {
   private docClient: DynamoDBDocumentClient;
   private readonly tableName = 'wraithwatch-entity-changes';
