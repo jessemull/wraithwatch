@@ -139,3 +139,49 @@ export const updateEntityInList = (
     entity.id === entityId ? updateFunction(entity) : entity
   );
 };
+
+// Entity name mapping from the data generation script...
+
+const ENTITY_NAMES: Record<string, string> = {
+  // Systems...
+
+  'system-001': 'Production Server Alpha',
+  'system-002': 'Database Server Beta',
+  'system-003': 'Load Balancer Gamma',
+  'system-004': 'Development Server Delta',
+  'system-005': 'Analytics Server Epsilon',
+
+  // AI Agents...
+
+  'ai-agent-001': 'Threat Detection AI',
+  'ai-agent-002': 'Network Analysis AI',
+  'ai-agent-003': 'Performance Monitor AI',
+  'ai-agent-004': 'Anomaly Detection AI',
+
+  // Threats...
+
+  'threat-001': 'Suspicious Activity Detected',
+  'threat-002': 'DDoS Attack Pattern',
+  'threat-003': 'Data Exfiltration Attempt',
+  'threat-004': 'Malware Detection',
+
+  // Network Nodes...
+
+  'network-node-001': 'Core Router Alpha',
+  'network-node-002': 'Edge Switch Beta',
+  'network-node-003': 'Firewall Gamma',
+  'network-node-004': 'VPN Gateway Delta',
+  'network-node-005': 'Load Balancer Epsilon',
+
+  // Users...
+
+  'user-001': 'Admin User',
+  'user-002': 'Security Analyst',
+  'user-003': 'Network Engineer',
+  'user-004': 'System Administrator',
+  'user-005': 'Data Scientist',
+};
+
+export const getEntityName = (entityId: string): string => {
+  return ENTITY_NAMES[entityId] || entityId;
+};

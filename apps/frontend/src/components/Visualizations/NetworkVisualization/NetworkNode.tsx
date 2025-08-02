@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Text } from '@react-three/drei';
 import { Entity } from '../../../types/entity';
 import { NETWORK_NODE_CONFIG } from '../../../constants/visualization';
+import { getEntityName } from '../../../util/entity';
 
 interface NetworkNodeProps {
   entity: Entity;
@@ -137,7 +138,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
         outlineWidth={NETWORK_NODE_CONFIG.labelOutlineWidth}
         outlineColor="#000000"
       >
-        {entity.name}
+        {getEntityName(entity.id)}
       </Text>
     </group>
   );
