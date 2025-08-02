@@ -15,22 +15,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install Dependencies
         run: |
-          cd apps/chat-bot
-          npm ci
+          yarn install --frozen-lockfile
 
       - name: Lint Code
         run: |
-          cd apps/chat-bot
-          npm run lint
+          yarn workspace @wraithwatch/chat-bot lint
 
       - name: Run Unit Tests
         run: |
-          cd apps/chat-bot
-          npm test
+          yarn workspace @wraithwatch/chat-bot test
 
       - name: Set Up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
@@ -41,10 +38,9 @@ jobs:
 
       - name: Build Lambda Package
         run: |
-          cd apps/chat-bot
           export NODE_ENV="production"
-          npm run build
-          npm run package
+          yarn workspace @wraithwatch/chat-bot build
+          yarn workspace @wraithwatch/chat-bot package
 
       - name: Generate Artifact Name
         run: |
