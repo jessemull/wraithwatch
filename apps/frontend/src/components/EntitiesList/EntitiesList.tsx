@@ -46,14 +46,10 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
 }) => {
   const [expandedType, setExpandedType] = useState<string | null>(null);
 
-  // Memoize aggregated data to prevent recalculation on every render...
-
   const aggregatedData = useMemo(
     () => aggregateEntitiesByType(entities),
     [entities]
   );
-
-  // Memoize toggle function to prevent unnecessary re-renders...
 
   const toggleType = useCallback((type: string) => {
     setExpandedType(prev => (prev === type ? null : type));
@@ -85,7 +81,7 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
             />
             {expandedType === type && (
               <div className="bg-gray-700/30 border-t border-gray-800">
-                <div className="divide-y divide-gray-600">
+                <div className="divide-y divide-gray-600/50">
                   {entities.map(entity => (
                     <EntityItem key={entity.id} entity={entity} />
                   ))}

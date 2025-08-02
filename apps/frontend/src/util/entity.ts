@@ -68,6 +68,10 @@ export const formatPropertyName = (name: string): string => {
   return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };
 
+export const formatText = (text: string): string => {
+  return text.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 export const formatEntityType = (entityType: string): string => {
   return entityType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };

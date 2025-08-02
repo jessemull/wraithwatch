@@ -160,7 +160,7 @@ export const NETWORK_NODE_CONFIG = {
   threatHaloOffset: 0.1,
   threatHighlightOffset: 0.05,
   labelOffset: 0.3,
-  labelFontSize: 0.6,
+  labelFontSize: 0.4,
   labelMaxWidth: 2,
   labelOutlineWidth: 0.02,
 } as const;
