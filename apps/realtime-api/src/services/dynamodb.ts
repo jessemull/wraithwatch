@@ -13,14 +13,9 @@ import {
   DYNAMODB_TABLE_NAME,
   DYNAMODB_CONSTANTS,
 } from '../constants';
-import {
-  EntityChange,
-  QueryOptions,
-  RecentChangesOptions,
-  EntitySummary,
-  PropertySummary,
-} from '../types/dynamodb';
+import { EntityChange, RecentChangesOptions } from '../types/dynamodb';
 import { createComponentLogger } from '../utils/logger';
+import NodeCache from 'node-cache';
 
 const logger = createComponentLogger('dynamodb-service');
 
@@ -31,12 +26,31 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 export class DynamoDBService {
   private readonly tableName = DYNAMODB_TABLE_NAME;
+  private dataCache: NodeCache;
+  private positionsCache: NodeCache;
+
+  constructor() {
+    // Cache with very long TTL for demo (30 days)...
+
+    this.dataCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
+    this.positionsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
+  }
 
   // Get all data with pagination...
 
   async getAllData(
     limit: number = DYNAMODB_CONSTANTS.DEFAULT_SCAN_LIMIT
   ): Promise<EntityChange[]> {
+    // Check cache first...
+
+    const cachedData = this.dataCache.get<EntityChange[]>('all_data');
+    if (cachedData) {
+      logger.info('Returning cached data');
+      return cachedData.slice(0, limit);
+    }
+
+    // If not in cache, fetch from database...
+
     const allItems: EntityChange[] = [];
     let lastEvaluatedKey: Record<string, unknown> | undefined = undefined;
 
@@ -57,6 +71,12 @@ export class DynamoDBService {
       } while (lastEvaluatedKey && allItems.length < limit);
 
       this.logScanCompletion(allItems.length);
+
+      // Cache the data...
+
+      this.dataCache.set('all_data', allItems);
+      logger.info('Cached all data');
+
       return allItems;
     } catch (error) {
       this.logError('Error scanning table for all data', { error });
@@ -65,7 +85,6 @@ export class DynamoDBService {
   }
 
   // Get entity history with flexible filtering...
-
   // Get recent changes using GSI2...
 
   async getRecentChanges(
@@ -100,6 +119,16 @@ export class DynamoDBService {
   }
 
   async getAllEntityPositions(): Promise<any[]> {
+    // Check cache first...
+
+    const cachedPositions = this.positionsCache.get<any[]>('all_positions');
+    if (cachedPositions) {
+      logger.info('Returning cached positions');
+      return cachedPositions;
+    }
+
+    // If not in cache, fetch from database...
+
     try {
       const allItems: any[] = [];
       let lastEvaluatedKey: Record<string, unknown> | undefined = undefined;
@@ -123,11 +152,48 @@ export class DynamoDBService {
       } while (lastEvaluatedKey);
 
       this.logScanCompletion(allItems.length);
+
+      // Cache the positions...
+
+      this.positionsCache.set('all_positions', allItems);
+      logger.info('Cached all positions');
+
       return allItems;
     } catch (error) {
       this.logError('Error scanning table for entity positions', { error });
       throw error;
     }
+  }
+
+  // Preload cache with all data...
+
+  async preloadCache(): Promise<void> {
+    try {
+      logger.info('Preloading cache with all data...');
+
+      // Preload data cache...
+
+      const allData = await this.getAllData();
+      this.dataCache.set('all_data', allData);
+
+      // Preload positions cache...
+
+      const allPositions = await this.getAllEntityPositions();
+      this.positionsCache.set('all_positions', allPositions);
+
+      logger.info('Cache preloaded successfully');
+    } catch (error) {
+      this.logError('Error preloading cache', { error });
+      throw error;
+    }
+  }
+
+  // Clear cache if needed...
+
+  clearCache(): void {
+    this.dataCache.flushAll();
+    this.positionsCache.flushAll();
+    logger.info('Cache cleared');
   }
 
   // Helper method to create a new entity change...
@@ -190,75 +256,6 @@ export class DynamoDBService {
       items: (response.Items as EntityChange[]) || [],
       lastEvaluatedKey: response.LastEvaluatedKey,
     };
-  }
-
-  private shouldUsePropertyFilter(
-    propertyName?: string,
-    startTime?: string,
-    endTime?: string
-  ): boolean {
-    return Boolean(propertyName && !startTime && !endTime);
-  }
-
-  private async getEntityHistoryWithPropertyFilter(
-    entityId: string,
-    propertyName: string,
-    limit: number
-  ): Promise<EntityChange[]> {
-    try {
-      const queryParams: QueryCommandInput = {
-        TableName: this.tableName,
-        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :propertyPrefix)',
-        ExpressionAttributeValues: {
-          ':pk': this.buildEntityKey(entityId),
-          ':propertyPrefix': `#${propertyName}`,
-        },
-        ScanIndexForward: false,
-        Limit: limit,
-      };
-
-      const response = await docClient.send(new QueryCommand(queryParams));
-      return (response.Items as EntityChange[]) || [];
-    } catch (error) {
-      this.logError('Error querying property history', {
-        error,
-        entityId,
-        propertyName,
-      });
-      throw error;
-    }
-  }
-
-  private buildEntityHistoryQuery(
-    entityId: string,
-    options: QueryOptions
-  ): QueryCommandInput {
-    const {
-      propertyName,
-      startTime,
-      endTime,
-      limit = DYNAMODB_CONSTANTS.DEFAULT_QUERY_LIMIT,
-    } = options;
-
-    const queryBuilder = new QueryBuilder();
-    queryBuilder.setPartitionKey(this.buildEntityKey(entityId));
-
-    if (propertyName) {
-      this.addPropertyTimeFilters(
-        queryBuilder,
-        propertyName,
-        startTime,
-        endTime
-      );
-    } else {
-      this.addTimeFilters(queryBuilder, startTime, endTime);
-    }
-
-    return queryBuilder.build({
-      tableName: this.tableName,
-      limit,
-      scanIndexForward: false,
-    });
   }
 
   private addPropertyTimeFilters(
@@ -361,50 +358,6 @@ export class DynamoDBService {
       0,
       options.limit || DYNAMODB_CONSTANTS.DEFAULT_QUERY_LIMIT
     );
-  }
-
-  private buildEntitySummary(
-    entityId: string,
-    changes: EntityChange[]
-  ): EntitySummary {
-    const entityType = changes[0].entity_type;
-    const properties = this.aggregatePropertyChanges(changes);
-
-    return {
-      entityId,
-      entityType,
-      properties,
-    };
-  }
-
-  private aggregatePropertyChanges(
-    changes: EntityChange[]
-  ): Record<string, PropertySummary> {
-    const properties: Record<string, PropertySummary> = {};
-
-    changes.forEach(change => {
-      if (!properties[change.property_name]) {
-        properties[change.property_name] = {
-          currentValue: change.value,
-          changeCount: 0,
-          lastChange: change.timestamp,
-        };
-      }
-
-      properties[change.property_name].changeCount++;
-
-      if (
-        this.isMoreRecent(
-          change.timestamp,
-          properties[change.property_name].lastChange
-        )
-      ) {
-        properties[change.property_name].currentValue = change.value;
-        properties[change.property_name].lastChange = change.timestamp;
-      }
-    });
-
-    return properties;
   }
 
   private createBatches<T>(items: T[], batchSize: number): T[][] {

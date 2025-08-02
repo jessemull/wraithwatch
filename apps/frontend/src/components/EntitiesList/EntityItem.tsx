@@ -13,31 +13,86 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
   const getKeyProperties = () => {
     if (!entity.properties) return [];
 
-    const priorityProperties = [
-      'cpu_usage',
-      'memory_usage',
-      'response_time',
-      'network_connections',
-      'active_requests',
-      'accuracy',
-      'confidence_score',
-      'latency',
-      'bandwidth_usage',
-      'error_rate',
-      'severity',
-      'status',
-      'session_duration',
-      'login_count',
-      'last_activity',
-      'failed_login_attempts',
-      'permission_level',
-      'threat_score',
-      'detection_count',
-    ];
+    // Define priority properties based on entity type...
 
-    return Object.entries(entity.properties)
-      .filter(([key]) => priorityProperties.includes(key))
-      .slice(0, 3);
+    let priorityProperties: string[];
+
+    if (entity.type === 'AI_Agent') {
+      priorityProperties = [
+        'status',
+        'confidence_score',
+        'active_requests',
+        'response_time',
+        'accuracy',
+        'training_status',
+      ];
+    } else if (entity.type === 'Network_Node') {
+      priorityProperties = [
+        'routing_status',
+        'bandwidth_usage',
+        'connection_count',
+        'latency',
+        'error_rate',
+        'packet_loss',
+      ];
+    } else if (entity.type === 'Threat') {
+      priorityProperties = [
+        'severity',
+        'threat_score',
+        'detection_count',
+        'mitigation_status',
+        'attack_type',
+      ];
+    } else if (entity.type === 'System') {
+      priorityProperties = [
+        'status',
+        'cpu_usage',
+        'memory_usage',
+        'response_time',
+        'network_connections',
+        'disk_usage',
+      ];
+    } else if (entity.type === 'User') {
+      priorityProperties = [
+        'last_activity',
+        'login_count',
+        'session_duration',
+        'permission_level',
+        'failed_login_attempts',
+      ];
+    } else {
+      priorityProperties = [
+        'cpu_usage',
+        'memory_usage',
+        'response_time',
+        'network_connections',
+        'active_requests',
+        'accuracy',
+        'confidence_score',
+        'latency',
+        'bandwidth_usage',
+        'error_rate',
+        'severity',
+        'status',
+        'session_duration',
+        'login_count',
+        'last_activity',
+        'failed_login_attempts',
+        'permission_level',
+        'threat_score',
+        'detection_count',
+      ];
+    }
+
+    const filteredProperties = Object.entries(entity.properties).filter(
+      ([key]) => priorityProperties.includes(key)
+    );
+
+    const sortedProperties = filteredProperties.sort(([a], [b]) => {
+      return a.localeCompare(b);
+    });
+
+    return sortedProperties.slice(0, 5);
   };
 
   const formatPropertyValue = (

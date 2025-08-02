@@ -13,8 +13,24 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://www.wraithwatch-demo.com',
   },
-  description: `${config.app.description}. Real-time entity monitoring and threat detection powered by advanced AI.`,
+  description: config.app.description,
   metadataBase: new URL('https://www.wraithwatch-demo.com'),
+  keywords:
+    'cyber defense, threat detection, AI security, real-time monitoring, cybersecurity, entity monitoring, security analytics',
+  authors: [{ name: 'Wraithwatch Team' }],
+  creator: 'Wraithwatch',
+  publisher: 'Wraithwatch',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     description: config.app.description,
     images: [

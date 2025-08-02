@@ -37,10 +37,13 @@ export class EntityManager {
   async initializeFromDatabase(): Promise<void> {
     try {
       logger.info('Loading entities from database...');
+
+      // Get data from DynamoDBService (which will use its cache)
       const dbData = await this.dynamoDBService.getAllData();
 
       const entities = this.transformDatabaseDataToEntities(dbData);
 
+      // Store entities in EntityManager cache for individual access
       entities.forEach(entity => {
         this.entityCache.set(entity.id, entity);
       });
@@ -163,6 +166,28 @@ export class EntityManager {
         'Processing entity for updates'
       );
 
+      // Ensure all allowed properties exist
+      allowedProperties.forEach(propertyName => {
+        if (!entity.properties[propertyName]) {
+          // Create missing property with initial value
+          const initialValue = this.generatePropertyValue(
+            propertyName,
+            null,
+            entityType
+          );
+          entity.properties[propertyName] = {
+            name: propertyName,
+            currentValue: initialValue,
+            lastChanged: new Date().toISOString(),
+            history: [],
+          };
+          logger.info(
+            { entityId: entity.id, propertyName, initialValue },
+            'Created missing property'
+          );
+        }
+      });
+
       Object.entries(entity.properties).forEach(([propertyName, property]) => {
         if (!allowedProperties.includes(propertyName)) {
           logger.debug(
@@ -176,7 +201,11 @@ export class EntityManager {
 
         if (shouldChangeProperty(changeFrequency)) {
           const oldValue = property.currentValue;
-          const newValue = this.generatePropertyValue(propertyName, oldValue);
+          const newValue = this.generatePropertyValue(
+            propertyName,
+            oldValue,
+            entityType
+          );
 
           property.currentValue = newValue;
           property.lastChanged = new Date().toISOString();
@@ -233,7 +262,6 @@ export class EntityManager {
       network_connections: 0.9,
       disk_usage: 0.3,
       response_time: 0.7,
-      status: 0.02,
 
       // AI Agent properties...
 
@@ -242,6 +270,7 @@ export class EntityManager {
       model_version: 0.01,
       accuracy: 0.4,
       training_status: 0.05,
+      status: 0.03,
 
       // Threat properties...
 
@@ -279,7 +308,11 @@ export class EntityManager {
     return frequencyMap[propertyName] || 0.2;
   }
 
-  private generatePropertyValue(propertyName: string, currentValue: any): any {
+  private generatePropertyValue(
+    propertyName: string,
+    currentValue: any,
+    entityType: string
+  ): any {
     const valueGenerators: Record<string, () => any> = {
       // System properties...
 
@@ -289,15 +322,20 @@ export class EntityManager {
       disk_usage: () => Math.floor(30 + Math.random() * 55),
       response_time: () => Math.floor(10 + Math.random() * 490),
       status: () => {
-        const statuses = [
-          'online',
-          'offline',
-          'maintenance',
-          'degraded',
-          'overloaded',
-          'recovering',
-        ];
-        return statuses[Math.floor(Math.random() * statuses.length)];
+        if (entityType === 'AI_Agent') {
+          const statuses = ['online', 'away', 'offline', 'busy'];
+          return statuses[Math.floor(Math.random() * statuses.length)];
+        } else {
+          const statuses = [
+            'online',
+            'offline',
+            'maintenance',
+            'degraded',
+            'overloaded',
+            'recovering',
+          ];
+          return statuses[Math.floor(Math.random() * statuses.length)];
+        }
       },
 
       // AI Agent properties...
@@ -427,6 +465,7 @@ export class EntityManager {
         'model_version',
         'accuracy',
         'training_status',
+        'status',
       ],
       Threat: [
         'threat_score',

@@ -1,7 +1,12 @@
 import * as routes from './routes';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { DynamoDBService, EntityManager, WebSocketManager } from './services';
+import {
+  DynamoDBService,
+  EntityManager,
+  WebSocketManager,
+  AggregatedMetricsService,
+} from './services';
 import { websocketPlugin } from './plugins';
 
 export async function createServer() {
@@ -36,6 +41,7 @@ export async function createServer() {
   const dynamoDBService = new DynamoDBService();
   const websocketManager = new WebSocketManager();
   const entityManager = new EntityManager(websocketManager, dynamoDBService);
+  const aggregatedMetricsService = new AggregatedMetricsService();
 
   // Register WebSocket plugin...
 
@@ -48,11 +54,13 @@ export async function createServer() {
 
   await fastify.register(routes.default, {
     dynamoDBService,
+    aggregatedMetricsService,
   });
 
   // Start generating entity updates...
 
   await entityManager.initializeFromDatabase();
+
   entityManager.startUpdateGeneration(2000);
 
   return fastify;

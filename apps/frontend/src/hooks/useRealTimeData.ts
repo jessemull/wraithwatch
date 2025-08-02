@@ -15,6 +15,7 @@ export const useRealTimeData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
   const [positions, setPositions] = useState<EntityPosition[]>([]);
+  const [metrics, setMetrics] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
@@ -95,6 +96,7 @@ export const useRealTimeData = () => {
 
       setChanges(result.data);
       setPositions(result.positions || []);
+      setMetrics(result.metrics || null);
       const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
     } catch (err) {
@@ -225,6 +227,7 @@ export const useRealTimeData = () => {
     entities,
     changes,
     positions,
+    metrics,
     loading,
     error,
     isConnected,
