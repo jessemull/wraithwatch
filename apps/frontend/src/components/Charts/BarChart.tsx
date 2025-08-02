@@ -11,6 +11,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { capitalizeFirstLetter } from '../../util';
 
 ChartJS.register(
   CategoryScale,
@@ -40,7 +41,7 @@ export const BarChart: React.FC<BarChartProps> = ({
 }) => {
   const chartData: ChartData<'bar'> = useMemo(
     () => ({
-      labels: Object.keys(data),
+      labels: Object.keys(data).map(capitalizeFirstLetter),
       datasets: [
         {
           label: title,
@@ -75,6 +76,15 @@ export const BarChart: React.FC<BarChartProps> = ({
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
           },
+          title: {
+            display: true,
+            text: 'Count',
+            color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
+          },
         },
         x: {
           grid: {
@@ -82,6 +92,15 @@ export const BarChart: React.FC<BarChartProps> = ({
           },
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
+          },
+          title: {
+            display: true,
+            text: 'Severity Level',
+            color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
           },
         },
       },

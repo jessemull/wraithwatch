@@ -12,6 +12,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { capitalizeFirstLetter } from '../../util';
 
 ChartJS.register(
   CategoryScale,
@@ -52,7 +53,7 @@ export const LineChart: React.FC<LineChartProps> = ({
 }) => {
   const chartData: ChartData<'line'> = useMemo(
     () => ({
-      labels: Object.keys(data),
+      labels: Object.keys(data).map(capitalizeFirstLetter),
       datasets: [
         {
           label: title,
@@ -105,6 +106,15 @@ export const LineChart: React.FC<LineChartProps> = ({
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
           },
+          title: {
+            display: true,
+            text: 'Changes',
+            color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
+          },
         },
         x: {
           grid: {
@@ -112,6 +122,15 @@ export const LineChart: React.FC<LineChartProps> = ({
           },
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
+          },
+          title: {
+            display: true,
+            text: 'Date',
+            color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
           },
         },
       },

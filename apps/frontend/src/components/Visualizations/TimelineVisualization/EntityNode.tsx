@@ -57,7 +57,7 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
   }, [style.pulse, style.size, style.color, style.emissive]);
 
   const textPosition = useMemo(
-    () => [0, style.size + 0.2, 0] as [number, number, number],
+    () => [0, style.size + 0.6, 0] as [number, number, number],
     [style.size]
   );
 

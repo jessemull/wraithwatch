@@ -11,6 +11,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { capitalizeFirstLetter } from '../../util';
 
 ChartJS.register(
   CategoryScale,
@@ -40,7 +41,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
 }) => {
   const chartData: ChartData<'bar'> = useMemo(
     () => ({
-      labels: Object.keys(data),
+      labels: Object.keys(data).map(capitalizeFirstLetter),
       datasets: [
         {
           label: title,
@@ -77,6 +78,15 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
           },
+          title: {
+            display: true,
+            text: 'Count',
+            color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
+          },
         },
         y: {
           grid: {
@@ -84,6 +94,15 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           },
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
+          },
+          title: {
+            display: true,
+            text: 'Agent Status',
+            color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 12,
+              weight: 'bold',
+            },
           },
         },
       },

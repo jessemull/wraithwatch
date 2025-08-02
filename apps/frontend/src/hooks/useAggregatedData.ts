@@ -190,7 +190,7 @@ export const useAggregatedData = (
 
     // Calculate total connections...
 
-    const totalConnections = entityStates
+    const totalConnections = Math.round(entityStates
       .filter(
         state =>
           state.connection_count !== undefined ||
@@ -208,7 +208,7 @@ export const useAggregatedData = (
             : Number(state.network_connections)
           : 0;
         return total + connectionCount + networkConnections;
-      }, 0);
+      }, 0));
 
     // Calculate distributions...
 

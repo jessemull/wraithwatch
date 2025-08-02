@@ -99,7 +99,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
       <Text
         position={[0, nodeStyle.size + NETWORK_NODE_CONFIG.labelOffset, 0]}
         fontSize={NETWORK_NODE_CONFIG.labelFontSize}
-        color="white"
+        color="#ffffff"
         anchorX="center"
         anchorY="bottom"
         maxWidth={NETWORK_NODE_CONFIG.labelMaxWidth}

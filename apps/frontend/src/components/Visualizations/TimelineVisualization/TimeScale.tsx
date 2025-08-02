@@ -50,10 +50,10 @@ export const TimeScale: React.FC<TimeScaleProps> = ({ position }) => {
   return (
     <group position={position}>
       <Text
-        position={[0, 8, 0]}
+        position={[6, 8, 0]}
         fontSize={0.8}
         color="#ffff00"
-        anchorX="center"
+        anchorX="left"
         anchorY="middle"
         outlineWidth={0.05}
         outlineColor="black"
@@ -61,10 +61,10 @@ export const TimeScale: React.FC<TimeScaleProps> = ({ position }) => {
         {formattedEndTime}
       </Text>
       <Text
-        position={[0, -8, 0]}
+        position={[6, -8, 0]}
         fontSize={0.8}
         color="#ffff00"
-        anchorX="center"
+        anchorX="left"
         anchorY="middle"
         outlineWidth={0.05}
         outlineColor="black"

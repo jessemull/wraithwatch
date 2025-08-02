@@ -30,7 +30,7 @@ export const ENTITY_STYLES = {
     default: { emissiveIntensity: 0.4, size: 0.3 },
   },
   User: {
-    base: { color: '#feca57', textColor: '#000000', pulse: false },
+    base: { color: '#feca57', textColor: '#ffffff', pulse: false },
     selected: { emissiveIntensity: 0.8, size: 0.4 },
     default: { emissiveIntensity: 0.4, size: 0.3 },
   },
@@ -88,8 +88,8 @@ export const TIMELINE_CONFIG = {
     material: { color: '#4a90e2', emissive: '#4a90e2', emissiveIntensity: 0.3 },
   },
   text: {
-    fontSize: 0.3,
-    outlineWidth: 0.02,
+    fontSize: 0.4,
+    outlineWidth: 0.03,
     outlineColor: 'black',
     infoText: {
       fontSize: 1.0,
@@ -160,9 +160,9 @@ export const NETWORK_NODE_CONFIG = {
   threatHaloOffset: 0.1,
   threatHighlightOffset: 0.05,
   labelOffset: 0.3,
-  labelFontSize: 0.15,
+  labelFontSize: 0.3,
   labelMaxWidth: 2,
-  labelOutlineWidth: 0.01,
+  labelOutlineWidth: 0.02,
 } as const;
 
 export const CONNECTION_LINE_CONFIG = {

@@ -9,6 +9,7 @@ import {
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { DEFAULT_COLORS, DEFAULT_BORDER_COLORS } from '../../constants/charts';
+import { capitalizeFirstLetter } from '../../util';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -36,7 +37,7 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({
     const dataValues = Object.values(data);
 
     return {
-      labels: dataKeys,
+      labels: dataKeys.map(capitalizeFirstLetter),
       datasets: [
         {
           data: dataValues,
