@@ -1,11 +1,11 @@
-name: Deploy
+name: Deploy Chatbot
 
 on:
   workflow_dispatch:
 
 jobs:
   deploy-lambda:
-    name: Deploy Chat Bot
+    name: Deploy Chatbot
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
