@@ -1,6 +1,10 @@
 import React from 'react';
 import { EntityGroupHeaderProps } from '../../types/entity';
-import { getEntityTypeColor, formatTime, formatEntityType } from '../../util/entity';
+import {
+  getEntityTypeColor,
+  formatTime,
+  formatEntityType,
+} from '../../util/entity';
 
 export const EntityGroupHeader: React.FC<EntityGroupHeaderProps> = ({
   type,

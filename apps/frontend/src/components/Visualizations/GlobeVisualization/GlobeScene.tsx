@@ -91,7 +91,7 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
         }
 
         // Fallback to algorithmic particles...
-        
+
         return Array.from({ length: 40 }, (_, index) => {
           const baseAngle = (index * 137.5) % (Math.PI * 2);
           const radius = 4 + Math.sin(baseAngle) * 0.5;

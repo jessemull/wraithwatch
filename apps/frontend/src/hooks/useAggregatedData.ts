@@ -190,25 +190,27 @@ export const useAggregatedData = (
 
     // Calculate total connections...
 
-    const totalConnections = Math.round(entityStates
-      .filter(
-        state =>
-          state.connection_count !== undefined ||
-          state.network_connections !== undefined
-      )
-      .reduce((total, state) => {
-        const connectionCount = state.connection_count
-          ? typeof state.connection_count === 'string'
-            ? parseFloat(state.connection_count)
-            : Number(state.connection_count)
-          : 0;
-        const networkConnections = state.network_connections
-          ? typeof state.network_connections === 'string'
-            ? parseFloat(state.network_connections)
-            : Number(state.network_connections)
-          : 0;
-        return total + connectionCount + networkConnections;
-      }, 0));
+    const totalConnections = Math.round(
+      entityStates
+        .filter(
+          state =>
+            state.connection_count !== undefined ||
+            state.network_connections !== undefined
+        )
+        .reduce((total, state) => {
+          const connectionCount = state.connection_count
+            ? typeof state.connection_count === 'string'
+              ? parseFloat(state.connection_count)
+              : Number(state.connection_count)
+            : 0;
+          const networkConnections = state.network_connections
+            ? typeof state.network_connections === 'string'
+              ? parseFloat(state.network_connections)
+              : Number(state.network_connections)
+            : 0;
+          return total + connectionCount + networkConnections;
+        }, 0)
+    );
 
     // Calculate distributions...
 

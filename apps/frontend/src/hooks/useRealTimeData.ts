@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Entity } from '../types/entity';
+import { Entity, EntityPosition } from '../types/entity';
 import { EntityChange, HistoryQuery } from '../types/api';
 import { WebSocketMessage } from '../types/websocket';
 import { WEBSOCKET_CONNECTION_STATUS } from '../constants';
@@ -14,7 +14,7 @@ import {
 export const useRealTimeData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
-  const [positions, setPositions] = useState<any[]>([]);
+  const [positions, setPositions] = useState<EntityPosition[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);

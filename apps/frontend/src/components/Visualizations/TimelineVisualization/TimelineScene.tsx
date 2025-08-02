@@ -88,7 +88,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
     }
 
     // Fallback to algorithmic particles...
-    
+
     const particleCount = 150;
     const selectedEntityIndex = entities.findIndex(
       e => e.id === selectedEntity.id

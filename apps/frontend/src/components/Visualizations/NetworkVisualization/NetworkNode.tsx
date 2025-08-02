@@ -47,10 +47,10 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
       const elapsed = Date.now() - startTime;
       const pulseSpeed = 0.003; // Speed of the pulse
       const pulseRange = 0.3; // Range of the pulse (0.7 to 1.3)
-      
+
       const scale = 1 + pulseRange * Math.sin(elapsed * pulseSpeed);
       setPulseScale(scale);
-      
+
       animationId = requestAnimationFrame(animate);
     };
 
@@ -107,7 +107,10 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
   return (
     <group position={position}>
       {threatHalo}
-      <mesh onClick={onClick} scale={isThreat ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}>
+      <mesh
+        onClick={onClick}
+        scale={isThreat ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}
+      >
         <sphereGeometry
           args={[
             nodeStyle.size,

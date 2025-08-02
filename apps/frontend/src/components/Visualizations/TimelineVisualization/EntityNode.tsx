@@ -49,10 +49,10 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
       const elapsed = Date.now() - startTime;
       const pulseSpeed = 0.003; // Speed of the pulse
       const pulseRange = 0.3; // Range of the pulse (0.7 to 1.3)
-      
+
       const scale = 1 + pulseRange * Math.sin(elapsed * pulseSpeed);
       setPulseScale(scale);
-      
+
       animationId = requestAnimationFrame(animate);
     };
 
@@ -91,7 +91,10 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
 
   return (
     <group position={position}>
-      <mesh onClick={onClick} scale={style.pulse ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}>
+      <mesh
+        onClick={onClick}
+        scale={style.pulse ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}
+      >
         <sphereGeometry args={[style.size, 16, 16]} />
         <meshStandardMaterial
           color={style.color}

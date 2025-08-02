@@ -52,7 +52,7 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
 
     unpositionedEntities.forEach((entity, index) => {
       // Create a spherical distribution for fallback positioning...
-      
+
       const angle =
         (index / Math.max(unpositionedEntities.length, 1)) * Math.PI * 2;
       const elevation =
