@@ -10,8 +10,6 @@
   ],
   "scripts": {
     "build": "yarn workspaces run build",
-    "build:prod": "yarn --cwd apps/realtime-api build:prod",
-    "build:chat-bot": "yarn --cwd apps/chat-bot build",
     "commit": "git-cz",
     "db:clean": "tsx scripts/delete-time-series-data.ts",
     "db:refresh": "yarn db:reset && yarn db:seed",
@@ -20,7 +18,6 @@
     "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:realtime\"",
     "dev:frontend": "yarn --cwd apps/frontend dev",
     "dev:realtime": "yarn --cwd apps/realtime-api dev",
-    "dev:chat-bot": "yarn --cwd apps/chat-bot dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "generate-data": "tsx scripts/generate-time-series-data.ts",
