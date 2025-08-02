@@ -19,7 +19,6 @@ module.exports = {
     extensions: ['.js', '.ts'],
   },
   externals: {
-    // Exclude node modules from bundling
     ws: 'commonjs ws',
     cors: 'commonjs cors',
   },
