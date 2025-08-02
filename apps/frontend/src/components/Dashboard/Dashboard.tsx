@@ -17,20 +17,19 @@ import { Entity } from '../../types/entity';
 import { VisualizationType } from '../../types/visualization';
 
 export const Dashboard: React.FC = () => {
-  const { entities, stableEntities, changes, positions, loading, error } =
-    useRealTimeData();
+  const { entities, changes, positions, loading, error } = useRealTimeData();
   const [selectedEntity, setSelectedEntity] = useState<Entity | undefined>();
   const [visualizationType, setVisualizationType] =
     useState<VisualizationType>('timeline');
 
   const visualizationProps = useMemo(
     () => ({
-      entities: stableEntities,
+      entities,
       positions,
       selectedEntity,
       onEntitySelect: setSelectedEntity,
     }),
-    [stableEntities, positions, selectedEntity]
+    [entities, positions, selectedEntity]
   );
 
   const renderVisualization = () => {
@@ -75,7 +74,7 @@ export const Dashboard: React.FC = () => {
       </div>
       <div className="relative px-4 py-8">
         <div className="mb-8">
-          <DashboardMetrics entities={stableEntities} changes={changes} />
+          <DashboardMetrics entities={entities} changes={changes} />
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           <div className="xl:col-span-1">
@@ -114,7 +113,7 @@ export const Dashboard: React.FC = () => {
           />
         </div>
         <div className="text-center text-gray-400 text-sm mt-8">
-          Static data mode - Real-time updates disabled
+          Real-time mode - Entities updating dynamically
         </div>
       </div>
     </div>

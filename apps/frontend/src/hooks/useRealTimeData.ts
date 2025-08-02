@@ -10,7 +10,6 @@ import {
   isEntityUpdateMessage,
   isConnectionStatusMessage,
 } from '../util/websocket';
-import cloneDeep from 'clone-deep';
 
 export const useRealTimeData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
@@ -21,8 +20,6 @@ export const useRealTimeData = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
 
-  // This will hold the initial entities and never change
-  const initialEntitiesRef = useRef<Entity[] | null>(null);
   const websocketRef = useRef<WebSocket | null>(null);
 
   const transformChangesToEntities = (changes: EntityChange[]): Entity[] => {
@@ -100,12 +97,6 @@ export const useRealTimeData = () => {
       setPositions(result.positions || []);
       const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
-
-      // Set initial entities only once
-      if (initialEntitiesRef.current === null) {
-        console.log('Setting initial entities:', transformedEntities.length);
-        initialEntitiesRef.current = cloneDeep(transformedEntities);
-      }
     } catch (err) {
       console.error('Error loading initial data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -232,7 +223,6 @@ export const useRealTimeData = () => {
 
   return {
     entities,
-    stableEntities: initialEntitiesRef.current || [],
     changes,
     positions,
     loading,
