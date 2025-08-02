@@ -6,6 +6,7 @@ import {
   formatEntityType,
   getUnit,
   formatText,
+  getEntityName,
 } from '../../util/entity';
 
 export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
@@ -59,8 +60,10 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
           <div
             className={`w-2 h-2 rounded-full ${getEntityTypeColor(entity.type)}`}
           />
-          <div>
-            <h4 className="text-sm font-medium text-white">{entity.name}</h4>
+          <div className="min-w-[165px]">
+            <h4 className="text-sm font-medium text-white">
+              {getEntityName(entity.id)}
+            </h4>
             <p className="text-xs text-gray-400">
               {formatEntityType(entity.type)}
             </p>

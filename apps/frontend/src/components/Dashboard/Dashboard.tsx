@@ -4,7 +4,6 @@ import {
   EntitiesList,
   TimelineVisualization,
   NetworkGraph3D,
-  Globe3D,
   Matrix3D,
 } from '../index';
 import { Header } from './Header';
@@ -38,8 +37,6 @@ export const Dashboard: React.FC = () => {
         return <TimelineVisualization {...visualizationProps} />;
       case 'network':
         return <NetworkGraph3D {...visualizationProps} />;
-      case 'globe':
-        return <Globe3D {...visualizationProps} />;
       case 'matrix':
         return <Matrix3D {...visualizationProps} />;
       default:

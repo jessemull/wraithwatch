@@ -47,7 +47,7 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
 
   return (
     <div className="w-full h-full relative">
-      <Canvas camera={{ position: [0, 0, 25], fov: 45 }} style={CANVAS_STYLE}>
+      <Canvas camera={{ position: [0, 0, 30], fov: 45 }} style={CANVAS_STYLE}>
         <Suspense fallback={null}>
           <ambientLight intensity={0.6} />
           <pointLight position={[10, 10, 10]} intensity={1} />

@@ -192,8 +192,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
               start={fromPos}
               end={toPos}
               type={connection.type}
-              speed={0.3 + Math.random() * 0.4} // Random speed variation per connection
-              particleCount={2 + Math.floor(Math.random() * 3)} // Random particle count (2-4)
+              speed={0.3 + ((index * 0.1) % 0.4)} // Deterministic speed based on index
+              particleCount={1 + (index % 2)} // Deterministic count: 1 or 2 particles
             />
           </React.Fragment>
         );

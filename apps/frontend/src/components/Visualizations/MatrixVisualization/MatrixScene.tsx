@@ -1,100 +1,196 @@
 import React from 'react';
-import { DataFlowLine } from './DataFlowLine';
-import { DataParticle } from './DataParticle';
-import { Entity } from '../../../types/entity';
+import { Entity, EntityPosition } from '../../../types/entity';
 import { MatrixNode } from './MatrixNode';
+import { Text } from '@react-three/drei';
 
 interface MatrixSceneProps {
   entities: Entity[];
+  positions?: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const MatrixScene: React.FC<MatrixSceneProps> = ({
   entities,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
-  return (
-    <group>
-      {Array.from({ length: 10 }, (_, i) => (
-        <group key={`grid-${i}`}>
-          <mesh position={[0, (i - 5) * 1, 0]}>
-            <boxGeometry args={[10, 0.02, 0.02]} />
-            <meshStandardMaterial
-              color="#00ff00"
-              emissive="#00ff00"
-              emissiveIntensity={0.3}
-            />
-          </mesh>
-          <mesh position={[(i - 5) * 1, 0, 0]}>
-            <boxGeometry args={[0.02, 10, 0.02]} />
-            <meshStandardMaterial
-              color="#00ff00"
-              emissive="#00ff00"
-              emissiveIntensity={0.3}
-            />
-          </mesh>
-        </group>
-      ))}
-      {entities.map((entity, index) => {
-        const gridSize = Math.ceil(Math.sqrt(entities.length));
-        const row = Math.floor(index / gridSize);
-        const col = index % gridSize;
+  const threatEntities = entities.filter(e => e.type === 'Threat');
 
-        const x = (col - gridSize / 2 + 0.5) * 2;
-        const y = (row - gridSize / 2 + 0.5) * 2;
-        const z = 0;
+  return (
+    <>
+      <ambientLight intensity={0.6} />
+      <pointLight position={[10, 10, 10]} intensity={1} />
+      <pointLight position={[-10, -10, -10]} intensity={0.5} />
+      <mesh position={[0, 2, 0]}>
+        <boxGeometry args={[12, 0.05, 8]} />
+        <meshStandardMaterial color="#333333" transparent opacity={0.2} />
+      </mesh>
+      {Array.from({ length: 5 }, (_, i) => (
+        <mesh key={`x-grid-${i}`} position={[0, (i - 1) * 2, 0]}>
+          <boxGeometry args={[12, 0.02, 0.02]} />
+          <meshStandardMaterial color="#444444" transparent opacity={0.3} />
+        </mesh>
+      ))}
+      {Array.from({ length: 7 }, (_, i) => (
+        <mesh key={`z-grid-${i}`} position={[0, 2, (i - 3) * 2]}>
+          <boxGeometry args={[0.02, 8, 0.02]} />
+          <meshStandardMaterial color="#444444" transparent opacity={0.3} />
+        </mesh>
+      ))}
+      <Text
+        position={[0, 8, 0]}
+        fontSize={0.4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        SEVERITY
+      </Text>
+      <Text
+        position={[-8, 2, 0]}
+        fontSize={0.4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        rotation={[0, 0, -Math.PI / 2]}
+      >
+        DETECTION COUNT
+      </Text>
+      <Text
+        position={[0, 2, 6]}
+        fontSize={0.4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        rotation={[0, 0, 0]}
+      >
+        THREAT SCORE
+      </Text>
+      <Text
+        position={[7, 6, 0]}
+        fontSize={0.25}
+        color="#ff4444"
+        anchorX="left"
+        anchorY="middle"
+      >
+        Critical
+      </Text>
+      <Text
+        position={[7, 4, 0]}
+        fontSize={0.25}
+        color="#ff6b35"
+        anchorX="left"
+        anchorY="middle"
+      >
+        High
+      </Text>
+      <Text
+        position={[7, 2, 0]}
+        fontSize={0.25}
+        color="#ffa726"
+        anchorX="left"
+        anchorY="middle"
+      >
+        Medium
+      </Text>
+      <Text
+        position={[7, 0, 0]}
+        fontSize={0.25}
+        color="#ffeb3b"
+        anchorX="left"
+        anchorY="middle"
+      >
+        Low
+      </Text>
+      <Text
+        position={[-4, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Low (0-33)
+      </Text>
+      <Text
+        position={[0, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Medium (34-66)
+      </Text>
+      <Text
+        position={[4, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        High (67-100)
+      </Text>
+      <Text
+        position={[0, -2, -3]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Low Score (0%)
+      </Text>
+      <Text
+        position={[0, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Medium Score (50%)
+      </Text>
+      <Text
+        position={[0, -2, 3]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        High Score (100%)
+      </Text>
+      {threatEntities.map(entity => {
+        // Only use server-calculated positions...
+
+        if (!positions) {
+          return null;
+        }
+
+        const positionData = positions.find(p => p.entity_id === entity.id);
+
+        if (!positionData?.matrix_position) {
+          console.log(
+            'MatrixScene - no matrix_position for entity:',
+            entity.id
+          );
+          return null;
+        }
+
+        const position: [number, number, number] = [
+          positionData.matrix_position.x,
+          positionData.matrix_position.y,
+          positionData.matrix_position.z,
+        ];
 
         return (
           <MatrixNode
             key={entity.id}
             entity={entity}
-            position={[x, y, z]}
+            position={position}
             isSelected={selectedEntity?.id === entity.id}
             onClick={() => onEntitySelect?.(entity)}
           />
         );
       })}
-      {entities.map((entity, index) => {
-        if (index === entities.length - 1) return null;
-
-        const nextEntity = entities[index + 1];
-        const gridSize = Math.ceil(Math.sqrt(entities.length));
-        const row1 = Math.floor(index / gridSize);
-        const col1 = index % gridSize;
-        const row2 = Math.floor((index + 1) / gridSize);
-        const col2 = (index + 1) % gridSize;
-
-        const start = [
-          (col1 - gridSize / 2 + 0.5) * 2,
-          (row1 - gridSize / 2 + 0.5) * 2,
-          0,
-        ];
-        const end = [
-          (col2 - gridSize / 2 + 0.5) * 2,
-          (row2 - gridSize / 2 + 0.5) * 2,
-          0,
-        ];
-
-        return (
-          <DataFlowLine
-            key={`${entity.id}-${nextEntity.id}`}
-            start={start as [number, number, number]}
-            end={end as [number, number, number]}
-          />
-        );
-      })}
-      {Array.from({ length: 40 }, (_, index) => {
-        const time = Date.now() * 0.001 + index * 0.1;
-        const x = Math.sin(time) * 5;
-        const y = Math.cos(time * 0.5) * 5;
-        const z = Math.sin(time * 0.3) * 2;
-
-        return (
-          <DataParticle key={`change-particle-${index}`} position={[x, y, z]} />
-        );
-      })}
-    </group>
+    </>
   );
 };

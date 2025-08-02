@@ -4,9 +4,15 @@ import {
   BatchWriteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { createHash } from 'crypto';
-import { EntityPosition } from '../apps/frontend/src/types/entity';
+import { EntityPosition as FrontendEntityPosition } from '../apps/frontend/src/types/entity';
 
 // Types for entity positions...
+
+interface EntityPosition extends FrontendEntityPosition {
+  PK: string;
+  SK: string;
+  TTL: number;
+}
 
 interface EntityCharacteristics {
   load?: 'high' | 'medium' | 'low';
@@ -228,6 +234,62 @@ function generateNetworkPosition(
   return [x, y, z];
 }
 
+function generateMatrixPosition(
+  entity: EntityConfig,
+  index: number
+): [number, number, number] {
+  const seed = generateDeterministicSeed(entity.id);
+
+  if (entity.type !== 'Threat') {
+    const gridSize = Math.ceil(Math.cbrt(ENTITY_CONFIGURATIONS.length));
+    const layer = Math.floor(index / (gridSize * gridSize));
+    const row = Math.floor((index % (gridSize * gridSize)) / gridSize);
+    const col = index % gridSize;
+    return [
+      (col - gridSize / 2 + 0.5) * 2,
+      (row - gridSize / 2 + 0.5) * 2 + 2, // Add 2 to move up
+      (layer - gridSize / 2 + 0.5) * 2,
+    ];
+  }
+
+  // For threats, position based on severity and detection count...
+
+  const severity = entity.characteristics.severity || 'low';
+  const detectionCount = deterministicRandom(seed) * 100; // 0-100 range
+  const threatScore = deterministicRandom(seed, 1); // 0-1 range
+
+  // Y-axis: Severity (bottom to top) - moved up by 2 units...
+
+  let y = 0;
+  switch (severity) {
+    case 'critical':
+      y = 6;
+      break;
+    case 'high':
+      y = 4;
+      break;
+    case 'medium':
+      y = 2;
+      break;
+    case 'low':
+      y = 0;
+      break;
+    default:
+      y = 2;
+  }
+
+  // X-axis: Detection Count (left to right) - 0-100 range...
+
+  const x = Math.max(-4, Math.min(4, (detectionCount / 100) * 8 - 4));
+
+  // Z-axis: Threat Score (back to front) - convert 0-1 to 0-100 scale...
+
+  const threatScorePercent = threatScore * 100;
+  const z = (threatScorePercent / 100) * 6 - 3;
+
+  return [x, y, z];
+}
+
 function generateChangeParticles(
   entity: EntityConfig
 ): Array<{ x: number; y: number; z: number }> {
@@ -268,6 +330,7 @@ function createEntityPosition(
 ): EntityPosition {
   const timelinePos = generateTimelinePosition(entity, index);
   const networkPos = generateNetworkPosition(entity, index);
+  const matrixPos = generateMatrixPosition(entity, index);
   const changeParticles = generateChangeParticles(entity);
 
   const ttl = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60; // 30 days
@@ -288,12 +351,18 @@ function createEntityPosition(
       y: networkPos[1],
       z: networkPos[2],
     },
+    matrix_position: {
+      x: matrixPos[0],
+      y: matrixPos[1],
+      z: matrixPos[2],
+    },
     change_particles: changeParticles,
     TTL: ttl,
   };
 }
 
-// Database operations
+// Database operations...
+
 class DynamoDBService {
   private docClient: DynamoDBDocumentClient;
   private readonly tableName = 'wraithwatch-entity-changes';

@@ -6,6 +6,7 @@ import {
   formatPropertyName,
   getUnit,
   formatEntityType,
+  getEntityName,
 } from '../../util/entity';
 
 interface EntityDetailsProps {
@@ -122,7 +123,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             className={`w-4 h-4 rounded-full ${getEntityTypeColor(selectedEntity.type)}`}
           />
           <h3 className="text-lg font-semibold text-white">
-            {selectedEntity.name}
+            {getEntityName(selectedEntity.id)}
           </h3>
         </div>
         <p className="text-sm text-gray-400">

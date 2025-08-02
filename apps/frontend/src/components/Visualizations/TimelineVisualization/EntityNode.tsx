@@ -7,6 +7,7 @@ import {
   TIMELINE_CONFIG,
 } from '../../../constants/visualization';
 import { EntityStyle } from '../../../types/visualization';
+import { getEntityName } from '../../../util/entity';
 
 interface EntityNodeProps {
   entity: Entity;
@@ -112,7 +113,7 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
         outlineWidth={TIMELINE_CONFIG.text.outlineWidth}
         outlineColor={TIMELINE_CONFIG.text.outlineColor}
       >
-        {entity.name}
+        {getEntityName(entity.id)}
       </Text>
     </group>
   );
