@@ -15,6 +15,7 @@ import cloneDeep from 'clone-deep';
 export const useRealTimeData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
+  const [positions, setPositions] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
@@ -58,8 +59,19 @@ export const useRealTimeData = () => {
         ],
       };
 
-      if (new Date(change.timestamp) > new Date(entity.lastSeen)) {
-        entity.lastSeen = change.timestamp;
+      try {
+        const changeTimestamp = new Date(change.timestamp);
+        const lastSeenTimestamp = new Date(entity.lastSeen);
+
+        if (
+          !isNaN(changeTimestamp.getTime()) &&
+          !isNaN(lastSeenTimestamp.getTime()) &&
+          changeTimestamp > lastSeenTimestamp
+        ) {
+          entity.lastSeen = change.timestamp;
+        }
+      } catch {
+        return;
       }
     });
 
@@ -85,6 +97,7 @@ export const useRealTimeData = () => {
       }
 
       setChanges(result.data);
+      setPositions(result.positions || []);
       const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
 
@@ -221,6 +234,7 @@ export const useRealTimeData = () => {
     entities,
     stableEntities: initialEntitiesRef.current || [],
     changes,
+    positions,
     loading,
     error,
     isConnected,

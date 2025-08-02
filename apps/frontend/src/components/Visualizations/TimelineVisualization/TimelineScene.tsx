@@ -84,28 +84,31 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
         />
       ))}
       {selectedEntity &&
-        Array.from({ length: Math.floor(Math.random() * 101) + 100 }, (_, index) => {
-          // Find the selected entity's position
-          const selectedEntityIndex = entities.findIndex(
-            e => e.id === selectedEntity.id
-          );
-          const entityPosition = entityPositions[selectedEntityIndex];
+        Array.from(
+          { length: Math.floor(Math.random() * 101) + 100 },
+          (_, index) => {
+            // Find the selected entity's position
+            const selectedEntityIndex = entities.findIndex(
+              e => e.id === selectedEntity.id
+            );
+            const entityPosition = entityPositions[selectedEntityIndex];
 
-          // Generate random positions around the entity
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
+            // Generate random positions around the entity
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
 
-          const x = entityPosition[0] + Math.cos(angle) * radius;
-          const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
-          const z = entityPosition[2] + Math.sin(angle) * radius;
+            const x = entityPosition[0] + Math.cos(angle) * radius;
+            const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
+            const z = entityPosition[2] + Math.sin(angle) * radius;
 
-          return (
-            <ChangeParticle
-              key={`change-particle-${index}`}
-              position={[x, y, z]}
-            />
-          );
-        })}
+            return (
+              <ChangeParticle
+                key={`change-particle-${index}`}
+                position={[x, y, z]}
+              />
+            );
+          }
+        )}
       {selectedEntity && <TimeScale position={[0, 0, 0]} />}
     </group>
   );

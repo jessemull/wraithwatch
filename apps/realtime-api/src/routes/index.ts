@@ -1,13 +1,37 @@
 import healthRoute from './health';
-import historyRoute from './history';
-import summaryRoute from './summary';
 import { FastifyPluginAsync } from 'fastify';
 import { RouteOptions } from '../types/routes';
+import { ApiResponse } from '../types/api';
 
 const routes: FastifyPluginAsync<RouteOptions> = async (fastify, options) => {
+  const { dynamoDBService } = options;
+
   await fastify.register(healthRoute);
-  await fastify.register(historyRoute, options);
-  await fastify.register(summaryRoute, options);
+
+  fastify.get('/api/test/data', async (request, reply) => {
+    const { limit } = request.query as { limit?: string };
+
+    try {
+      const [data, positions] = await Promise.all([
+        dynamoDBService.getAllData(limit ? parseInt(limit, 10) : 5),
+        dynamoDBService.getAllEntityPositions(),
+      ]);
+
+      return {
+        success: true,
+        data,
+        positions,
+        count: data.length,
+        positionCount: positions.length,
+      } as ApiResponse;
+    } catch (error) {
+      reply.status(500);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      } as ApiResponse;
+    }
+  });
 };
 
 export default routes;
