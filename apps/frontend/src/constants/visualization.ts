@@ -108,6 +108,21 @@ export const CAMERA_CONFIG = {
   fov: 35,
 } as const;
 
+export const MOBILE_CAMERA_CONFIG = {
+  position: [0, 0, 50] as [number, number, number],
+  fov: 45,
+} as const;
+
+export const MOBILE_NETWORK_CAMERA_CONFIG = {
+  position: [0, 0, 40] as [number, number, number],
+  fov: 50,
+} as const;
+
+export const MOBILE_MATRIX_CAMERA_CONFIG = {
+  position: [0, 3, 25] as [number, number, number],
+  fov: 55,
+} as const;
+
 export const LIGHTING_CONFIG = {
   ambient: { intensity: 0.6 },
   pointLights: [
@@ -123,6 +138,15 @@ export const CONTROLS_CONFIG = {
   maxDistance: 60,
   minDistance: 15,
   zoomFactor: 1.2,
+} as const;
+
+export const MOBILE_CONTROLS_CONFIG = {
+  enablePan: true,
+  enableZoom: true,
+  enableRotate: true,
+  maxDistance: 80,
+  minDistance: 25,
+  zoomFactor: 1.3,
 } as const;
 
 export const CANVAS_STYLE = {

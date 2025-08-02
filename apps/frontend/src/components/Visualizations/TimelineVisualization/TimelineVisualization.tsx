@@ -2,8 +2,10 @@ import React, { Suspense, useRef, useCallback } from 'react';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import {
   CAMERA_CONFIG,
+  MOBILE_CAMERA_CONFIG,
   LIGHTING_CONFIG,
   CONTROLS_CONFIG,
+  MOBILE_CONTROLS_CONFIG,
   CANVAS_STYLE,
 } from '../../../constants/visualization';
 import { Canvas } from '@react-three/fiber';
@@ -11,6 +13,7 @@ import { ControlPanel } from './ControlPanel';
 import { Entity, EntityPosition } from '../../../types/entity';
 import { OrbitControls } from '@react-three/drei';
 import { TimelineScene } from './TimelineScene';
+import { useIsMobile } from '../../../hooks/useRealTimeData';
 
 interface TimelineVisualizationProps {
   entities: Entity[];
@@ -26,22 +29,24 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   onEntitySelect,
 }) => {
   const controlsRef = useRef<OrbitControlsImpl>(null);
+  const isMobile = useIsMobile();
 
-  // Optimized control handlers with useCallback...
+  const cameraConfig = isMobile ? MOBILE_CAMERA_CONFIG : CAMERA_CONFIG;
+  const controlsConfig = isMobile ? MOBILE_CONTROLS_CONFIG : CONTROLS_CONFIG;
 
   const handleZoomIn = useCallback(() => {
     if (controlsRef.current) {
-      controlsRef.current.dollyOut(CONTROLS_CONFIG.zoomFactor);
+      controlsRef.current.dollyOut(controlsConfig.zoomFactor);
       controlsRef.current.update();
     }
-  }, []);
+  }, [controlsConfig.zoomFactor]);
 
   const handleZoomOut = useCallback(() => {
     if (controlsRef.current) {
-      controlsRef.current.dollyIn(CONTROLS_CONFIG.zoomFactor);
+      controlsRef.current.dollyIn(controlsConfig.zoomFactor);
       controlsRef.current.update();
     }
-  }, []);
+  }, [controlsConfig.zoomFactor]);
 
   const handleReset = useCallback(() => {
     if (controlsRef.current) {
@@ -51,7 +56,7 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
 
   return (
     <div className="w-full h-full relative">
-      <Canvas camera={CAMERA_CONFIG} style={CANVAS_STYLE}>
+      <Canvas camera={cameraConfig} style={CANVAS_STYLE}>
         <Suspense fallback={null}>
           <ambientLight intensity={LIGHTING_CONFIG.ambient.intensity} />
           {LIGHTING_CONFIG.pointLights.map((light, index) => (
@@ -61,7 +66,7 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
               intensity={light.intensity}
             />
           ))}
-          <OrbitControls ref={controlsRef} {...CONTROLS_CONFIG} />
+          <OrbitControls ref={controlsRef} {...controlsConfig} />
           <TimelineScene
             entities={entities}
             positions={positions}
