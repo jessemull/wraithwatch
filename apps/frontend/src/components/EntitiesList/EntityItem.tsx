@@ -43,11 +43,11 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
           
           <div className="flex items-center space-x-2 ml-4">
             {keyProperties.map(([propertyName, property]) => (
-              <div key={propertyName} className="bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 w-24 h-16 text-center shadow-sm flex flex-col justify-center">
-                <div className="text-xs text-gray-400 font-medium">
+              <div key={propertyName} className="bg-gradient-to-br from-gray-700/80 to-gray-800/90 border-l-4 border-blue-400/60 rounded-r-lg px-3 py-2 w-24 h-16 text-center shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col justify-center backdrop-blur-sm">
+                <div className="text-xs text-blue-300 font-medium">
                   {formatText(propertyName)}
                 </div>
-                <div className="text-xs text-white font-mono mt-1">
+                <div className="text-xs text-white font-semibold mt-1">
                   {formatPropertyValue(propertyName, property.currentValue)}
                 </div>
               </div>
