@@ -94,7 +94,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-      <div className="xl:col-span-1 space-y-8">
+      <div className="xl:col-span-1 space-y-6">
         <h3 className="text-lg font-semibold text-white mb-4">
           Key Performance Indicators
         </h3>
@@ -140,7 +140,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           Analytics & Charts
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 space-y-8">
+          <div className="lg:col-span-1 space-y-6">
             <ChartCard title="Threat Severity Distribution">
               <div className="h-full">
                 <BarChart
@@ -158,7 +158,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               </div>
             </ChartCard>
           </div>
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             <ChartCard title="Entity Changes">
               <div className="h-full">
                 <LineChart
