@@ -109,14 +109,14 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
   const keyProperties = getKeyProperties();
 
   return (
-    <div className="px-6 py-3">
-      <div className="flex items-center justify-between">
+    <div className="px-4 sm:px-6 py-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div className="flex items-center space-x-3">
           <div
             className={`w-2 h-2 rounded-full ${getEntityTypeColor(entity.type)}`}
           />
-          <div className="min-w-[165px]">
-            <h4 className="text-sm font-medium text-white">
+          <div className="min-w-0 sm:min-w-[165px] w-full sm:w-auto">
+            <h4 className="text-sm font-medium text-white truncate">
               {getEntityName(entity.id)}
             </h4>
             <p className="text-xs text-gray-400">
@@ -124,16 +124,16 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
             </p>
           </div>
 
-          <div className="flex items-center space-x-2 ml-4">
+          <div className="flex flex-wrap gap-2 ml-4">
             {keyProperties.map(([propertyName, property]) => (
               <div
                 key={propertyName}
-                className="bg-gradient-to-br from-gray-700/80 to-gray-800/90 border-l-4 border-blue-400/60 rounded-r-lg px-3 py-2 w-24 h-16 text-center shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col justify-center backdrop-blur-sm"
+                className="bg-gradient-to-br from-gray-700/80 to-gray-800/90 border-l-4 border-blue-400/60 rounded-r-lg px-1.5 sm:px-3 py-1.5 sm:py-2 w-16 sm:w-24 h-12 sm:h-16 text-center shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col justify-center backdrop-blur-sm flex-shrink-0"
               >
-                <div className="text-xs text-blue-300 font-medium">
+                <div className="text-xs sm:text-xs text-blue-300 font-medium truncate">
                   {formatText(propertyName)}
                 </div>
-                <div className="text-xs text-white font-semibold mt-1">
+                <div className="text-xs sm:text-xs text-white font-semibold mt-0.5 sm:mt-1 truncate">
                   {formatPropertyValue(propertyName, property.currentValue)}
                 </div>
               </div>
@@ -141,8 +141,8 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="text-right">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+          <div className="text-left sm:text-right">
             <p className="text-sm text-white">
               {entity.changesToday} changes today
             </p>
@@ -150,7 +150,7 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
               Last seen: {formatTime(entity.lastSeen)}
             </p>
           </div>
-          <div className="w-4 h-4"></div>
+          <div className="w-4 h-4 hidden sm:block"></div>
         </div>
       </div>
     </div>
