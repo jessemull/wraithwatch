@@ -1,6 +1,6 @@
-import { getTapeyResponse } from "./claude";
+import { getWraithResponse } from './claude';
 
-jest.mock("@anthropic-ai/sdk", () => {
+jest.mock('@anthropic-ai/sdk', () => {
   const createMock = jest.fn();
 
   return {
@@ -14,9 +14,9 @@ jest.mock("@anthropic-ai/sdk", () => {
   };
 });
 
-const { __mockCreate__ } = jest.requireMock("@anthropic-ai/sdk");
+const { __mockCreate__ } = jest.requireMock('@anthropic-ai/sdk');
 
-describe("getTapeyResponse", () => {
+describe('getWraithResponse', () => {
   const originalConsoleError = console.error;
 
   beforeAll(() => {
@@ -33,19 +33,19 @@ describe("getTapeyResponse", () => {
 
   it("returns bot message when response type is 'text'", async () => {
     __mockCreate__.mockResolvedValue({
-      content: [{ type: "text", text: "Hello, friend!" }],
+      content: [{ type: 'text', text: 'Hello, friend!' }],
     });
 
-    const response = await getTapeyResponse("Hi there");
-    expect(response).toEqual({ message: "Hello, friend!" });
+    const response = await getWraithResponse('Hi there');
+    expect(response).toEqual({ message: 'Hello, friend!' });
     expect(__mockCreate__).toHaveBeenCalledWith({
       model: expect.any(String),
       max_tokens: expect.any(Number),
       system: expect.any(String),
       messages: [
         {
-          role: "user",
-          content: "Hi there",
+          role: 'user',
+          content: 'Hi there',
         },
       ],
     });
@@ -53,46 +53,46 @@ describe("getTapeyResponse", () => {
 
   it("returns fallback message if response type is not 'text'", async () => {
     __mockCreate__.mockResolvedValue({
-      content: [{ type: "non-text", foo: "bar" }],
+      content: [{ type: 'non-text', foo: 'bar' }],
     });
 
-    const response = await getTapeyResponse("Something weird");
+    const response = await getWraithResponse('Something weird');
     expect(response).toEqual({
       message: "Sorry dude, I'm having trouble processing that right now!",
     });
   });
 
-  it("returns error message if API call throws", async () => {
-    const error = new Error("API is down");
+  it('returns error message if API call throws', async () => {
+    const error = new Error('API is down');
     __mockCreate__.mockRejectedValue(error);
 
-    const response = await getTapeyResponse("Are you there?");
+    const response = await getWraithResponse('Are you there?');
     expect(response).toEqual({
       message:
         "Sorry dude, I'm having some technical difficulties right now! Try again in a bit!",
-      error: "API is down",
+      error: 'API is down',
     });
   });
 
-  it("returns generic error string if error is not an instance of Error", async () => {
-    __mockCreate__.mockRejectedValue("weird string error");
+  it('returns generic error string if error is not an instance of Error', async () => {
+    __mockCreate__.mockRejectedValue('weird string error');
 
-    const response = await getTapeyResponse("This broke something");
+    const response = await getWraithResponse('This broke something');
     expect(response).toEqual({
       message:
         "Sorry dude, I'm having some technical difficulties right now! Try again in a bit!",
-      error: "Unknown error",
+      error: 'Unknown error',
     });
   });
 
-  it("logs error to console", async () => {
-    const error = new Error("Logging test");
+  it('logs error to console', async () => {
+    const error = new Error('Logging test');
     __mockCreate__.mockRejectedValue(error);
 
-    await getTapeyResponse("test");
+    await getWraithResponse('test');
     expect(console.error).toHaveBeenCalledWith(
-      "Error calling Claude API:",
-      error,
+      'Error calling Claude API:',
+      error
     );
   });
 });

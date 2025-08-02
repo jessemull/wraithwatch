@@ -1,15 +1,15 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { ChatRequest, ChatResponse } from "./types";
-import { getCorsHeaders } from "./utils/cors";
-import { getTapeyResponse } from "./services/claude";
-import { buildConversationHistory } from "./services/history";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { ChatRequest, ChatResponse } from './types';
+import { getCorsHeaders } from './utils/cors';
+import { getWraithResponse } from './services/claude';
+import { buildConversationHistory } from './services/history';
 
 export const handler = async (
-  event: APIGatewayProxyEvent,
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // Log the incoming request for debugging...
 
-  console.log("Received event:", JSON.stringify(event, null, 2));
+  console.log('Received event:', JSON.stringify(event, null, 2));
 
   // Extract origin from Origin header or Referer header...
 
@@ -20,7 +20,7 @@ export const handler = async (
 
   let requestOrigin = origin;
   if (!requestOrigin && referer) {
-    const match = referer.match(/^(https?:\/\/[^\/]+)/);
+    const match = referer.match(/^(https?:\/\/[^/]+)/);
     if (match) {
       requestOrigin = match[1];
     } else {
@@ -32,11 +32,11 @@ export const handler = async (
 
   // Handle OPTIONS request for CORS preflight...
 
-  if (event.httpMethod === "OPTIONS") {
+  if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: corsHeaders,
-      body: "",
+      body: '',
     };
   }
 
@@ -46,10 +46,10 @@ export const handler = async (
 
     // Handle GET request (health check)...
 
-    if (event.httpMethod === "GET") {
+    if (event.httpMethod === 'GET') {
       const response: ChatResponse = {
         message:
-          "Wraithwatch Chat Bot is running! Send a POST request with a message to start chatting.",
+          'Wraithwatch Chat Bot is running! Send a POST request with a message to start chatting.',
         history: [],
         timestamp,
         requestId,
@@ -64,40 +64,40 @@ export const handler = async (
 
     // Handle POST request (chat)...
 
-    if (event.httpMethod === "POST") {
+    if (event.httpMethod === 'POST') {
       let chatRequest: ChatRequest;
 
       try {
-        chatRequest = event.body ? JSON.parse(event.body) : { message: "" };
+        chatRequest = event.body ? JSON.parse(event.body) : { message: '' };
       } catch {
         return {
           statusCode: 400,
           headers: corsHeaders,
           body: JSON.stringify({
-            error: "Invalid JSON in request body",
+            error: 'Invalid JSON in request body',
             timestamp,
             requestId,
           }),
         };
       }
 
-      if (!chatRequest.message || chatRequest.message.trim() === "") {
+      if (!chatRequest.message || chatRequest.message.trim() === '') {
         return {
           statusCode: 400,
           headers: corsHeaders,
           body: JSON.stringify({
-            error: "Message is required",
+            error: 'Message is required',
             timestamp,
             requestId,
           }),
         };
       }
 
-      // Get response from Tapey (Claude)...
+      // Get response from Wraith (Claude)...
 
-      const tapeyResponse = await getTapeyResponse(
+      const wraithResponse = await getWraithResponse(
         chatRequest.message,
-        chatRequest.history,
+        chatRequest.history
       );
 
       // Build updated conversation history...
@@ -105,11 +105,11 @@ export const handler = async (
       const updatedHistory = buildConversationHistory(
         chatRequest.history || [],
         chatRequest.message,
-        tapeyResponse.message,
+        wraithResponse.message
       );
 
       const response: ChatResponse = {
-        message: tapeyResponse.message,
+        message: wraithResponse.message,
         history: updatedHistory,
         timestamp,
         requestId,
@@ -126,19 +126,19 @@ export const handler = async (
       statusCode: 405,
       headers: corsHeaders,
       body: JSON.stringify({
-        error: "Method not allowed",
+        error: 'Method not allowed',
         timestamp,
         requestId,
       }),
     };
   } catch (error) {
-    console.error("Error processing request:", error);
+    console.error('Error processing request:', error);
 
     return {
       statusCode: 500,
       headers: corsHeaders,
       body: JSON.stringify({
-        error: "Internal server error",
+        error: 'Internal server error',
         timestamp: new Date().toISOString(),
         requestId: event.requestContext.requestId,
       }),

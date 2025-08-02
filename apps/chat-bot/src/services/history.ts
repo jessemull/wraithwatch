@@ -1,5 +1,5 @@
-import { ChatMessage } from "../types";
-import { MAX_HISTORY_LENGTH } from "../constants";
+import { ChatMessage } from '../types';
+import { MAX_HISTORY_LENGTH } from '../constants';
 
 /**
  * Limits the conversation history to the specified maximum length
@@ -16,16 +16,16 @@ export function limitHistoryLength(history: ChatMessage[] = []): ChatMessage[] {
 export function buildConversationHistory(
   existingHistory: ChatMessage[] = [],
   userMessage: string,
-  assistantMessage: string,
+  assistantMessage: string
 ): ChatMessage[] {
   const userMessageObj: ChatMessage = {
-    role: "user",
+    role: 'user',
     content: userMessage,
     timestamp: new Date().toISOString(),
   };
 
   const assistantMessageObj: ChatMessage = {
-    role: "assistant",
+    role: 'assistant',
     content: assistantMessage,
     timestamp: new Date().toISOString(),
   };
@@ -42,9 +42,9 @@ export function buildConversationHistory(
  * Converts ChatMessage array to Claude API format
  */
 export function convertToClaudeFormat(
-  history: ChatMessage[] = [],
-): Array<{ role: "user" | "assistant"; content: string }> {
-  return history.map((msg) => ({
+  history: ChatMessage[] = []
+): Array<{ role: 'user' | 'assistant'; content: string }> {
+  return history.map(msg => ({
     role: msg.role,
     content: msg.content,
   }));

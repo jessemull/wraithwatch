@@ -1,12 +1,12 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 
 Resources:
   WraithwatchChatBotExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: "wraithwatch-chat-bot-role"
+      RoleName: 'wraithwatch-chat-bot-role'
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -16,18 +16,18 @@ Resources:
       Policies:
         - PolicyName: LambdaBasicExecution
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: "arn:aws:logs:*:*:*"
+                Resource: 'arn:aws:logs:*:*:*'
 
 Outputs:
   WraithwatchChatBotExecutionRoleArn:
     Value: !GetAtt WraithwatchChatBotExecutionRole.Arn
-    Description: "Lambda execution role ARN"
+    Description: 'Lambda execution role ARN'
     Export:
-      Name: "WraithwatchChatBotExecutionRoleArn"
+      Name: 'WraithwatchChatBotExecutionRoleArn'

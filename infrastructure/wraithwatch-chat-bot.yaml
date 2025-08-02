@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
   S3Key:
@@ -13,20 +13,20 @@ Resources:
   WraithwatchChatBotFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: "wraithwatch-chat-bot"
+      FunctionName: 'wraithwatch-chat-bot'
       Runtime: nodejs20.x
       Role:
-        Fn::ImportValue: "WraithwatchChatBotExecutionRoleArn"
+        Fn::ImportValue: 'WraithwatchChatBotExecutionRoleArn'
       Handler: index.handler
       Code:
         S3Bucket:
-          Fn::ImportValue: "WraithwatchChatBotBucketName"
+          Fn::ImportValue: 'WraithwatchChatBotBucketName'
         S3Key: !Ref S3Key
       Timeout: 30
       MemorySize: 256
       Environment:
         Variables:
-          ENVIRONMENT: "production"
+          ENVIRONMENT: 'production'
           ANTHROPIC_API_KEY: !Ref AnthropicApiKey
 
   LambdaPermissionGet:
@@ -35,7 +35,7 @@ Resources:
       FunctionName: !Ref WraithwatchChatBotFunction
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/GET/*"
+      SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/GET/*'
 
   LambdaPermissionPost:
     Type: AWS::Lambda::Permission
@@ -43,7 +43,7 @@ Resources:
       FunctionName: !Ref WraithwatchChatBotFunction
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/POST/*"
+      SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/POST/*'
 
   MyLambdaVersion:
     Type: AWS::Lambda::Version
@@ -52,7 +52,7 @@ Resources:
 
 Outputs:
   WraithwatchChatBotFunctionArn:
-    Description: "ARN of the chat bot function"
+    Description: 'ARN of the chat bot function'
     Value: !Ref MyLambdaVersion
     Export:
-      Name: "WraithwatchChatBotFunctionArn"
+      Name: 'WraithwatchChatBotFunctionArn'
