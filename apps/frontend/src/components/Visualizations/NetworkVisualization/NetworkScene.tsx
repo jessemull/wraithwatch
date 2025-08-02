@@ -3,7 +3,6 @@ import { ConnectionLine } from './ConnectionLine';
 import { ConnectionParticle } from './ConnectionParticle';
 import { NetworkNode } from './NetworkNode';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { NETWORK_SCENE_CONFIG } from '../../../constants/visualization';
 import { NetworkLayout, NetworkConnection } from '../../../types/visualization';
 

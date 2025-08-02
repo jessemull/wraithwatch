@@ -1,8 +1,7 @@
 import React from 'react';
 import { DataFlowLine } from './DataFlowLine';
 import { DataParticle } from './DataParticle';
-import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
+import { Entity } from '../../../types/entity';]
 import { MatrixNode } from './MatrixNode';
 
 interface MatrixSceneProps {
