@@ -21,6 +21,7 @@ import {
   PropertySummary,
 } from '../types/dynamodb';
 import { createComponentLogger } from '../utils/logger';
+import NodeCache from 'node-cache';
 
 const logger = createComponentLogger('dynamodb-service');
 
@@ -31,12 +32,28 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 export class DynamoDBService {
   private readonly tableName = DYNAMODB_TABLE_NAME;
+  private dataCache: NodeCache;
+  private positionsCache: NodeCache;
+
+  constructor() {
+    // Cache with very long TTL for demo (30 days)
+    this.dataCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
+    this.positionsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
+  }
 
   // Get all data with pagination...
 
   async getAllData(
     limit: number = DYNAMODB_CONSTANTS.DEFAULT_SCAN_LIMIT
   ): Promise<EntityChange[]> {
+    // Check cache first
+    const cachedData = this.dataCache.get<EntityChange[]>('all_data');
+    if (cachedData) {
+      logger.info('Returning cached data');
+      return cachedData.slice(0, limit);
+    }
+
+    // If not in cache, fetch from database
     const allItems: EntityChange[] = [];
     let lastEvaluatedKey: Record<string, unknown> | undefined = undefined;
 
@@ -57,6 +74,11 @@ export class DynamoDBService {
       } while (lastEvaluatedKey && allItems.length < limit);
 
       this.logScanCompletion(allItems.length);
+      
+      // Cache the data
+      this.dataCache.set('all_data', allItems);
+      logger.info('Cached all data');
+      
       return allItems;
     } catch (error) {
       this.logError('Error scanning table for all data', { error });
@@ -100,6 +122,14 @@ export class DynamoDBService {
   }
 
   async getAllEntityPositions(): Promise<any[]> {
+    // Check cache first
+    const cachedPositions = this.positionsCache.get<any[]>('all_positions');
+    if (cachedPositions) {
+      logger.info('Returning cached positions');
+      return cachedPositions;
+    }
+
+    // If not in cache, fetch from database
     try {
       const allItems: any[] = [];
       let lastEvaluatedKey: Record<string, unknown> | undefined = undefined;
@@ -123,11 +153,43 @@ export class DynamoDBService {
       } while (lastEvaluatedKey);
 
       this.logScanCompletion(allItems.length);
+      
+      // Cache the positions
+      this.positionsCache.set('all_positions', allItems);
+      logger.info('Cached all positions');
+      
       return allItems;
     } catch (error) {
       this.logError('Error scanning table for entity positions', { error });
       throw error;
     }
+  }
+
+  // Preload cache with all data
+  async preloadCache(): Promise<void> {
+    try {
+      logger.info('Preloading cache with all data...');
+      
+      // Preload data cache
+      const allData = await this.getAllData();
+      this.dataCache.set('all_data', allData);
+      
+      // Preload positions cache
+      const allPositions = await this.getAllEntityPositions();
+      this.positionsCache.set('all_positions', allPositions);
+      
+      logger.info('Cache preloaded successfully');
+    } catch (error) {
+      this.logError('Error preloading cache', { error });
+      throw error;
+    }
+  }
+
+  // Clear cache if needed
+  clearCache(): void {
+    this.dataCache.flushAll();
+    this.positionsCache.flushAll();
+    logger.info('Cache cleared');
   }
 
   // Helper method to create a new entity change...
