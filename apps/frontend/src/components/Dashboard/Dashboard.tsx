@@ -104,7 +104,7 @@ export const Dashboard: React.FC = () => {
         <div className="absolute bottom-40 left-1/3 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-500"></div>
       </div>
       <div className="relative px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="sr-only">Wraithwatch Cyber Defense Dashboard</h1>
           <h2 className="text-xl font-semibold text-white mb-4">
             Dashboard Metrics
@@ -147,7 +147,7 @@ export const Dashboard: React.FC = () => {
             <DashboardMetrics entities={entities} metrics={metrics} />
           )}
         </div>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <div className="xl:col-span-1">
             <h2 className="text-xl font-semibold text-white mb-4">
               Visualization
@@ -203,7 +203,7 @@ export const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
-        <div className="mt-8">
+        <div className="mt-6">
           <h2 className="text-xl font-semibold text-white mb-4">Entity List</h2>
           {loading ? (
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl animate-pulse">
@@ -236,7 +236,7 @@ export const Dashboard: React.FC = () => {
             />
           )}
         </div>
-        <div className="text-center text-gray-400 text-sm mt-8">
+        <div className="text-center text-gray-400 text-sm mt-6">
           Real-Time Mode - Entities Updating Dynamically
         </div>
       </div>
