@@ -1,0 +1,346 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: "The custom domain name for the API Gateway"
+    Default: "api.chat.wraithwatch-demo.com"
+  CertificateArn:
+    Type: String
+    Description: "ARN of the SSL certificate for the custom domain"
+
+Resources:
+  ChatBotApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: "wraithwatch-chat-bot-api"
+      Description: "API Gateway for Wraithwatch Chat Bot"
+      EndpointConfiguration:
+        Types:
+          - EDGE
+
+  ApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ParentId: !GetAtt ChatBotApi.RootResourceId
+      PathPart: "api"
+
+  ChatResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ParentId: !Ref ApiResource
+      PathPart: "chat"
+
+  # API Gateway Models
+  ChatMessageModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ContentType: application/json
+      Name: "ChatMessage"
+      Description: "A single message in the conversation history"
+      Schema:
+        type: object
+        required:
+          - role
+          - content
+        properties:
+          role:
+            type: string
+            enum: [user, assistant]
+            description: "The role of the message sender"
+          content:
+            type: string
+            description: "The content of the message"
+          timestamp:
+            type: string
+            format: date-time
+            description: "ISO 8601 timestamp of when the message was created"
+
+  ChatRequestModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ContentType: application/json
+      Name: "ChatRequest"
+      Description: "Request body for sending a message to the chat bot"
+      Schema:
+        type: object
+        required:
+          - message
+        properties:
+          message:
+            type: string
+            description: "The message to send to the chat bot"
+            minLength: 1
+          history:
+            type: array
+            description: "Previous conversation history (optional, defaults to empty array)"
+            items:
+              type: object
+              required:
+                - role
+                - content
+              properties:
+                role:
+                  type: string
+                  enum: [user, assistant]
+                  description: "The role of the message sender"
+                content:
+                  type: string
+                  description: "The content of the message"
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: "ISO 8601 timestamp of when the message was created"
+            maxItems: 5
+          userId:
+            type: string
+            description: "Optional user identifier for future use"
+
+  ChatResponseModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ContentType: application/json
+      Name: "ChatResponse"
+      Description: "Response from the chat bot"
+      Schema:
+        type: object
+        required:
+          - message
+          - history
+          - timestamp
+          - requestId
+        properties:
+          message:
+            type: string
+            description: "Tapey's response message"
+          history:
+            type: array
+            description: "Updated conversation history (limited to 5 messages)"
+            items:
+              type: object
+              required:
+                - role
+                - content
+              properties:
+                role:
+                  type: string
+                  enum: [user, assistant]
+                  description: "The role of the message sender"
+                content:
+                  type: string
+                  description: "The content of the message"
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: "ISO 8601 timestamp of when the message was created"
+            maxItems: 5
+          timestamp:
+            type: string
+            format: date-time
+            description: "ISO 8601 timestamp of when the response was generated"
+          requestId:
+            type: string
+            description: "Unique request identifier for tracking"
+
+  ErrorResponseModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ContentType: application/json
+      Name: "ErrorResponse"
+      Description: "Error response format"
+      Schema:
+        type: object
+        required:
+          - error
+          - timestamp
+          - requestId
+        properties:
+          error:
+            type: string
+            description: "Error message"
+          timestamp:
+            type: string
+            format: date-time
+            description: "ISO 8601 timestamp of when the error occurred"
+          requestId:
+            type: string
+            description: "Unique request identifier for tracking"
+
+  # Request Validator
+  ChatRequestValidator:
+    Type: AWS::ApiGateway::RequestValidator
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      Name: "ChatRequestValidator"
+      ValidateRequestBody: true
+      ValidateRequestParameters: false
+
+
+
+  GetChatMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ResourceId: !Ref ChatResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:wraithwatch-chat-bot/invocations"
+      MethodResponses:
+        - StatusCode: "200"
+          ResponseModels:
+            application/json: !Ref ChatResponseModel
+        - StatusCode: "500"
+          ResponseModels:
+            application/json: !Ref ErrorResponseModel
+
+
+  PostChatMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ResourceId: !Ref ChatResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      RequestModels:
+        application/json: !Ref ChatRequestModel
+      RequestValidatorId: !Ref ChatRequestValidator
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:wraithwatch-chat-bot/invocations"
+      MethodResponses:
+        - StatusCode: "200"
+          ResponseModels:
+            application/json: !Ref ChatResponseModel
+        - StatusCode: "400"
+          ResponseModels:
+            application/json: !Ref ErrorResponseModel
+        - StatusCode: "405"
+          ResponseModels:
+            application/json: !Ref ErrorResponseModel
+        - StatusCode: "500"
+          ResponseModels:
+            application/json: !Ref ErrorResponseModel
+
+  OptionsChatMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      ResourceId: !Ref ChatResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: "200"
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ""
+      MethodResponses:
+        - StatusCode: "200"
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - GetChatMethod
+      - PostChatMethod
+      - OptionsChatMethod
+      - ChatMessageModel
+      - ChatRequestModel
+      - ChatResponseModel
+      - ErrorResponseModel
+      - ChatRequestValidator
+    Properties:
+      RestApiId: !Ref ChatBotApi
+      StageName: "production"
+      Description: "Deployment for production environment"
+
+  CustomDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Ref DomainName
+      RegionalCertificateArn: !Ref CertificateArn
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn:
+      - ApiDeployment
+    Properties:
+      DomainName: !Ref CustomDomainName
+      RestApiId: !Ref ChatBotApi
+      Stage: "production"
+
+  ChatBotUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn: ApiDeployment
+    Properties:
+      UsagePlanName: "wraithwatch-chat-bot-usage-plan"
+      Description: "Usage plan for Wraithwatch Chat Bot API with rate limiting"
+      Throttle:
+        RateLimit: 5
+        BurstLimit: 10
+      Quota:
+        Limit: 1000
+        Period: DAY
+      ApiStages:
+        - ApiId: !Ref ChatBotApi
+          Stage: "production"
+
+Outputs:
+  ApiGatewayId:
+    Description: "API Gateway ID"
+    Value: !Ref ChatBotApi
+    Export:
+      Name: "WraithwatchChatBotApiGatewayId"
+
+  ApiGatewayChatResourceId:
+    Description: "API Gateway Chat Resource ID"
+    Value: !Ref ChatResource
+    Export:
+      Name: "WraithwatchChatBotApiGatewayChatResourceId"
+
+  ApiGatewayUrl:
+    Description: "API Gateway URL"
+    Value: !Sub "https://${ChatBotApi}.execute-api.${AWS::Region}.amazonaws.com/production"
+    Export:
+      Name: "WraithwatchChatBotApiUrl"
+
+  CustomDomainUrl:
+    Description: "Custom domain URL"
+    Value: !Sub "https://${DomainName}/chat"
+    Export:
+      Name: "WraithwatchChatBotCustomDomainUrl"
+
+  CustomDomainRegionalDomainName:
+    Description: "Regional domain name for the custom domain"
+    Value: !GetAtt CustomDomainName.RegionalDomainName
+    Export:
+      Name: "WraithwatchChatBotCustomDomainRegionalDomainName"
+
+  CustomDomainRegionalHostedZoneId:
+    Description: "Regional hosted zone ID for the custom domain"
+    Value: !GetAtt CustomDomainName.RegionalHostedZoneId
+    Export:
+      Name: "WraithwatchChatBotCustomDomainRegionalHostedZoneId"

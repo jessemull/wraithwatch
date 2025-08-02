@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  S3Key:
+    Type: String
+    Description: The S3 key for the lambda function zip file.
+  AnthropicApiKey:
+    Type: String
+    Description: Anthropic API key for Claude integration
+    NoEcho: true
+
+Resources:
+  WraithwatchChatBotFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: "wraithwatch-chat-bot"
+      Runtime: nodejs20.x
+      Role:
+        Fn::ImportValue: "WraithwatchChatBotExecutionRoleArn"
+      Handler: index.handler
+      Code:
+        S3Bucket:
+          Fn::ImportValue: "WraithwatchChatBotBucketName"
+        S3Key: !Ref S3Key
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          ENVIRONMENT: "production"
+          ANTHROPIC_API_KEY: !Ref AnthropicApiKey
+
+  LambdaPermissionGet:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WraithwatchChatBotFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/GET/*"
+
+  LambdaPermissionPost:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WraithwatchChatBotFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:*/POST/*"
+
+  MyLambdaVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref WraithwatchChatBotFunction
+
+Outputs:
+  WraithwatchChatBotFunctionArn:
+    Description: "ARN of the chat bot function"
+    Value: !Ref MyLambdaVersion
+    Export:
+      Name: "WraithwatchChatBotFunctionArn"
