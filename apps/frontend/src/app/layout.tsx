@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Roboto_Condensed } from 'next/font/google';
 import './globals.css';
 import { config } from '../config';
+import ChatBot from '../components/ChatBot';
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ['latin'],
@@ -64,6 +65,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${robotoCondensed.variable} antialiased`}>
         {children}
+        <ChatBot />
       </body>
     </html>
   );
