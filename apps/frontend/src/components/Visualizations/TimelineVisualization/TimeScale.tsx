@@ -7,7 +7,8 @@ interface TimeScaleProps {
 
 export const TimeScale: React.FC<TimeScaleProps> = ({ position }) => {
   const timeScaleData = useMemo(() => {
-    // Use current time as timeline bounds
+    // Use current time as timeline bounds...
+    
     const now = new Date();
     const startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
     const endTime = now;

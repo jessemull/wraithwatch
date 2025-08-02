@@ -4,33 +4,10 @@ import {
   BatchWriteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { createHash } from 'crypto';
+import { EntityPosition } from '../apps/frontend/src/types/entity';
 
-// Types for entity positions
-interface EntityPosition {
-  PK: string;
-  SK: string;
-  entity_id: string;
-  entity_type: string;
-  name: string;
-  timeline_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  network_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  change_particles: Array<{
-    x: number;
-    y: number;
-    z: number;
-  }>;
-  TTL: number;
-}
+// Types for entity positions...
 
-// Entity configurations (same as in generate-time-series-data.ts)
 interface EntityCharacteristics {
   load?: 'high' | 'medium' | 'low';
   criticality?: 'critical' | 'high' | 'medium' | 'low';
@@ -51,7 +28,8 @@ interface EntityConfig {
 }
 
 const ENTITY_CONFIGURATIONS: EntityConfig[] = [
-  // Systems
+  // Systems...
+
   {
     id: 'system-001',
     type: 'System',
@@ -83,7 +61,8 @@ const ENTITY_CONFIGURATIONS: EntityConfig[] = [
     characteristics: { load: 'high', criticality: 'medium' },
   },
 
-  // AI Agents
+  // AI Agents...
+
   {
     id: 'ai-agent-001',
     type: 'AI_Agent',
@@ -109,7 +88,8 @@ const ENTITY_CONFIGURATIONS: EntityConfig[] = [
     characteristics: { specialization: 'anomaly', accuracy: 'high' },
   },
 
-  // Threats
+  // Threats...
+
   {
     id: 'threat-001',
     type: 'Threat',
@@ -135,7 +115,8 @@ const ENTITY_CONFIGURATIONS: EntityConfig[] = [
     characteristics: { severity: 'low', persistence: 'high' },
   },
 
-  // Network Nodes
+  // Network Nodes...
+
   {
     id: 'network-node-001',
     type: 'Network_Node',
@@ -161,7 +142,8 @@ const ENTITY_CONFIGURATIONS: EntityConfig[] = [
     characteristics: { role: 'security', traffic: 'high' },
   },
 
-  // Users
+  // Users...
+
   {
     id: 'user-001',
     type: 'User',
@@ -188,7 +170,8 @@ const ENTITY_CONFIGURATIONS: EntityConfig[] = [
   },
 ];
 
-// Utility functions for deterministic positioning
+// Utility functions for deterministic positioning...
+
 function generateEntityHash(entityId: string): string {
   return createHash('md5').update(entityId).digest('hex').substring(0, 8);
 }
@@ -199,7 +182,8 @@ function generateDeterministicSeed(entityId: string): number {
 }
 
 function deterministicRandom(seed: number, index: number = 0): number {
-  // Simple deterministic random number generator
+  // Simple deterministic random number generator...
+
   const x = Math.sin(seed + index) * 10000;
   return x - Math.floor(x);
 }
@@ -210,10 +194,12 @@ function generateTimelinePosition(
 ): [number, number, number] {
   const seed = generateDeterministicSeed(entity.id);
 
-  // Spread entities across the timeline height
+  // Spread entities across the timeline height...
+
   const entityY = (index / (ENTITY_CONFIGURATIONS.length - 1) - 0.5) * 16;
 
-  // Generate deterministic random positions around the timeline
+  // Generate deterministic random positions around the timeline...
+
   const angle = deterministicRandom(seed) * Math.PI * 2;
   const radius = 2 + deterministicRandom(seed, 1) * 4; // 2-6 units from timeline
 
@@ -229,7 +215,8 @@ function generateNetworkPosition(
 ): [number, number, number] {
   const seed = generateDeterministicSeed(entity.id);
 
-  // Create a more spherical network layout with entities positioned in 3D space
+  // Create a more spherical network layout with entities positioned in 3D space...
+
   const angle = (index / ENTITY_CONFIGURATIONS.length) * Math.PI * 2;
   const elevation = (deterministicRandom(seed) - 0.5) * Math.PI; // Full sphere elevation
   const radius = 6 + deterministicRandom(seed, 1) * 4; // 6-10 units from center
@@ -248,7 +235,8 @@ function generateChangeParticles(
   const particleCount = 100 + Math.floor(deterministicRandom(seed) * 101); // 100-200 particles
   const particles: Array<{ x: number; y: number; z: number }> = [];
 
-  // Get the entity's timeline position as the center
+  // Get the entity's timeline position as the center...
+
   const entityIndex = ENTITY_CONFIGURATIONS.findIndex(e => e.id === entity.id);
   const [centerX, centerY, centerZ] = generateTimelinePosition(
     entity,
@@ -258,7 +246,8 @@ function generateChangeParticles(
   for (let i = 0; i < particleCount; i++) {
     const particleSeed = seed + i;
 
-    // Generate deterministic positions around the entity
+    // Generate deterministic positions around the entity...
+
     const angle = deterministicRandom(particleSeed) * Math.PI * 2;
     const radius = 1 + deterministicRandom(particleSeed, 1) * 3; // 1-4 units from entity
     const verticalOffset = (deterministicRandom(particleSeed, 2) - 0.5) * 12; // ±6 units vertical
@@ -348,7 +337,8 @@ class DynamoDBService {
   }
 }
 
-// Main execution
+// Main execution...
+
 async function main(): Promise<void> {
   console.log('Generating entity positions...');
 

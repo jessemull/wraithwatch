@@ -1,28 +1,7 @@
 import React, { useMemo } from 'react';
-import { Entity } from '../../../types/entity';
+import { Entity, EntityPosition } from '../../../types/entity';
 import { GlobeNode } from './GlobeNode';
 import { ChangeParticle } from './ChangeParticle';
-
-interface EntityPosition {
-  entity_id: string;
-  entity_type: string;
-  name: string;
-  timeline_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  network_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  change_particles: Array<{
-    x: number;
-    y: number;
-    z: number;
-  }>;
-}
 
 interface GlobeSceneProps {
   entities: Entity[];
@@ -56,11 +35,13 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
         </mesh>
       ))}
       {entities.map(entity => {
-        // Find position data for this entity
+        // Find position data for this entity...
+
         const positionData = positions.find(p => p.entity_id === entity.id);
 
         if (!positionData) {
-          // Fallback to algorithmic positioning if no position data
+          // Fallback to algorithmic positioning if no position data...
+
           const index = entities.findIndex(e => e.id === entity.id);
           const lat = (index / entities.length) * Math.PI - Math.PI / 2;
           const lon = (index * 2.4) % (Math.PI * 2);
@@ -81,8 +62,10 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
           );
         }
 
-        // Use real position data
+        // Use real position data...
+
         const { x, y, z } = positionData.timeline_position;
+
         return (
           <GlobeNode
             key={entity.id}
@@ -94,7 +77,8 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
         );
       })}
       {useMemo(() => {
-        // Use change particles from position data if available
+        // Use change particles from position data if available...
+
         const allChangeParticles = positions.flatMap(p => p.change_particles);
 
         if (allChangeParticles.length > 0) {
@@ -106,7 +90,8 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
           ));
         }
 
-        // Fallback to algorithmic particles
+        // Fallback to algorithmic particles...
+        
         return Array.from({ length: 40 }, (_, index) => {
           const baseAngle = (index * 137.5) % (Math.PI * 2);
           const radius = 4 + Math.sin(baseAngle) * 0.5;

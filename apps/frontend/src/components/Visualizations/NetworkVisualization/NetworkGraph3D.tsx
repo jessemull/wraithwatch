@@ -1,35 +1,14 @@
 import React, { Suspense, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Entity } from '../../../types/entity';
-import { NetworkScene } from './NetworkScene';
 import { OrbitControls } from '@react-three/drei';
+import { NetworkScene } from './NetworkScene';
+import { Entity, EntityPosition } from '../../../types/entity';
 import {
   CANVAS_STYLE,
   CONTROLS_CONFIG,
 } from '../../../constants/visualization';
 import { ControlPanel } from '../TimelineVisualization/ControlPanel';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-
-interface EntityPosition {
-  entity_id: string;
-  entity_type: string;
-  name: string;
-  timeline_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  network_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  change_particles: Array<{
-    x: number;
-    y: number;
-    z: number;
-  }>;
-}
 
 interface NetworkGraph3DProps {
   entities: Entity[];

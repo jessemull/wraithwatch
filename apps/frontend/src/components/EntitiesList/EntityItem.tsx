@@ -1,6 +1,6 @@
 import React from 'react';
 import { EntityItemProps } from '../../types/entity';
-import { getEntityTypeColor, formatTime, formatEntityType, getUnit, getStatusColor, formatText } from '../../util/entity';
+import { getEntityTypeColor, formatTime, formatEntityType, getUnit, formatText } from '../../util/entity';
 
 export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
   const getKeyProperties = () => {

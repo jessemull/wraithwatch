@@ -1,29 +1,8 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Entity } from '../../../types/entity';
-import { GlobeScene } from './GlobeScene';
 import { OrbitControls } from '@react-three/drei';
-
-interface EntityPosition {
-  entity_id: string;
-  entity_type: string;
-  name: string;
-  timeline_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  network_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  change_particles: Array<{
-    x: number;
-    y: number;
-    z: number;
-  }>;
-}
+import { GlobeScene } from './GlobeScene';
+import { Entity, EntityPosition } from '../../../types/entity';
 
 interface Globe3DProps {
   entities: Entity[];

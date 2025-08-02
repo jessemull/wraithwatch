@@ -2,30 +2,9 @@ import React, { useMemo, useCallback } from 'react';
 import { ConnectionLine } from './ConnectionLine';
 import { ConnectionParticle } from './ConnectionParticle';
 import { NetworkNode } from './NetworkNode';
-import { Entity } from '../../../types/entity';
+import { Entity, EntityPosition } from '../../../types/entity';
 import { NETWORK_SCENE_CONFIG } from '../../../constants/visualization';
 import { NetworkLayout, NetworkConnection } from '../../../types/visualization';
-
-interface EntityPosition {
-  entity_id: string;
-  entity_type: string;
-  name: string;
-  timeline_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  network_position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  change_particles: Array<{
-    x: number;
-    y: number;
-    z: number;
-  }>;
-}
 
 interface NetworkSceneProps {
   entities: Entity[];
@@ -54,7 +33,8 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   const entityPositions = useMemo(() => {
     const positionMap = new Map<string, [number, number, number]>();
 
-    // Use real position data from server
+    // Use real position data from server...
+
     entities.forEach(entity => {
       const positionData = positions.find(p => p.entity_id === entity.id);
       if (positionData) {
@@ -63,14 +43,16 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       }
     });
 
-    // For any entities without position data, create a more spherical distribution
+    // For any entities without position data, create a more spherical distribution...
+
     const positionedEntities = new Set(positionMap.keys());
     const unpositionedEntities = entities.filter(
       e => !positionedEntities.has(e.id)
     );
 
     unpositionedEntities.forEach((entity, index) => {
-      // Create a spherical distribution for fallback positioning
+      // Create a spherical distribution for fallback positioning...
+      
       const angle =
         (index / Math.max(unpositionedEntities.length, 1)) * Math.PI * 2;
       const elevation =
