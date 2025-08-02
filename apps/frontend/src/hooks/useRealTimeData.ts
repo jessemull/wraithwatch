@@ -12,12 +12,12 @@ import {
 } from '../util/websocket';
 
 export const useRealTimeData = () => {
-  const [changes, setChanges] = useState<EntityChange[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
+  const [changes, setChanges] = useState<EntityChange[]>([]);
   const [positions, setPositions] = useState<EntityPosition[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
 
@@ -236,4 +236,21 @@ export const useRealTimeData = () => {
     getEntityHistory,
     getPropertyHistory,
   };
+};
+
+export const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
 };

@@ -168,7 +168,7 @@ export const Dashboard: React.FC = () => {
                   entitiesCount={entities.length}
                   changesCount={changes.length}
                 />
-                <div className="h-[667px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-auto sm:overflow-hidden p-6">
+                <div className="h-[400px] sm:h-[667px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-auto sm:overflow-hidden p-6">
                   {renderVisualization()}
                 </div>
               </div>
@@ -196,7 +196,7 @@ export const Dashboard: React.FC = () => {
                     Select an entity to view detailed information
                   </p>
                 </div>
-                <div className="h-[667px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-auto sm:overflow-hidden p-6">
+                <div className="h-[400px] sm:h-[667px] bg-gray-900/50 backdrop-blur-sm rounded-b-xl overflow-auto sm:overflow-hidden p-6">
                   <EntityDetails selectedEntity={selectedEntity} />
                 </div>
               </div>
