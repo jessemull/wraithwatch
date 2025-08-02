@@ -7,14 +7,12 @@ import { MatrixNode } from './MatrixNode';
 
 interface MatrixSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const MatrixScene: React.FC<MatrixSceneProps> = ({
   entities,
-  changes,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -88,7 +86,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           />
         );
       })}
-      {changes.slice(0, 30).map((change, index) => {
+      {Array.from({ length: 40 }, (_, index) => {
         const time = Date.now() * 0.001 + index * 0.1;
         const x = Math.sin(time) * 5;
         const y = Math.cos(time * 0.5) * 5;
@@ -96,8 +94,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
 
         return (
           <DataParticle
-            key={`${change.entity_id}-${change.timestamp}-${index}`}
-            change={change}
+            key={`change-particle-${index}`}
             position={[x, y, z]}
           />
         );

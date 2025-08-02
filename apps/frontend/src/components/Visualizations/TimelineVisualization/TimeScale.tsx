@@ -1,24 +1,16 @@
 import React, { useMemo } from 'react';
-import { EntityChange } from '../../../types/api';
 import { Text } from '@react-three/drei';
-import { TimeScaleData } from '../../../types/visualization';
 
 interface TimeScaleProps {
-  changes: EntityChange[];
   position: [number, number, number];
 }
 
-export const TimeScale: React.FC<TimeScaleProps> = ({ changes, position }) => {
-  const timeScaleData = useMemo((): TimeScaleData | null => {
-    if (changes.length === 0) return null;
-
-    const sortedChanges = [...changes].sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
-
-    const startTime = new Date(sortedChanges[0].timestamp);
-    const endTime = new Date(sortedChanges[sortedChanges.length - 1].timestamp);
+export const TimeScale: React.FC<TimeScaleProps> = ({ position }) => {
+  const timeScaleData = useMemo(() => {
+    // Use current time as timeline bounds
+    const now = new Date();
+    const startTime = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 24 hours ago
+    const endTime = now;
     const duration = endTime.getTime() - startTime.getTime();
 
     const formatTime = (date: Date) => {
@@ -48,7 +40,7 @@ export const TimeScale: React.FC<TimeScaleProps> = ({ changes, position }) => {
       formattedEndTime: formatTime(endTime),
       formattedDuration: formatDuration(duration),
     };
-  }, [changes]);
+  }, []);
 
   if (!timeScaleData) return null;
 

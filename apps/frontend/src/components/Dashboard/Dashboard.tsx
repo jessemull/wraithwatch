@@ -25,7 +25,6 @@ export const Dashboard: React.FC = () => {
   const visualizationProps = useMemo(
     () => ({
       entities,
-      changes,
       selectedEntity,
       onEntitySelect: setSelectedEntity,
     }),

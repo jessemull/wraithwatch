@@ -1,0 +1,228 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Entity } from '../types/entity';
+import { EntityChange, HistoryQuery } from '../types/api';
+import { WebSocketMessage } from '../types/websocket';
+import { WEBSOCKET_CONNECTION_STATUS } from '../constants';
+import { config } from '../config';
+import { updateEntityInList, updateEntityProperty } from '../util/entity';
+import { isEntityListMessage, isEntityUpdateMessage, isConnectionStatusMessage } from '../util/websocket';
+import cloneDeep from 'clone-deep';
+
+export const useRealTimeData = () => {
+  const [changes, setChanges] = useState<EntityChange[]>([]);
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  
+  // This will hold the initial entities and never change
+  const initialEntitiesRef = useRef<Entity[] | null>(null);
+  const websocketRef = useRef<WebSocket | null>(null);
+
+  const transformChangesToEntities = (changes: EntityChange[]): Entity[] => {
+    const entityMap = new Map<string, Entity>();
+
+    changes.forEach(change => {
+      if (!entityMap.has(change.entity_id)) {
+        entityMap.set(change.entity_id, {
+          id: change.entity_id,
+          name: change.entity_id,
+          type: change.entity_type as Entity['type'],
+          properties: {},
+          lastSeen: change.timestamp,
+          changesToday: 0,
+        });
+      }
+
+      const entity = entityMap.get(change.entity_id)!;
+
+      if (!entity.properties) {
+        entity.properties = {};
+      }
+
+      entity.properties[change.property_name] = {
+        name: change.property_name,
+        currentValue: change.value,
+        lastChanged: change.timestamp,
+        history: [
+          {
+            timestamp: change.timestamp,
+            oldValue: change.value,
+            newValue: change.value,
+          },
+        ],
+      };
+
+      if (new Date(change.timestamp) > new Date(entity.lastSeen)) {
+        entity.lastSeen = change.timestamp;
+      }
+    });
+
+    return Array.from(entityMap.values());
+  };
+
+  const fetchInitialData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(
+        `${config.api.baseUrl}/api/test/data?limit=10000`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (!result.success || !result.data) {
+        throw new Error('Invalid response from API');
+      }
+
+      setChanges(result.data);
+      const transformedEntities = transformChangesToEntities(result.data);
+      setEntities(transformedEntities);
+      
+      // Set initial entities only once
+      if (initialEntitiesRef.current === null) {
+        console.log('Setting initial entities:', transformedEntities.length);
+        initialEntitiesRef.current = cloneDeep(transformedEntities);
+      }
+    } catch (err) {
+      console.error('Error loading initial data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getEntityHistory = async (
+    entityId: string,
+    options: HistoryQuery = {}
+  ) => {
+    const params = new URLSearchParams();
+
+    if (options.propertyName)
+      params.append('propertyName', options.propertyName);
+    if (options.startTime) params.append('startTime', options.startTime);
+    if (options.endTime) params.append('endTime', options.endTime);
+    if (options.limit) params.append('limit', options.limit.toString());
+
+    const response = await fetch(
+      `${config.api.baseUrl}/api/history/entity/${entityId}?${params}`
+    );
+
+    if (!response.ok) throw new Error('Failed to fetch entity history');
+
+    const result = await response.json();
+    return result.data;
+  };
+
+  const getPropertyHistory = async (
+    entityId: string,
+    propertyName: string,
+    options: HistoryQuery = {}
+  ) => {
+    const params = new URLSearchParams();
+
+    if (options.startTime) params.append('startTime', options.startTime);
+    if (options.endTime) params.append('endTime', options.endTime);
+    if (options.limit) params.append('limit', options.limit.toString());
+
+    const response = await fetch(
+      `${config.api.baseUrl}/api/history/entity/${entityId}/property/${propertyName}?${params}`
+    );
+
+    if (!response.ok) throw new Error('Failed to fetch property history');
+
+    const result = await response.json();
+    return result.data;
+  };
+
+  const handleWebSocketMessage = useCallback((message: WebSocketMessage) => {
+    if (isEntityListMessage(message)) {
+      const { entities } = message.payload;
+      setEntities(entities);
+    } else if (isEntityUpdateMessage(message)) {
+      const { entityId, newValue, oldValue, property, timestamp } =
+        message.payload;
+
+      setEntities(prevEntities =>
+        updateEntityInList(entityId, prevEntities, entity =>
+          updateEntityProperty(entity, newValue, oldValue, property, timestamp)
+        )
+      );
+
+      setLastUpdate(timestamp);
+    } else if (isConnectionStatusMessage(message)) {
+      const isConnected =
+        message.payload.status === WEBSOCKET_CONNECTION_STATUS.CONNECTED;
+      setIsConnected(isConnected);
+    }
+  }, []);
+
+  const connectWebSocket = useCallback(() => {
+    if (websocketRef.current) {
+      websocketRef.current.close();
+    }
+
+    const websocket = new WebSocket(config.websocket.url);
+
+    websocket.onopen = () => {
+      console.log('WebSocket connected');
+      setIsConnected(true);
+    };
+
+    websocket.onclose = () => {
+      console.log('WebSocket disconnected');
+      setIsConnected(false);
+    };
+
+    websocket.onerror = (error: Event) => {
+      console.error('WebSocket error:', error);
+      setIsConnected(false);
+    };
+
+    websocket.onmessage = (event) => {
+      try {
+        const message: WebSocketMessage = JSON.parse(event.data);
+        handleWebSocketMessage(message);
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    websocketRef.current = websocket;
+  }, [handleWebSocketMessage]);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
+
+  useEffect(() => {
+    if (!loading) {
+      connectWebSocket();
+    }
+
+    return () => {
+      if (websocketRef.current) {
+        websocketRef.current.close();
+        websocketRef.current = null;
+      }
+    };
+  }, [loading, connectWebSocket]);
+
+  return {
+    entities,
+    stableEntities: initialEntitiesRef.current || [],
+    changes,
+    loading,
+    error,
+    isConnected,
+    lastUpdate,
+    refetch: fetchInitialData,
+    getEntityHistory,
+    getPropertyHistory,
+  };
+}; 

@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useMemo, useCallback } from 'react';
+import React, { Suspense, useRef, useCallback } from 'react';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import {
   CAMERA_CONFIG,
@@ -9,31 +9,21 @@ import {
 import { Canvas } from '@react-three/fiber';
 import { ControlPanel } from './ControlPanel';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { OrbitControls } from '@react-three/drei';
 import { TimelineScene } from './TimelineScene';
 
 interface TimelineVisualizationProps {
   entities: Entity[];
-  changes: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   entities,
-  changes,
   selectedEntity,
   onEntitySelect,
 }) => {
   const controlsRef = useRef<OrbitControlsImpl>(null);
-
-  // Memoize filtered changes to prevent unnecessary recalculations...
-
-  const selectedEntityChanges = useMemo(() => {
-    if (!selectedEntity) return [];
-    return changes.filter(change => change.entity_id === selectedEntity.id);
-  }, [selectedEntity, changes]);
 
   // Optimized control handlers with useCallback...
 
@@ -72,8 +62,6 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
           <OrbitControls ref={controlsRef} {...CONTROLS_CONFIG} />
           <TimelineScene
             entities={entities}
-            changes={selectedEntityChanges}
-            allChanges={changes}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />

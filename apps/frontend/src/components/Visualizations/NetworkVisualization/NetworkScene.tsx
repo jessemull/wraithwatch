@@ -9,7 +9,6 @@ import { NetworkLayout, NetworkConnection } from '../../../types/visualization';
 
 interface NetworkSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }

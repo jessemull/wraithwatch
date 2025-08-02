@@ -1,39 +1,27 @@
 import React, { useMemo, useCallback } from 'react';
-import { ChangeParticle } from './ChangeParticle';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { EntityNode } from './EntityNode';
-
+import { ChangeParticle } from './ChangeParticle';
 import { TimeScale } from './TimeScale';
 
 interface TimelineSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
-  allChanges: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const TimelineScene: React.FC<TimelineSceneProps> = ({
   entities,
-  changes,
-  allChanges,
   selectedEntity,
   onEntitySelect,
 }) => {
-  // Memoize timeline bounds and entity positions...
+  // Memoize entity positions...
 
   const { entityPositions } = useMemo(() => {
-    const sortedChanges = [...allChanges].sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
-
-    const startTime = new Date(sortedChanges[0].timestamp).getTime();
-
-    const endTime = new Date(
-      sortedChanges[sortedChanges.length - 1].timestamp
-    ).getTime();
+    // Use current time as timeline bounds
+    const now = Date.now();
+    const startTime = now - (24 * 60 * 60 * 1000); // 24 hours ago
+    const endTime = now;
 
     // Calculate all entity positions...
 
@@ -57,7 +45,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
       timelineBounds: { startTime, endTime },
       entityPositions: positions,
     };
-  }, [allChanges, entities]);
+  }, [entities]);
 
   const handleEntityClick = useCallback(
     (entity: Entity) => {
@@ -94,36 +82,30 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           isSelected={selectedEntity?.id === entity.id}
           onClick={() => handleEntityClick(entity)}
         />
-      ))}
-      {selectedEntity &&
-        changes.map((change, index) => {
-          // Find the selected entity's position...
+              ))}
+      {selectedEntity && Array.from({ length: 150 }, (_, index) => {
+        // Find the selected entity's position
+        const selectedEntityIndex = entities.findIndex(
+          e => e.id === selectedEntity.id
+        );
+        const entityPosition = entityPositions[selectedEntityIndex];
 
-          const selectedEntityIndex = entities.findIndex(
-            e => e.id === selectedEntity.id
-          );
+        // Generate random positions around the entity
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
 
-          const entityPosition = entityPositions[selectedEntityIndex];
+        const x = entityPosition[0] + Math.cos(angle) * radius;
+        const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
+        const z = entityPosition[2] + Math.sin(angle) * radius;
 
-          // Position change particles centered around the entity's position...
-
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
-
-          const x = entityPosition[0] + Math.cos(angle) * radius;
-          const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
-          const z = entityPosition[2] + Math.sin(angle) * radius;
-
-          return (
-            <ChangeParticle
-              key={`${change.entity_id}-${change.timestamp}-${index}`}
-              change={change}
-              position={[x, y, z]}
-            />
-          );
-        })}
-
-      {selectedEntity && <TimeScale changes={changes} position={[0, 0, 0]} />}
+        return (
+          <ChangeParticle
+            key={`change-particle-${index}`}
+            position={[x, y, z]}
+          />
+        );
+      })}
+      {selectedEntity && <TimeScale position={[0, 0, 0]} />}
     </group>
   );
 };

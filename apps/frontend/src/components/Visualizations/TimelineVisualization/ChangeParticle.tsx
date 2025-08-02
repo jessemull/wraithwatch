@@ -1,9 +1,7 @@
 import React from 'react';
-import { EntityChange } from '../../../types/api';
 import { PARTICLE_STYLES } from '../../../constants/visualization';
 
 interface ChangeParticleProps {
-  change: EntityChange;
   position: [number, number, number];
 }
 

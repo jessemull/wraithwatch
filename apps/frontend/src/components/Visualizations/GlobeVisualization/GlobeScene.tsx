@@ -1,19 +1,16 @@
 import React from 'react';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { GlobeNode } from './GlobeNode';
 import { ChangeParticle } from './ChangeParticle';
 
 interface GlobeSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const GlobeScene: React.FC<GlobeSceneProps> = ({
   entities,
-  changes,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -56,7 +53,7 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
           />
         );
       })}
-      {changes.slice(0, 40).map((change, index) => {
+      {Array.from({ length: 40 }, (_, index) => {
         const time = Date.now() * 0.001 + index * 0.1;
         const radius = 4 + Math.sin(time) * 0.5;
         const x = radius * Math.cos(time);
@@ -65,8 +62,7 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
 
         return (
           <ChangeParticle
-            key={`${change.entity_id}-${change.timestamp}-${index}`}
-            change={change}
+            key={`change-particle-${index}`}
             position={[x, y, z]}
           />
         );
