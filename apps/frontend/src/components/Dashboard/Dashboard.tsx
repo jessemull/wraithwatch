@@ -71,10 +71,13 @@ export const Dashboard: React.FC = () => {
       </div>
       <div className="relative px-4 py-8">
         <div className="mb-8">
+          <h1 className="sr-only">Wraithwatch Cyber Defense Dashboard</h1>
+          <h2 className="text-xl font-semibold text-white mb-4">Dashboard Metrics</h2>
           <DashboardMetrics entities={entities} changes={changes} />
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           <div className="xl:col-span-1">
+            <h2 className="text-xl font-semibold text-white mb-4">Visualization</h2>
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl">
               <VisualizationControls
                 visualizationType={visualizationType}
@@ -88,11 +91,12 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
           <div className="xl:col-span-1">
+            <h2 className="text-xl font-semibold text-white mb-4">Entity Details</h2>
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl">
               <div className="px-6 py-4 border-b border-gray-800">
-                <h2 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-white">
                   Entity Details
-                </h2>
+                </h3>
                 <p className="text-sm text-gray-400 mt-1">
                   Select an entity to view detailed information
                 </p>
@@ -104,6 +108,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
         <div className="mt-8">
+          <h2 className="text-xl font-semibold text-white mb-4">Entity List</h2>
           <EntitiesList
             entities={entities}
             lastUpdate={new Date().toISOString()}

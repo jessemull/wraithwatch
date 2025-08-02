@@ -74,11 +74,11 @@ export class DynamoDBService {
       } while (lastEvaluatedKey && allItems.length < limit);
 
       this.logScanCompletion(allItems.length);
-      
+
       // Cache the data
       this.dataCache.set('all_data', allItems);
       logger.info('Cached all data');
-      
+
       return allItems;
     } catch (error) {
       this.logError('Error scanning table for all data', { error });
@@ -153,11 +153,11 @@ export class DynamoDBService {
       } while (lastEvaluatedKey);
 
       this.logScanCompletion(allItems.length);
-      
+
       // Cache the positions
       this.positionsCache.set('all_positions', allItems);
       logger.info('Cached all positions');
-      
+
       return allItems;
     } catch (error) {
       this.logError('Error scanning table for entity positions', { error });
@@ -169,15 +169,15 @@ export class DynamoDBService {
   async preloadCache(): Promise<void> {
     try {
       logger.info('Preloading cache with all data...');
-      
+
       // Preload data cache
       const allData = await this.getAllData();
       this.dataCache.set('all_data', allData);
-      
+
       // Preload positions cache
       const allPositions = await this.getAllEntityPositions();
       this.positionsCache.set('all_positions', allPositions);
-      
+
       logger.info('Cache preloaded successfully');
     } catch (error) {
       this.logError('Error preloading cache', { error });

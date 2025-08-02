@@ -37,10 +37,13 @@ export class EntityManager {
   async initializeFromDatabase(): Promise<void> {
     try {
       logger.info('Loading entities from database...');
+      
+      // Get data from DynamoDBService (which will use its cache)
       const dbData = await this.dynamoDBService.getAllData();
 
       const entities = this.transformDatabaseDataToEntities(dbData);
 
+      // Store entities in EntityManager cache for individual access
       entities.forEach(entity => {
         this.entityCache.set(entity.id, entity);
       });

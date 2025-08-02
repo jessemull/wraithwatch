@@ -3,7 +3,7 @@ export const config = {
     baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
   },
   app: {
-    description: 'Adaptive, Intelligent Cyber Defense',
+    description: 'Wraithwatch - Advanced AI-powered cyber defense command center for real-time entity monitoring, threat detection, and intelligent security analytics. Monitor your digital infrastructure with cutting-edge visualization and predictive insights.',
     name: 'Wraithwatch',
     tagline: 'Real-Time Entity Monitoring Dashboard',
   },

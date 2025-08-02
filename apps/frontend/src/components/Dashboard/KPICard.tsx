@@ -21,9 +21,9 @@ export const KPICard: React.FC<KPICardProps> = ({
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 shadow-lg">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-gray-300 text-sm font-semibold uppercase tracking-wide">
+        <h4 className="text-gray-300 text-sm font-semibold uppercase tracking-wide">
           {title}
-        </h3>
+        </h4>
         {icon && <div className="text-gray-400">{icon}</div>}
       </div>
       <div className="flex items-baseline space-x-2">

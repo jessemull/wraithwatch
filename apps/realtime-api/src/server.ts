@@ -53,10 +53,10 @@ export async function createServer() {
   // Start generating entity updates...
 
   await entityManager.initializeFromDatabase();
-  
+
   // Preload cache with all data
   await dynamoDBService.preloadCache();
-  
+
   entityManager.startUpdateGeneration(2000);
 
   return fastify;
