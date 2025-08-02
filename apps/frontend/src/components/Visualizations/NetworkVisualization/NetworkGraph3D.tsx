@@ -1,7 +1,6 @@
 import React, { Suspense, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { NetworkScene } from './NetworkScene';
 import { OrbitControls } from '@react-three/drei';
 import {
@@ -11,16 +10,37 @@ import {
 import { ControlPanel } from '../TimelineVisualization/ControlPanel';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
+interface EntityPosition {
+  entity_id: string;
+  entity_type: string;
+  name: string;
+  timeline_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  network_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  change_particles: Array<{
+    x: number;
+    y: number;
+    z: number;
+  }>;
+}
+
 interface NetworkGraph3DProps {
-  changes: EntityChange[];
   entities: Entity[];
+  positions: EntityPosition[];
   onEntitySelect?: (entity: Entity) => void;
   selectedEntity?: Entity;
 }
 
 export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
   entities,
-  changes,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -63,7 +83,7 @@ export const NetworkGraph3D: React.FC<NetworkGraph3DProps> = ({
           />
           <NetworkScene
             entities={entities}
-            changes={changes}
+            positions={positions}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />

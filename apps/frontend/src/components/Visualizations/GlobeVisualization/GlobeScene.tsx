@@ -1,16 +1,39 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Entity } from '../../../types/entity';
 import { GlobeNode } from './GlobeNode';
 import { ChangeParticle } from './ChangeParticle';
 
+interface EntityPosition {
+  entity_id: string;
+  entity_type: string;
+  name: string;
+  timeline_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  network_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  change_particles: Array<{
+    x: number;
+    y: number;
+    z: number;
+  }>;
+}
+
 interface GlobeSceneProps {
   entities: Entity[];
+  positions: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const GlobeScene: React.FC<GlobeSceneProps> = ({
   entities,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -32,17 +55,34 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
           <meshBasicMaterial color="#ffffff" transparent opacity={0.2} />
         </mesh>
       ))}
-      {entities.map((entity, index) => {
-        // Position entities on the globe surface...
+      {entities.map(entity => {
+        // Find position data for this entity
+        const positionData = positions.find(p => p.entity_id === entity.id);
 
-        const lat = (index / entities.length) * Math.PI - Math.PI / 2; // -90 to 90 degrees
-        const lon = (index * 2.4) % (Math.PI * 2); // Distribute around longitude
-        const radius = 3.2; // Slightly above globe surface
+        if (!positionData) {
+          // Fallback to algorithmic positioning if no position data
+          const index = entities.findIndex(e => e.id === entity.id);
+          const lat = (index / entities.length) * Math.PI - Math.PI / 2;
+          const lon = (index * 2.4) % (Math.PI * 2);
+          const radius = 3.2;
 
-        const x = radius * Math.cos(lat) * Math.cos(lon);
-        const y = radius * Math.sin(lat);
-        const z = radius * Math.cos(lat) * Math.sin(lon);
+          const x = radius * Math.cos(lat) * Math.cos(lon);
+          const y = radius * Math.sin(lat);
+          const z = radius * Math.cos(lat) * Math.sin(lon);
 
+          return (
+            <GlobeNode
+              key={entity.id}
+              entity={entity}
+              position={[x, y, z]}
+              isSelected={selectedEntity?.id === entity.id}
+              onClick={() => onEntitySelect?.(entity)}
+            />
+          );
+        }
+
+        // Use real position data
+        const { x, y, z } = positionData.timeline_position;
         return (
           <GlobeNode
             key={entity.id}
@@ -53,20 +93,35 @@ export const GlobeScene: React.FC<GlobeSceneProps> = ({
           />
         );
       })}
-      {Array.from({ length: 40 }, (_, index) => {
-        const time = Date.now() * 0.001 + index * 0.1;
-        const radius = 4 + Math.sin(time) * 0.5;
-        const x = radius * Math.cos(time);
-        const z = radius * Math.sin(time);
-        const y = Math.sin(time * 2) * 0.5;
+      {useMemo(() => {
+        // Use change particles from position data if available
+        const allChangeParticles = positions.flatMap(p => p.change_particles);
 
-        return (
-          <ChangeParticle
-            key={`change-particle-${index}`}
-            position={[x, y, z]}
-          />
-        );
-      })}
+        if (allChangeParticles.length > 0) {
+          return allChangeParticles.map((particle, index) => (
+            <ChangeParticle
+              key={`change-particle-globe-${index}`}
+              position={[particle.x, particle.y, particle.z]}
+            />
+          ));
+        }
+
+        // Fallback to algorithmic particles
+        return Array.from({ length: 40 }, (_, index) => {
+          const baseAngle = (index * 137.5) % (Math.PI * 2);
+          const radius = 4 + Math.sin(baseAngle) * 0.5;
+          const x = radius * Math.cos(baseAngle);
+          const z = radius * Math.sin(baseAngle);
+          const y = Math.sin(baseAngle * 2) * 0.5;
+
+          return (
+            <ChangeParticle
+              key={`change-particle-globe-${index}`}
+              position={[x, y, z]}
+            />
+          );
+        });
+      }, [positions])}
     </group>
   );
 };

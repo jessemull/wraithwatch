@@ -11,24 +11,26 @@ import { Header } from './Header';
 import { DashboardMetrics } from './DashboardMetrics';
 import { EntityDetails } from './EntityDetails';
 import { VisualizationControls } from './VisualizationControls';
-import { useEntityData } from '../../hooks/useEntityData';
+import { useRealTimeData } from '../../hooks/useRealTimeData';
 import { useState, useMemo } from 'react';
 import { Entity } from '../../types/entity';
 import { VisualizationType } from '../../types/visualization';
 
 export const Dashboard: React.FC = () => {
-  const { entities, changes, loading, error } = useEntityData();
+  const { entities, stableEntities, changes, positions, loading, error } =
+    useRealTimeData();
   const [selectedEntity, setSelectedEntity] = useState<Entity | undefined>();
   const [visualizationType, setVisualizationType] =
     useState<VisualizationType>('timeline');
 
   const visualizationProps = useMemo(
     () => ({
-      entities,
+      entities: stableEntities,
+      positions,
       selectedEntity,
       onEntitySelect: setSelectedEntity,
     }),
-    [entities, changes, selectedEntity]
+    [stableEntities, positions, selectedEntity]
   );
 
   const renderVisualization = () => {
@@ -73,7 +75,7 @@ export const Dashboard: React.FC = () => {
       </div>
       <div className="relative px-4 py-8">
         <div className="mb-8">
-          <DashboardMetrics entities={entities} changes={changes} />
+          <DashboardMetrics entities={stableEntities} changes={changes} />
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           <div className="xl:col-span-1">

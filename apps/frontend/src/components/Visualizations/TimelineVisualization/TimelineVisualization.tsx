@@ -12,14 +12,37 @@ import { Entity } from '../../../types/entity';
 import { OrbitControls } from '@react-three/drei';
 import { TimelineScene } from './TimelineScene';
 
+interface EntityPosition {
+  entity_id: string;
+  entity_type: string;
+  name: string;
+  timeline_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  network_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  change_particles: Array<{
+    x: number;
+    y: number;
+    z: number;
+  }>;
+}
+
 interface TimelineVisualizationProps {
   entities: Entity[];
+  positions: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
   entities,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -62,6 +85,7 @@ export const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
           <OrbitControls ref={controlsRef} {...CONTROLS_CONFIG} />
           <TimelineScene
             entities={entities}
+            positions={positions}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />

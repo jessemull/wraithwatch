@@ -6,14 +6,37 @@ import { Entity } from '../../../types/entity';
 import { NETWORK_SCENE_CONFIG } from '../../../constants/visualization';
 import { NetworkLayout, NetworkConnection } from '../../../types/visualization';
 
+interface EntityPosition {
+  entity_id: string;
+  entity_type: string;
+  name: string;
+  timeline_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  network_position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  change_particles: Array<{
+    x: number;
+    y: number;
+    z: number;
+  }>;
+}
+
 interface NetworkSceneProps {
   entities: Entity[];
+  positions: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const NetworkScene: React.FC<NetworkSceneProps> = ({
   entities,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -29,7 +52,22 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   );
 
   const entityPositions = useMemo(() => {
-    const positions = new Map<string, [number, number, number]>();
+    const positionMap = new Map<string, [number, number, number]>();
+
+    // First, try to use real position data
+    entities.forEach(entity => {
+      const positionData = positions.find(p => p.entity_id === entity.id);
+      if (positionData) {
+        const { x, y, z } = positionData.network_position;
+        positionMap.set(entity.id, [x, y, z]);
+      }
+    });
+
+    // Fallback to algorithmic positioning for entities without position data
+    const positionedEntities = new Set(positionMap.keys());
+    const unpositionedEntities = entities.filter(
+      e => !positionedEntities.has(e.id)
+    );
 
     const positionEntities = (
       entityList: Entity[],
@@ -41,24 +79,37 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
         const x = Math.cos(angle) * config.radius;
         const z = Math.sin(angle) * config.radius;
         const y = config.y;
-        positions.set(entity.id, [x, y, z]);
+        positionMap.set(entity.id, [x, y, z]);
       });
     };
 
-    positionEntities(entityGroups.threats, 'threats');
-    positionEntities(entityGroups.aiAgents, 'aiAgents');
-    positionEntities(entityGroups.systems, 'systems');
-    positionEntities(entityGroups.networkNodes, 'networkNodes');
-    positionEntities(entityGroups.users, 'users');
-
-    const positionedEntities = new Set(positions.keys());
-    const unpositionedEntities = entities.filter(
-      e => !positionedEntities.has(e.id)
+    positionEntities(
+      unpositionedEntities.filter(e => e.type === 'Threat'),
+      'threats'
     );
-    positionEntities(unpositionedEntities, 'default');
+    positionEntities(
+      unpositionedEntities.filter(e => e.type === 'AI_Agent'),
+      'aiAgents'
+    );
+    positionEntities(
+      unpositionedEntities.filter(e => e.type === 'System'),
+      'systems'
+    );
+    positionEntities(
+      unpositionedEntities.filter(e => e.type === 'Network_Node'),
+      'networkNodes'
+    );
+    positionEntities(
+      unpositionedEntities.filter(e => e.type === 'User'),
+      'users'
+    );
 
-    return positions;
-  }, [entities, entityGroups]);
+    // Position any remaining entities with default positioning
+    const remainingUnpositioned = entities.filter(e => !positionMap.has(e.id));
+    positionEntities(remainingUnpositioned, 'default');
+
+    return positionMap;
+  }, [entities, positions, entityGroups]);
 
   const connections = useMemo(() => {
     const connectionList: NetworkConnection[] = [];
