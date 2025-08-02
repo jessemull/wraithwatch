@@ -1,7 +1,12 @@
 import * as routes from './routes';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { DynamoDBService, EntityManager, WebSocketManager, AggregatedMetricsService } from './services';
+import {
+  DynamoDBService,
+  EntityManager,
+  WebSocketManager,
+  AggregatedMetricsService,
+} from './services';
 import { websocketPlugin } from './plugins';
 
 export async function createServer() {

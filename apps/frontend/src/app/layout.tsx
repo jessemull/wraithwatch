@@ -15,7 +15,8 @@ export const metadata: Metadata = {
   },
   description: config.app.description,
   metadataBase: new URL('https://www.wraithwatch-demo.com'),
-  keywords: 'cyber defense, threat detection, AI security, real-time monitoring, cybersecurity, entity monitoring, security analytics',
+  keywords:
+    'cyber defense, threat detection, AI security, real-time monitoring, cybersecurity, entity monitoring, security analytics',
   authors: [{ name: 'Wraithwatch Team' }],
   creator: 'Wraithwatch',
   publisher: 'Wraithwatch',

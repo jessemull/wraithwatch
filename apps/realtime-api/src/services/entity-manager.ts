@@ -37,7 +37,7 @@ export class EntityManager {
   async initializeFromDatabase(): Promise<void> {
     try {
       logger.info('Loading entities from database...');
-      
+
       // Get data from DynamoDBService (which will use its cache)
       const dbData = await this.dynamoDBService.getAllData();
 

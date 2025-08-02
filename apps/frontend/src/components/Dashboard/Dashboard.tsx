@@ -1,24 +1,52 @@
 'use client';
 
-import {
-  EntitiesList,
-} from '../index';
+import { EntitiesList } from '../index';
 import dynamic from 'next/dynamic';
 
-const TimelineVisualization = dynamic(() => import('../Visualizations/TimelineVisualization').then(mod => ({ default: mod.TimelineVisualization })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading visualization...</div>,
-  ssr: false
-});
+const TimelineVisualization = dynamic(
+  () =>
+    import('../Visualizations/TimelineVisualization').then(mod => ({
+      default: mod.TimelineVisualization,
+    })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading visualization...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
-const NetworkGraph3D = dynamic(() => import('../Visualizations/NetworkVisualization').then(mod => ({ default: mod.NetworkGraph3D })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading visualization...</div>,
-  ssr: false
-});
+const NetworkGraph3D = dynamic(
+  () =>
+    import('../Visualizations/NetworkVisualization').then(mod => ({
+      default: mod.NetworkGraph3D,
+    })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading visualization...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
-const Matrix3D = dynamic(() => import('../Visualizations/MatrixVisualization').then(mod => ({ default: mod.Matrix3D })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading visualization...</div>,
-  ssr: false
-});
+const Matrix3D = dynamic(
+  () =>
+    import('../Visualizations/MatrixVisualization').then(mod => ({
+      default: mod.Matrix3D,
+    })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading visualization...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 import { Header } from './Header';
 import { DashboardMetrics } from './DashboardMetrics';
 import { EntityDetails } from './EntityDetails';
@@ -29,7 +57,8 @@ import { Entity } from '../../types/entity';
 import { VisualizationType } from '../../types/visualization';
 
 export const Dashboard: React.FC = () => {
-  const { entities, changes, positions, metrics, loading, error } = useRealTimeData();
+  const { entities, changes, positions, metrics, loading, error } =
+    useRealTimeData();
   const [selectedEntity, setSelectedEntity] = useState<Entity | undefined>();
   const [visualizationType, setVisualizationType] =
     useState<VisualizationType>('timeline');
@@ -77,13 +106,20 @@ export const Dashboard: React.FC = () => {
       <div className="relative px-4 py-8">
         <div className="mb-8">
           <h1 className="sr-only">Wraithwatch Cyber Defense Dashboard</h1>
-          <h2 className="text-xl font-semibold text-white mb-4">Dashboard Metrics</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Dashboard Metrics
+          </h2>
           {loading ? (
             <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
               <div className="xl:col-span-1 space-y-8">
-                <h3 className="text-lg font-semibold text-white mb-4">Key Performance Indicators</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Key Performance Indicators
+                </h3>
                 {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="bg-gray-900 border border-gray-700 rounded-lg p-6 shadow-lg animate-pulse">
+                  <div
+                    key={i}
+                    className="bg-gray-900 border border-gray-700 rounded-lg p-6 shadow-lg animate-pulse"
+                  >
                     <div className="h-4 bg-gray-700 rounded mb-3"></div>
                     <div className="h-8 bg-gray-700 rounded mb-2"></div>
                     <div className="h-3 bg-gray-700 rounded w-1/2"></div>
@@ -91,10 +127,15 @@ export const Dashboard: React.FC = () => {
                 ))}
               </div>
               <div className="xl:col-span-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Analytics & Charts</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Analytics & Charts
+                </h3>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg animate-pulse">
+                    <div
+                      key={i}
+                      className="bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg animate-pulse"
+                    >
                       <div className="h-4 bg-gray-700 rounded mb-3"></div>
                       <div className="h-60 bg-gray-700 rounded"></div>
                     </div>
@@ -108,7 +149,9 @@ export const Dashboard: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           <div className="xl:col-span-1">
-            <h2 className="text-xl font-semibold text-white mb-4">Visualization</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Visualization
+            </h2>
             {loading ? (
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl animate-pulse">
                 <div className="px-6 py-4 border-b border-gray-800">
@@ -132,7 +175,9 @@ export const Dashboard: React.FC = () => {
             )}
           </div>
           <div className="xl:col-span-1">
-            <h2 className="text-xl font-semibold text-white mb-4">Entity Details</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Entity Details
+            </h2>
             {loading ? (
               <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 shadow-2xl animate-pulse">
                 <div className="px-6 py-4 border-b border-gray-800">
@@ -168,7 +213,10 @@ export const Dashboard: React.FC = () => {
               </div>
               <div className="p-6">
                 {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className="flex items-center justify-between py-3 border-b border-gray-800 last:border-b-0">
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-3 border-b border-gray-800 last:border-b-0"
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
                       <div>

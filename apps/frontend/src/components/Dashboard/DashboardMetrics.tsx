@@ -4,25 +4,59 @@ import { KPICard } from './KPICard';
 import { ChartCard } from './ChartCard';
 import dynamic from 'next/dynamic';
 
-const BarChart = dynamic(() => import('../Charts/BarChart').then(mod => ({ default: mod.BarChart })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>,
-  ssr: false
-});
+const BarChart = dynamic(
+  () => import('../Charts/BarChart').then(mod => ({ default: mod.BarChart })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading chart...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
-const LineChart = dynamic(() => import('../Charts/LineChart').then(mod => ({ default: mod.LineChart })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>,
-  ssr: false
-});
+const LineChart = dynamic(
+  () => import('../Charts/LineChart').then(mod => ({ default: mod.LineChart })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading chart...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
-const DoughnutChart = dynamic(() => import('../Charts/DoughnutChart').then(mod => ({ default: mod.DoughnutChart })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>,
-  ssr: false
-});
+const DoughnutChart = dynamic(
+  () =>
+    import('../Charts/DoughnutChart').then(mod => ({
+      default: mod.DoughnutChart,
+    })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading chart...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
-const HorizontalBarChart = dynamic(() => import('../Charts/HorizontalBarChart').then(mod => ({ default: mod.HorizontalBarChart })), {
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>,
-  ssr: false
-});
+const HorizontalBarChart = dynamic(
+  () =>
+    import('../Charts/HorizontalBarChart').then(mod => ({
+      default: mod.HorizontalBarChart,
+    })),
+  {
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-gray-400">
+        Loading chart...
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
 interface DashboardMetricsProps {
   changes?: EntityChange[];
@@ -30,7 +64,9 @@ interface DashboardMetricsProps {
   metrics?: any;
 }
 
-export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
+export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
+  metrics,
+}) => {
   const {
     activeThreatsValue,
     threatScoreValue,
@@ -60,7 +96,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) =
   return (
     <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
       <div className="xl:col-span-1 space-y-8">
-        <h3 className="text-lg font-semibold text-white mb-4">Key Performance Indicators</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">
+          Key Performance Indicators
+        </h3>
         <KPICard
           title="Active Threats"
           value={dashboardMetrics.activeThreats}
@@ -99,7 +137,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) =
         />
       </div>
       <div className="xl:col-span-4">
-        <h3 className="text-lg font-semibold text-white mb-4">Analytics & Charts</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">
+          Analytics & Charts
+        </h3>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-8">
             <ChartCard title="Threat Severity Distribution">

@@ -20,16 +20,15 @@ export class AggregatedMetricsService {
   private lastUpdate: Date | null = null;
 
   constructor() {
-    // Cache metrics for 30 days to match DynamoDBService cache duration
     this.metricsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
   }
 
   async calculateMetrics(changes: EntityChange[]): Promise<AggregatedMetrics> {
-    // Create cache key based on data hash to ensure cache invalidation when data changes
+    // Create cache key based on data hash to ensure cache invalidation when data changes...
+    
     const dataHash = this.generateDataHash(changes);
     const cacheKey = `dashboard_metrics_${dataHash}`;
-    
-    // Check cache first
+
     const cachedMetrics = this.metricsCache.get<AggregatedMetrics>(cacheKey);
     if (cachedMetrics) {
       logger.info('Returning cached metrics');
@@ -49,7 +48,7 @@ export class AggregatedMetricsService {
         protocolUsage: {},
         entityChangesByDay: {},
       };
-      
+
       this.metricsCache.set(cacheKey, emptyMetrics);
       return emptyMetrics;
     }
@@ -67,13 +66,21 @@ export class AggregatedMetricsService {
 
     // Calculate average threat score...
 
-    const threatScores = this.extractNumericValues(entityStates, 'threat_score');
+    const threatScores = this.extractNumericValues(
+      entityStates,
+      'threat_score'
+    );
     const avgThreatScore = this.calculateAverage(threatScores).toFixed(2);
 
     // Calculate AI confidence...
 
-    const aiConfidences = this.extractNumericValues(entityStates, 'confidence_score');
-    const avgConfidence = Math.round(this.calculateAverage(aiConfidences) * 100);
+    const aiConfidences = this.extractNumericValues(
+      entityStates,
+      'confidence_score'
+    );
+    const avgConfidence = Math.round(
+      this.calculateAverage(aiConfidences) * 100
+    );
 
     // Calculate total connections...
 
@@ -101,8 +108,13 @@ export class AggregatedMetricsService {
 
     // Calculate distributions...
 
-    const threatSeverityDistribution = this.countByProperty(entityStates, 'severity');
-    const aiAgentActivity = this.countByProperty(entityStates, 'status');
+    const threatSeverityDistribution = this.countByProperty(
+      entityStates,
+      'severity'
+    );
+    
+    // Count AI agents by status, but include all AI agents
+    const aiAgentActivity = this.countAIAgentsByStatus(entityStates);
 
     // Calculate protocol usage...
 
@@ -139,7 +151,7 @@ export class AggregatedMetricsService {
 
     this.metricsCache.set(cacheKey, metrics);
     this.lastUpdate = new Date();
-    
+
     logger.info('Metrics calculated and cached successfully');
     return metrics;
   }
@@ -215,7 +227,10 @@ export class AggregatedMetricsService {
       : 0;
   }
 
-  private extractNumericValues(entityStates: any[], propertyName: string): number[] {
+  private extractNumericValues(
+    entityStates: any[],
+    propertyName: string
+  ): number[] {
     return entityStates
       .filter(state => state[propertyName] !== undefined)
       .map(state => {
@@ -225,7 +240,10 @@ export class AggregatedMetricsService {
       .filter(value => !isNaN(value));
   }
 
-  private countByProperty(entityStates: any[], propertyName: string): Record<string, number> {
+  private countByProperty(
+    entityStates: any[],
+    propertyName: string
+  ): Record<string, number> {
     const distribution: Record<string, number> = {};
 
     entityStates
@@ -238,7 +256,13 @@ export class AggregatedMetricsService {
     return distribution;
   }
 
-  private calculateEntityChangesByDay(changes: EntityChange[]): Record<string, number> {
+  private countAIAgentsByStatus(entityStates: any[]): Record<string, number> {
+    
+  }
+
+  private calculateEntityChangesByDay(
+    changes: EntityChange[]
+  ): Record<string, number> {
     const entityChangesByDay: Record<string, number> = {};
     const now = new Date();
 
@@ -297,13 +321,13 @@ export class AggregatedMetricsService {
     if (!changes || changes.length === 0) {
       return 'empty';
     }
-    
+
     const lastChange = changes[changes.length - 1];
     const dataLength = changes.length;
     const lastTimestamp = lastChange?.timestamp || '';
-    
+
     // Simple hash combining data length and last timestamp...
-    
+
     return `${dataLength}_${lastTimestamp}`;
   }
-} 
+}
