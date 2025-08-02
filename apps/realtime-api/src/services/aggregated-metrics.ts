@@ -256,24 +256,14 @@ export class AggregatedMetricsService {
   private countAIAgentsByStatus(entityStates: any[]): Record<string, number> {
     const distribution: Record<string, number> = {};
 
-    // Count all AI agents (entities with entity_type === 'AI_Agent')
     const aiAgents = entityStates.filter(state => state.entity_type === 'AI_Agent');
     
-    // Log for debugging
-    logger.info(`Found ${aiAgents.length} AI agents`);
-    aiAgents.forEach((state, index) => {
-      logger.info(`AI Agent ${index + 1}: entity_type=${state.entity_type}, status=${state.status}, all_props=${Object.keys(state)}`);
-    });
-    
     aiAgents.forEach(state => {
-      const status = state.status || 'offline'; // Default to offline if no status
+      const status = state.status || 'offline';
       const statusStr = String(status);
-      
-      // Use the actual status values as categories
       distribution[statusStr] = (distribution[statusStr] || 0) + 1;
     });
 
-    logger.info(`AI Agent Activity distribution: ${JSON.stringify(distribution)}`);
     return distribution;
   }
 

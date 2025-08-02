@@ -242,6 +242,10 @@ const BASE_PROPERTY_CONFIGS = {
       values: ['idle', 'training', 'evaluating', 'deploying', 'failed'],
       changeRate: 0.05,
     },
+    status: {
+      values: ['online', 'away', 'offline', 'busy'],
+      changeRate: 0.03,
+    },
   },
   Threat: {
     threat_score: { min: 0.1, max: 0.95, changeRate: 0.3, volatility: 0.15 },
@@ -684,7 +688,21 @@ function generateEntityChanges(
   const timestamps = generateRandomTimestamps(startDate, endDate);
   const changes: EntityChange[] = [];
 
-  for (const currentTime of timestamps) {
+  // First, ensure all properties are saved at least once
+  for (const prop of properties) {
+    const propConfig = config[prop];
+    const initialValue = currentValues[prop];
+    const timestamp = format(timestamps[0], "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+    
+    // Always save the initial value for each property
+    changes.push(
+      createEntityChange(entity, prop, initialValue, initialValue, timestamp)
+    );
+  }
+
+  // Then generate random changes over time
+  for (let i = 1; i < timestamps.length; i++) {
+    const currentTime = timestamps[i];
     const propertiesToCheck = properties.filter(() => Math.random() < 0.3);
 
     for (const prop of propertiesToCheck) {

@@ -13,31 +13,85 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
   const getKeyProperties = () => {
     if (!entity.properties) return [];
 
-    const priorityProperties = [
-      'cpu_usage',
-      'memory_usage',
-      'response_time',
-      'network_connections',
-      'active_requests',
-      'accuracy',
-      'confidence_score',
-      'latency',
-      'bandwidth_usage',
-      'error_rate',
-      'severity',
-      'status',
-      'session_duration',
-      'login_count',
-      'last_activity',
-      'failed_login_attempts',
-      'permission_level',
-      'threat_score',
-      'detection_count',
-    ];
+    // Define priority properties based on entity type
+    let priorityProperties: string[];
+    
+    if (entity.type === 'AI_Agent') {
+      priorityProperties = [
+        'status', // Prioritize status for AI_Agent entities
+        'confidence_score',
+        'active_requests',
+        'response_time',
+        'accuracy',
+        'training_status',
+      ];
+    } else if (entity.type === 'Network_Node') {
+      priorityProperties = [
+        'routing_status', // Prioritize routing_status for Network_Node entities
+        'bandwidth_usage',
+        'connection_count',
+        'latency',
+        'error_rate',
+        'packet_loss',
+      ];
+    } else if (entity.type === 'Threat') {
+      priorityProperties = [
+        'severity', // Prioritize severity for Threat entities
+        'threat_score',
+        'detection_count',
+        'mitigation_status',
+        'attack_type',
+      ];
+    } else if (entity.type === 'System') {
+      priorityProperties = [
+        'status', // Prioritize status for System entities
+        'cpu_usage',
+        'memory_usage',
+        'response_time',
+        'network_connections',
+        'disk_usage',
+      ];
+    } else if (entity.type === 'User') {
+      priorityProperties = [
+        'last_activity', // Prioritize last_activity for User entities
+        'login_count',
+        'session_duration',
+        'permission_level',
+        'failed_login_attempts',
+      ];
+    } else {
+      // Fallback for other entity types
+      priorityProperties = [
+        'cpu_usage',
+        'memory_usage',
+        'response_time',
+        'network_connections',
+        'active_requests',
+        'accuracy',
+        'confidence_score',
+        'latency',
+        'bandwidth_usage',
+        'error_rate',
+        'severity',
+        'status',
+        'session_duration',
+        'login_count',
+        'last_activity',
+        'failed_login_attempts',
+        'permission_level',
+        'threat_score',
+        'detection_count',
+      ];
+    }
 
-    return Object.entries(entity.properties)
-      .filter(([key]) => priorityProperties.includes(key))
-      .slice(0, 3);
+    const filteredProperties = Object.entries(entity.properties)
+      .filter(([key]) => priorityProperties.includes(key));
+    
+    const sortedProperties = filteredProperties.sort(([a], [b]) => {
+      return a.localeCompare(b);
+    });
+    
+    return sortedProperties.slice(0, 5);
   };
 
   const formatPropertyValue = (

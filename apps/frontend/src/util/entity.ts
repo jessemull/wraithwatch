@@ -52,6 +52,13 @@ export const STATUS_COLORS = {
     user: 'bg-blue-500 text-white',
     default: 'bg-gray-500 text-white',
   },
+  status: {
+    online: 'bg-green-500 text-white',
+    away: 'bg-yellow-500 text-black',
+    offline: 'bg-gray-500 text-white',
+    busy: 'bg-orange-500 text-white',
+    default: 'bg-gray-500 text-white',
+  },
 } as const;
 
 export const getStatusColor = (name: string, value: string): string => {
