@@ -1,8 +1,9 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Entity } from '../../../types/entity';
-import { MatrixScene } from './MatrixScene';
 import { OrbitControls } from '@react-three/drei';
+import { MatrixScene } from './MatrixScene';
+import { Entity } from '../../../types/entity';
+import { CANVAS_STYLE } from '../../../constants/visualization';
 
 interface Matrix3DProps {
   entities: Entity[];
@@ -16,28 +17,24 @@ export const Matrix3D: React.FC<Matrix3DProps> = ({
   onEntitySelect,
 }) => {
   return (
-    <div className="w-full h-full">
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Canvas
-        camera={{ position: [0, 0, 12], fov: 60 }}
-        style={{ background: 'linear-gradient(to bottom, #0f0f23, #1a1a2e)' }}
+        camera={{ position: [0, 3, 15], fov: 50 }}
+        style={CANVAS_STYLE}
       >
-        <Suspense fallback={null}>
-          <ambientLight intensity={0.6} />
-          <pointLight position={[10, 10, 10]} intensity={1} />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} />
-          <OrbitControls
-            enablePan={true}
-            enableZoom={true}
-            enableRotate={true}
-            maxDistance={30}
-            minDistance={5}
-          />
-          <MatrixScene
-            entities={entities}
-            selectedEntity={selectedEntity}
-            onEntitySelect={onEntitySelect}
-          />
-        </Suspense>
+        <MatrixScene
+          entities={entities}
+          selectedEntity={selectedEntity}
+          onEntitySelect={onEntitySelect}
+        />
+        <OrbitControls
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={5}
+          maxDistance={30}
+          target={[0, 3, 0]}
+        />
       </Canvas>
     </div>
   );

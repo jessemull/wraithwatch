@@ -177,4 +177,4 @@ export interface Particle {
   active: boolean;
 }
 
-export type VisualizationType = 'timeline' | 'network' | 'globe' | 'matrix';
+export type VisualizationType = 'timeline' | 'network' | 'matrix';

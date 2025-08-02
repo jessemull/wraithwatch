@@ -4,7 +4,6 @@ export const visualizationTypes: { type: VisualizationType; label: string }[] =
   [
     { type: 'timeline', label: 'Timeline' },
     { type: 'network', label: 'Network' },
-    { type: 'globe', label: 'Globe' },
     { type: 'matrix', label: 'Matrix' },
   ];
 
