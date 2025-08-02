@@ -1,58 +1,34 @@
 import React from 'react';
-import { Entity } from '../../../types/entity';
+import { Entity, EntityPosition } from '../../../types/entity';
 import { MatrixNode } from './MatrixNode';
 import { Text } from '@react-three/drei';
 
 interface MatrixSceneProps {
   entities: Entity[];
+  positions?: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
-const getThreatPosition = (entity: Entity) => {
-  if (entity.type !== 'Threat') {
-    return null; // Don't position non-threat entities
-  }
-
-  const severity = entity.properties?.severity?.currentValue;
-  const detectionCount = Number(entity.properties?.detection_count?.currentValue) || 0;
-  const threatScore = Number(entity.properties?.threat_score?.currentValue) || 0;
-
-  // Y-axis: Severity (bottom to top) - moved up by 2 units
-  let y = 0;
-  switch (severity) {
-    case 'critical':
-      y = 6;
-      break;
-    case 'high':
-      y = 4;
-      break;
-    case 'medium':
-      y = 2;
-      break;
-    case 'low':
-      y = 0;
-      break;
-    default:
-      y = 2;
-  }
-
-  // X-axis: Detection Count (left to right) - 0-100 range
-  const x = Math.max(-4, Math.min(4, (detectionCount / 100) * 8 - 4)); // Scale detection count 0-100 to -4 to +4
-
-  // Z-axis: Threat Score (back to front) - convert 0-1 to 0-100 scale
-  const threatScorePercent = threatScore * 100; // Convert 0-1 to 0-100
-  const z = (threatScorePercent / 100) * 6 - 3; // Scale from -3 to +3 for 0-100 range
-
-  return [x, y, z] as [number, number, number];
-};
-
 export const MatrixScene: React.FC<MatrixSceneProps> = ({
   entities,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
   const threatEntities = entities.filter(e => e.type === 'Threat');
+
+  // Debug logging
+  console.log('MatrixScene - positions:', positions);
+  console.log('MatrixScene - threatEntities:', threatEntities);
+  if (positions && positions.length > 0) {
+    console.log('MatrixScene - first position:', positions[0]);
+    console.log(
+      'MatrixScene - has matrix_position:',
+      positions[0].matrix_position
+    );
+    console.log('MatrixScene - all position keys:', Object.keys(positions[0]));
+  }
 
   return (
     <>
@@ -92,7 +68,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
       >
         SEVERITY
       </Text>
-      
+
       <Text
         position={[-8, 2, 0]}
         fontSize={0.4}
@@ -116,46 +92,138 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
       </Text>
 
       {/* Severity Labels */}
-      <Text position={[7, 6, 0]} fontSize={0.25} color="#ff4444" anchorX="left" anchorY="middle">
+      <Text
+        position={[7, 6, 0]}
+        fontSize={0.25}
+        color="#ff4444"
+        anchorX="left"
+        anchorY="middle"
+      >
         Critical
       </Text>
-      <Text position={[7, 4, 0]} fontSize={0.25} color="#ff6b35" anchorX="left" anchorY="middle">
+      <Text
+        position={[7, 4, 0]}
+        fontSize={0.25}
+        color="#ff6b35"
+        anchorX="left"
+        anchorY="middle"
+      >
         High
       </Text>
-      <Text position={[7, 2, 0]} fontSize={0.25} color="#ffa726" anchorX="left" anchorY="middle">
+      <Text
+        position={[7, 2, 0]}
+        fontSize={0.25}
+        color="#ffa726"
+        anchorX="left"
+        anchorY="middle"
+      >
         Medium
       </Text>
-      <Text position={[7, 0, 0]} fontSize={0.25} color="#ffeb3b" anchorX="left" anchorY="middle">
+      <Text
+        position={[7, 0, 0]}
+        fontSize={0.25}
+        color="#ffeb3b"
+        anchorX="left"
+        anchorY="middle"
+      >
         Low
       </Text>
 
       {/* Detection Count Labels */}
-      <Text position={[-4, -2, 0]} fontSize={0.25} color="#ffffff" anchorX="center" anchorY="middle">
+      <Text
+        position={[-4, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
         Low (0-33)
       </Text>
-      <Text position={[0, -2, 0]} fontSize={0.25} color="#ffffff" anchorX="center" anchorY="middle">
+      <Text
+        position={[0, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
         Medium (34-66)
       </Text>
-      <Text position={[4, -2, 0]} fontSize={0.25} color="#ffffff" anchorX="center" anchorY="middle">
+      <Text
+        position={[4, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
         High (67-100)
       </Text>
 
       {/* Threat Score Labels */}
-      <Text position={[0, -2, -3]} fontSize={0.25} color="#ffffff" anchorX="center" anchorY="middle">
+      <Text
+        position={[0, -2, -3]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
         Low Score (0%)
       </Text>
-      <Text position={[0, -2, 0]} fontSize={0.25} color="#ffffff" anchorX="center" anchorY="middle">
+      <Text
+        position={[0, -2, 0]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
         Medium Score (50%)
       </Text>
-      <Text position={[0, -2, 3]} fontSize={0.25} color="#ffffff" anchorX="center" anchorY="middle">
+      <Text
+        position={[0, -2, 3]}
+        fontSize={0.25}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
         High Score (100%)
       </Text>
 
       {/* Threat Entities Only */}
-      {threatEntities.map((entity) => {
-        const position = getThreatPosition(entity);
-        if (!position) return null;
-        
+      {threatEntities.map(entity => {
+        // Only use server-calculated positions
+        if (!positions) {
+          console.log('MatrixScene - no positions available');
+          return null;
+        }
+
+        const positionData = positions.find(p => p.entity_id === entity.id);
+        console.log(
+          'MatrixScene - entity:',
+          entity.id,
+          'positionData:',
+          positionData
+        );
+
+        if (!positionData?.matrix_position) {
+          console.log(
+            'MatrixScene - no matrix_position for entity:',
+            entity.id
+          );
+          return null;
+        }
+
+        const position: [number, number, number] = [
+          positionData.matrix_position.x,
+          positionData.matrix_position.y,
+          positionData.matrix_position.z,
+        ];
+
+        console.log(
+          'MatrixScene - rendering entity:',
+          entity.id,
+          'at position:',
+          position
+        );
+
         return (
           <MatrixNode
             key={entity.id}

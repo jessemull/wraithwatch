@@ -82,6 +82,11 @@ export interface EntityPosition {
     y: number;
     z: number;
   };
+  matrix_position?: {
+    x: number;
+    y: number;
+    z: number;
+  };
   change_particles: Array<{
     x: number;
     y: number;
