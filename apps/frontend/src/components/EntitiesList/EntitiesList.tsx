@@ -64,10 +64,10 @@ export const EntitiesList: React.FC<EntitiesListProps> = ({
       <div className="px-6 py-4 border-b border-gray-800 flex-shrink-0">
         <h2 className="text-lg font-semibold text-white">Entities</h2>
         <p className="text-sm text-gray-400 mt-1">
-          {entities.length} total entities
+          {entities.length} Total Entities
           {lastUpdate && (
             <span className="ml-2 text-blue-400">
-              • Last update: {formatTime(lastUpdate)}
+              • Last Update: {formatTime(lastUpdate)}
             </span>
           )}
         </p>
