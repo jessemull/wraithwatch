@@ -229,14 +229,14 @@ function generateNetworkPosition(
 ): [number, number, number] {
   const seed = generateDeterministicSeed(entity.id);
 
-  // Create a network layout with entities positioned in a 3D space
+  // Create a more spherical network layout with entities positioned in 3D space
   const angle = (index / ENTITY_CONFIGURATIONS.length) * Math.PI * 2;
-  const radius = 5 + deterministicRandom(seed) * 3; // 5-8 units from center
-  const height = (deterministicRandom(seed, 1) - 0.5) * 4; // ±2 units height
+  const elevation = (deterministicRandom(seed) - 0.5) * Math.PI; // Full sphere elevation
+  const radius = 6 + deterministicRandom(seed, 1) * 4; // 6-10 units from center
 
-  const x = Math.cos(angle) * radius;
-  const y = height;
-  const z = Math.sin(angle) * radius;
+  const x = radius * Math.cos(elevation) * Math.cos(angle);
+  const y = radius * Math.sin(elevation);
+  const z = radius * Math.cos(elevation) * Math.sin(angle);
 
   return [x, y, z];
 }

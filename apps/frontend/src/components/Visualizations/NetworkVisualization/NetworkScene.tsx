@@ -54,7 +54,7 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   const entityPositions = useMemo(() => {
     const positionMap = new Map<string, [number, number, number]>();
 
-    // First, try to use real position data
+    // Use real position data from server
     entities.forEach(entity => {
       const positionData = positions.find(p => p.entity_id === entity.id);
       if (positionData) {
@@ -63,53 +63,30 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
       }
     });
 
-    // Fallback to algorithmic positioning for entities without position data
+    // For any entities without position data, create a more spherical distribution
     const positionedEntities = new Set(positionMap.keys());
     const unpositionedEntities = entities.filter(
       e => !positionedEntities.has(e.id)
     );
 
-    const positionEntities = (
-      entityList: Entity[],
-      level: keyof typeof NETWORK_SCENE_CONFIG.entityLevels
-    ) => {
-      const config = NETWORK_SCENE_CONFIG.entityLevels[level];
-      entityList.forEach((entity, i) => {
-        const angle = (i / Math.max(entityList.length, 1)) * Math.PI * 2;
-        const x = Math.cos(angle) * config.radius;
-        const z = Math.sin(angle) * config.radius;
-        const y = config.y;
-        positionMap.set(entity.id, [x, y, z]);
-      });
-    };
+    unpositionedEntities.forEach((entity, index) => {
+      // Create a spherical distribution for fallback positioning
+      const angle =
+        (index / Math.max(unpositionedEntities.length, 1)) * Math.PI * 2;
+      const elevation =
+        (index / Math.max(unpositionedEntities.length, 1)) * Math.PI -
+        Math.PI / 2;
+      const radius = 8 + Math.random() * 4; // 8-12 units from center
 
-    positionEntities(
-      unpositionedEntities.filter(e => e.type === 'Threat'),
-      'threats'
-    );
-    positionEntities(
-      unpositionedEntities.filter(e => e.type === 'AI_Agent'),
-      'aiAgents'
-    );
-    positionEntities(
-      unpositionedEntities.filter(e => e.type === 'System'),
-      'systems'
-    );
-    positionEntities(
-      unpositionedEntities.filter(e => e.type === 'Network_Node'),
-      'networkNodes'
-    );
-    positionEntities(
-      unpositionedEntities.filter(e => e.type === 'User'),
-      'users'
-    );
+      const x = radius * Math.cos(elevation) * Math.cos(angle);
+      const y = radius * Math.sin(elevation);
+      const z = radius * Math.cos(elevation) * Math.sin(angle);
 
-    // Position any remaining entities with default positioning
-    const remainingUnpositioned = entities.filter(e => !positionMap.has(e.id));
-    positionEntities(remainingUnpositioned, 'default');
+      positionMap.set(entity.id, [x, y, z]);
+    });
 
     return positionMap;
-  }, [entities, positions, entityGroups]);
+  }, [entities, positions]);
 
   const connections = useMemo(() => {
     const connectionList: NetworkConnection[] = [];
