@@ -48,4 +48,4 @@ describe('Health Route', () => {
     expect(result1.status).toBe('ok');
     expect(result2.status).toBe('ok');
   });
-}); 
+});

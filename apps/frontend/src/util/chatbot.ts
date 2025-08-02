@@ -1,11 +1,8 @@
 import { Message, ChatMessage } from '../types/chatbot';
 
-/**
- * Formats message history for API consumption
- * Takes the last 5 messages and converts them to the API format
- * @param messages - Array of messages to format
- * @returns Formatted messages for API
- */
+// Formats message history for API consumption
+// Takes the last 5 messages and converts them to the API format
+
 export function formatHistoryForAPI(messages: Message[]): ChatMessage[] {
   return messages.slice(-5).map(msg => ({
     role: msg.role,
@@ -14,10 +11,8 @@ export function formatHistoryForAPI(messages: Message[]): ChatMessage[] {
   }));
 }
 
-/**
- * Scrolls an element into view with smooth behavior
- * @param element - The element to scroll to
- */
+// Scrolls an element into view with smooth behavior
+
 export function scrollToBottom(element: HTMLElement | null): void {
   element?.scrollIntoView({ behavior: 'smooth' });
 }

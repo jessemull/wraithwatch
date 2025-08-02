@@ -125,7 +125,6 @@ const ChatBot: React.FC = () => {
           </div>
         </button>
       )}
-
       {isOpen && (
         <div className="bg-gray-900 border-2 border-white rounded-lg shadow-lg w-[calc(100vw-2rem)] md:w-80 h-[calc(100vh-2rem)] max-h-96 md:h-96 flex flex-col fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:static md:transform-none">
           <div className="p-4 border-b border-white flex justify-between items-center">
@@ -165,7 +164,6 @@ const ChatBot: React.FC = () => {
                 </p>
               </div>
             )}
-
             {messages.map(message => (
               <div
                 key={message.id}
@@ -190,7 +188,6 @@ const ChatBot: React.FC = () => {
                 </div>
               </div>
             ))}
-
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-gray-800 text-gray-100 p-3 rounded-lg border border-gray-700">
@@ -211,10 +208,8 @@ const ChatBot: React.FC = () => {
                 </div>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
-
           <div className="p-4 border-t border-white">
             <div className="flex space-x-2 items-center">
               <input

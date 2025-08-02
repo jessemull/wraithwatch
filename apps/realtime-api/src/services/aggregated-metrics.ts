@@ -1,6 +1,6 @@
+import NodeCache from 'node-cache';
 import { EntityChange } from '../types/dynamodb';
 import { createComponentLogger } from '../utils/logger';
-import NodeCache from 'node-cache';
 
 const logger = createComponentLogger('aggregated-metrics-service');
 

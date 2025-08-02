@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify';
 import routes from '../index';
-import { RouteOptions } from '../../types/routes';
 
 describe('Routes', () => {
   let fastify: FastifyInstance;
@@ -43,7 +42,10 @@ describe('Routes', () => {
       aggregatedMetricsService: mockAggregatedMetricsService,
     });
 
-    expect(fastify.get).toHaveBeenCalledWith('/api/test/data', expect.any(Function));
+    expect(fastify.get).toHaveBeenCalledWith(
+      '/api/test/data',
+      expect.any(Function)
+    );
   });
 
   it('should return data with default limit', async () => {
@@ -53,7 +55,9 @@ describe('Routes', () => {
 
     mockDynamoDBService.getAllData.mockResolvedValue(mockData);
     mockDynamoDBService.getAllEntityPositions.mockResolvedValue(mockPositions);
-    mockAggregatedMetricsService.calculateMetrics.mockResolvedValue(mockMetrics);
+    mockAggregatedMetricsService.calculateMetrics.mockResolvedValue(
+      mockMetrics
+    );
 
     await routes(fastify, {
       dynamoDBService: mockDynamoDBService,
@@ -80,7 +84,9 @@ describe('Routes', () => {
 
     mockDynamoDBService.getAllData.mockResolvedValue(mockData);
     mockDynamoDBService.getAllEntityPositions.mockResolvedValue(mockPositions);
-    mockAggregatedMetricsService.calculateMetrics.mockResolvedValue(mockMetrics);
+    mockAggregatedMetricsService.calculateMetrics.mockResolvedValue(
+      mockMetrics
+    );
 
     await routes(fastify, {
       dynamoDBService: mockDynamoDBService,
@@ -145,7 +151,9 @@ describe('Routes', () => {
 
     mockDynamoDBService.getAllData.mockResolvedValue(mockData);
     mockDynamoDBService.getAllEntityPositions.mockResolvedValue(mockPositions);
-    mockAggregatedMetricsService.calculateMetrics.mockResolvedValue(mockMetrics);
+    mockAggregatedMetricsService.calculateMetrics.mockResolvedValue(
+      mockMetrics
+    );
 
     await routes(fastify, {
       dynamoDBService: mockDynamoDBService,
@@ -164,4 +172,4 @@ describe('Routes', () => {
       positionCount: 0,
     });
   });
-}); 
+});

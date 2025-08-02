@@ -38,12 +38,14 @@ export class EntityManager {
     try {
       logger.info('Loading entities from database...');
 
-      // Get data from DynamoDBService (which will use its cache)
+      // Get data from DynamoDBService (which will use its cache)...
+
       const dbData = await this.dynamoDBService.getAllData();
 
       const entities = this.transformDatabaseDataToEntities(dbData);
 
-      // Store entities in EntityManager cache for individual access
+      // Store entities in EntityManager cache for individual access...
+
       entities.forEach(entity => {
         this.entityCache.set(entity.id, entity);
       });
@@ -166,10 +168,12 @@ export class EntityManager {
         'Processing entity for updates'
       );
 
-      // Ensure all allowed properties exist
+      // Ensure all allowed properties exist...
+
       allowedProperties.forEach(propertyName => {
         if (!entity.properties[propertyName]) {
-          // Create missing property with initial value
+          // Create missing property with initial value...
+
           const initialValue = this.generatePropertyValue(
             propertyName,
             null,

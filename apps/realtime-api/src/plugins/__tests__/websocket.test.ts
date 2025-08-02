@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { WebSocketConnection } from '../../types/websocket';
-import { WebSocketPluginOptions } from '../../types/plugins';
+
 import websocketPlugin from '../websocket';
 
 describe('WebSocket Plugin', () => {
@@ -77,7 +77,9 @@ describe('WebSocket Plugin', () => {
     const routeHandler = (fastify.get as jest.Mock).mock.calls[0][2];
     routeHandler(mockConnection);
 
-    expect(mockEntityManager.sendEntityList).toHaveBeenCalledWith(mockConnection);
+    expect(mockEntityManager.sendEntityList).toHaveBeenCalledWith(
+      mockConnection
+    );
   });
 
   it('should send connection status on connection', async () => {
@@ -89,7 +91,9 @@ describe('WebSocket Plugin', () => {
     const routeHandler = (fastify.get as jest.Mock).mock.calls[0][2];
     routeHandler(mockConnection);
 
-    expect(mockEntityManager.sendConnectionStatus).toHaveBeenCalledWith(mockConnection);
+    expect(mockEntityManager.sendConnectionStatus).toHaveBeenCalledWith(
+      mockConnection
+    );
   });
 
   it('should remove client on socket close', async () => {
@@ -101,13 +105,15 @@ describe('WebSocket Plugin', () => {
     const routeHandler = (fastify.get as jest.Mock).mock.calls[0][2];
     routeHandler(mockConnection);
 
-    const closeHandler = (mockConnection.socket.on as jest.Mock).mock.calls.find(
-      (call: any) => call[0] === 'close'
-    )[1];
+    const closeHandler = (
+      mockConnection.socket.on as jest.Mock
+    ).mock.calls.find((call: any) => call[0] === 'close')[1];
 
     closeHandler();
 
-    expect(mockWebSocketManager.removeClient).toHaveBeenCalledWith(mockConnection);
+    expect(mockWebSocketManager.removeClient).toHaveBeenCalledWith(
+      mockConnection
+    );
   });
 
   it('should remove client on socket error', async () => {
@@ -119,14 +125,16 @@ describe('WebSocket Plugin', () => {
     const routeHandler = (fastify.get as jest.Mock).mock.calls[0][2];
     routeHandler(mockConnection);
 
-    const errorHandler = (mockConnection.socket.on as jest.Mock).mock.calls.find(
-      (call: any) => call[0] === 'error'
-    )[1];
+    const errorHandler = (
+      mockConnection.socket.on as jest.Mock
+    ).mock.calls.find((call: any) => call[0] === 'error')[1];
 
     const testError = new Error('Test error');
     errorHandler(testError);
 
-    expect(mockWebSocketManager.removeClient).toHaveBeenCalledWith(mockConnection);
+    expect(mockWebSocketManager.removeClient).toHaveBeenCalledWith(
+      mockConnection
+    );
   });
 
   it('should handle multiple connections independently', async () => {
@@ -148,8 +156,14 @@ describe('WebSocket Plugin', () => {
     routeHandler(mockConnection2);
 
     expect(mockWebSocketManager.addClient).toHaveBeenCalledWith(mockConnection);
-    expect(mockWebSocketManager.addClient).toHaveBeenCalledWith(mockConnection2);
-    expect(mockEntityManager.sendEntityList).toHaveBeenCalledWith(mockConnection);
-    expect(mockEntityManager.sendEntityList).toHaveBeenCalledWith(mockConnection2);
+    expect(mockWebSocketManager.addClient).toHaveBeenCalledWith(
+      mockConnection2
+    );
+    expect(mockEntityManager.sendEntityList).toHaveBeenCalledWith(
+      mockConnection
+    );
+    expect(mockEntityManager.sendEntityList).toHaveBeenCalledWith(
+      mockConnection2
+    );
   });
-}); 
+});

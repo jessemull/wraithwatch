@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
 import { Entity, EntityPosition } from '../types/entity';
 import { EntityChange, HistoryQuery } from '../types/api';
-import { WebSocketMessage } from '../types/websocket';
 import { WEBSOCKET_CONNECTION_STATUS } from '../constants';
+import { WebSocketMessage } from '../types/websocket';
 import { config } from '../config';
 import { updateEntityInList, updateEntityProperty } from '../util/entity';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   isEntityListMessage,
   isEntityUpdateMessage,
