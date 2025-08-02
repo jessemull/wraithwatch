@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Text } from '@react-three/drei';
 import { Entity } from '../../../types/entity';
 import { NETWORK_NODE_CONFIG } from '../../../constants/visualization';
@@ -35,13 +35,40 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
   }, [entity.type, isSelected]);
 
   const isThreat = entity.type === 'Threat';
+  const [pulseScale, setPulseScale] = useState(1);
+
+  useEffect(() => {
+    if (!isThreat) return;
+
+    let animationId: number;
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const pulseSpeed = 0.003; // Speed of the pulse
+      const pulseRange = 0.3; // Range of the pulse (0.7 to 1.3)
+
+      const scale = 1 + pulseRange * Math.sin(elapsed * pulseSpeed);
+      setPulseScale(scale);
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [isThreat]);
 
   const threatHalo = useMemo(() => {
     if (!isThreat) return null;
 
     return (
       <>
-        <mesh>
+        <mesh scale={[pulseScale, pulseScale, pulseScale]}>
           <sphereGeometry
             args={[
               nodeStyle.size + NETWORK_NODE_CONFIG.threatHaloOffset,
@@ -57,7 +84,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
             emissiveIntensity={0.2}
           />
         </mesh>
-        <mesh>
+        <mesh scale={[pulseScale * 0.8, pulseScale * 0.8, pulseScale * 0.8]}>
           <sphereGeometry
             args={[
               nodeStyle.size + NETWORK_NODE_CONFIG.threatHighlightOffset,
@@ -75,12 +102,15 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
         </mesh>
       </>
     );
-  }, [isThreat, nodeStyle.size]);
+  }, [isThreat, nodeStyle.size, pulseScale]);
 
   return (
     <group position={position}>
       {threatHalo}
-      <mesh onClick={onClick}>
+      <mesh
+        onClick={onClick}
+        scale={isThreat ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}
+      >
         <sphereGeometry
           args={[
             nodeStyle.size,
@@ -99,7 +129,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
       <Text
         position={[0, nodeStyle.size + NETWORK_NODE_CONFIG.labelOffset, 0]}
         fontSize={NETWORK_NODE_CONFIG.labelFontSize}
-        color="white"
+        color="#ffffff"
         anchorX="center"
         anchorY="bottom"
         maxWidth={NETWORK_NODE_CONFIG.labelMaxWidth}

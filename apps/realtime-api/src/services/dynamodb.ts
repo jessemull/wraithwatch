@@ -66,40 +66,6 @@ export class DynamoDBService {
 
   // Get entity history with flexible filtering...
 
-  async getEntityHistory(
-    entityId: string,
-    options?: QueryOptions
-  ): Promise<EntityChange[]> {
-    const {
-      propertyName,
-      startTime,
-      endTime,
-      limit = DYNAMODB_CONSTANTS.DEFAULT_QUERY_LIMIT,
-    } = options || {};
-
-    if (this.shouldUsePropertyFilter(propertyName, startTime, endTime)) {
-      return this.getEntityHistoryWithPropertyFilter(
-        entityId,
-        propertyName!,
-        limit
-      );
-    }
-
-    try {
-      const queryParams = this.buildEntityHistoryQuery(entityId, {
-        propertyName,
-        startTime,
-        endTime,
-        limit,
-      });
-      const response = await docClient.send(new QueryCommand(queryParams));
-      return (response.Items as EntityChange[]) || [];
-    } catch (error) {
-      this.logError('Error querying entity history', { error, entityId });
-      throw error;
-    }
-  }
-
   // Get recent changes using GSI2...
 
   async getRecentChanges(
@@ -133,31 +99,35 @@ export class DynamoDBService {
     }
   }
 
-  // Get property history...
+  async getAllEntityPositions(): Promise<any[]> {
+    try {
+      const allItems: any[] = [];
+      let lastEvaluatedKey: Record<string, unknown> | undefined = undefined;
 
-  async getPropertyHistory(
-    entityId: string,
-    propertyName: string,
-    options?: Omit<QueryOptions, 'propertyName'>
-  ): Promise<EntityChange[]> {
-    return this.getEntityHistory(entityId, {
-      propertyName,
-      ...options,
-    });
-  }
+      do {
+        const scanParams: ScanCommandInput = {
+          TableName: this.tableName,
+          FilterExpression: 'begins_with(PK, :pkPrefix)',
+          ExpressionAttributeValues: {
+            ':pkPrefix': 'ENTITY_POSITION#',
+          },
+          ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey }),
+        };
 
-  // Get entity summary...
+        const response = await docClient.send(new ScanCommand(scanParams));
+        const items = response.Items || [];
+        allItems.push(...items);
+        lastEvaluatedKey = response.LastEvaluatedKey;
 
-  async getEntitySummary(entityId: string): Promise<EntitySummary> {
-    const changes = await this.getEntityHistory(entityId, {
-      limit: DYNAMODB_CONSTANTS.ENTITY_SUMMARY_LIMIT,
-    });
+        this.logScanProgress(items.length, allItems.length, !!lastEvaluatedKey);
+      } while (lastEvaluatedKey);
 
-    if (changes.length === 0) {
-      throw new Error(`No data found for entity: ${entityId}`);
+      this.logScanCompletion(allItems.length);
+      return allItems;
+    } catch (error) {
+      this.logError('Error scanning table for entity positions', { error });
+      throw error;
     }
-
-    return this.buildEntitySummary(entityId, changes);
   }
 
   // Helper method to create a new entity change...
@@ -207,6 +177,10 @@ export class DynamoDBService {
   }> {
     const scanParams: ScanCommandInput = {
       TableName: this.tableName,
+      FilterExpression: 'NOT begins_with(PK, :pkPrefix)',
+      ExpressionAttributeValues: {
+        ':pkPrefix': 'ENTITY_POSITION#',
+      },
       Limit: Math.min(DYNAMODB_CONSTANTS.SCAN_LIMIT, limit),
       ExclusiveStartKey: lastEvaluatedKey,
     };

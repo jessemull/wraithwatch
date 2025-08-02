@@ -1,13 +1,26 @@
-import { Entity } from '../types/entity';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Entity, EntityPosition } from '../types/entity';
 import { EntityChange, HistoryQuery } from '../types/api';
+import { WebSocketMessage } from '../types/websocket';
+import { WEBSOCKET_CONNECTION_STATUS } from '../constants';
 import { config } from '../config';
-import { useState, useEffect, useCallback } from 'react';
+import { updateEntityInList, updateEntityProperty } from '../util/entity';
+import {
+  isEntityListMessage,
+  isEntityUpdateMessage,
+  isConnectionStatusMessage,
+} from '../util/websocket';
 
-export const useEntityData = () => {
+export const useRealTimeData = () => {
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
+  const [positions, setPositions] = useState<EntityPosition[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+
+  const websocketRef = useRef<WebSocket | null>(null);
 
   const transformChangesToEntities = (changes: EntityChange[]): Entity[] => {
     const entityMap = new Map<string, Entity>();
@@ -43,15 +56,26 @@ export const useEntityData = () => {
         ],
       };
 
-      if (new Date(change.timestamp) > new Date(entity.lastSeen)) {
-        entity.lastSeen = change.timestamp;
+      try {
+        const changeTimestamp = new Date(change.timestamp);
+        const lastSeenTimestamp = new Date(entity.lastSeen);
+
+        if (
+          !isNaN(changeTimestamp.getTime()) &&
+          !isNaN(lastSeenTimestamp.getTime()) &&
+          changeTimestamp > lastSeenTimestamp
+        ) {
+          entity.lastSeen = change.timestamp;
+        }
+      } catch {
+        return;
       }
     });
 
     return Array.from(entityMap.values());
   };
 
-  const fetchRecentChanges = useCallback(async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -70,11 +94,11 @@ export const useEntityData = () => {
       }
 
       setChanges(result.data);
-
+      setPositions(result.positions || []);
       const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
     } catch (err) {
-      console.error('Error loading data:', err);
+      console.error('Error loading initial data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
       setLoading(false);
@@ -121,20 +145,91 @@ export const useEntityData = () => {
     if (!response.ok) throw new Error('Failed to fetch property history');
 
     const result = await response.json();
-
     return result.data;
   };
 
+  const handleWebSocketMessage = useCallback((message: WebSocketMessage) => {
+    if (isEntityListMessage(message)) {
+      const { entities } = message.payload;
+      setEntities(entities);
+    } else if (isEntityUpdateMessage(message)) {
+      const { entityId, newValue, oldValue, property, timestamp } =
+        message.payload;
+
+      setEntities(prevEntities =>
+        updateEntityInList(entityId, prevEntities, entity =>
+          updateEntityProperty(entity, newValue, oldValue, property, timestamp)
+        )
+      );
+
+      setLastUpdate(timestamp);
+    } else if (isConnectionStatusMessage(message)) {
+      const isConnected =
+        message.payload.status === WEBSOCKET_CONNECTION_STATUS.CONNECTED;
+      setIsConnected(isConnected);
+    }
+  }, []);
+
+  const connectWebSocket = useCallback(() => {
+    if (websocketRef.current) {
+      websocketRef.current.close();
+    }
+
+    const websocket = new WebSocket(config.websocket.url);
+
+    websocket.onopen = () => {
+      console.log('WebSocket connected');
+      setIsConnected(true);
+    };
+
+    websocket.onclose = () => {
+      console.log('WebSocket disconnected');
+      setIsConnected(false);
+    };
+
+    websocket.onerror = (error: Event) => {
+      console.error('WebSocket error:', error);
+      setIsConnected(false);
+    };
+
+    websocket.onmessage = event => {
+      try {
+        const message: WebSocketMessage = JSON.parse(event.data);
+        handleWebSocketMessage(message);
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    websocketRef.current = websocket;
+  }, [handleWebSocketMessage]);
+
   useEffect(() => {
-    fetchRecentChanges();
-  }, [fetchRecentChanges]);
+    fetchInitialData();
+  }, [fetchInitialData]);
+
+  useEffect(() => {
+    if (!loading) {
+      connectWebSocket();
+    }
+
+    return () => {
+      if (websocketRef.current) {
+        websocketRef.current.close();
+        websocketRef.current = null;
+      }
+    };
+  }, [loading, connectWebSocket]);
 
   return {
     entities,
     changes,
+    positions,
     loading,
     error,
-    refetch: fetchRecentChanges,
+    isConnected,
+    lastUpdate,
+    refetch: fetchInitialData,
     getEntityHistory,
     getPropertyHistory,
   };

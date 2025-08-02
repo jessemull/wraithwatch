@@ -1,5 +1,5 @@
 // Demo entity configurations
-export type EntityType = 'System' | 'User' | 'Sensor';
+export type EntityType = 'System' | 'User' | 'Sensor' | 'Threat';
 
 export interface DemoEntityConfig {
   id: string;
@@ -121,6 +121,178 @@ export const demoEntities: DemoEntityConfig[] = [
         initialValue: 87,
         changeFrequency: 'low',
         valueRange: [0, 100],
+      },
+    },
+  },
+  {
+    id: 'threat-001',
+    name: 'malware-detection-001',
+    type: 'Threat',
+    properties: {
+      threat_score: {
+        initialValue: 0.7,
+        changeFrequency: 'high',
+        valueRange: [0.1, 0.95],
+      },
+      severity: {
+        initialValue: 'high',
+        changeFrequency: 'medium',
+        possibleValues: ['low', 'medium', 'high', 'critical', 'emergency'],
+      },
+      detection_count: {
+        initialValue: 5,
+        changeFrequency: 'high',
+        valueRange: [1, 50],
+      },
+      source_ip: {
+        initialValue: '192.168.1.100',
+        changeFrequency: 'low',
+        possibleValues: [
+          '192.168.1.100',
+          '10.0.0.50',
+          '172.16.0.25',
+          '203.0.113.45',
+          '198.51.100.123',
+        ],
+      },
+      attack_type: {
+        initialValue: 'malware',
+        changeFrequency: 'low',
+        possibleValues: ['malware', 'ddos', 'phishing', 'sql-injection', 'xss'],
+      },
+      mitigation_status: {
+        initialValue: 'active',
+        changeFrequency: 'medium',
+        possibleValues: ['active', 'investigating', 'mitigated', 'resolved'],
+      },
+    },
+  },
+  {
+    id: 'threat-002',
+    name: 'network-intrusion-002',
+    type: 'Threat',
+    properties: {
+      threat_score: {
+        initialValue: 0.4,
+        changeFrequency: 'high',
+        valueRange: [0.1, 0.95],
+      },
+      severity: {
+        initialValue: 'medium',
+        changeFrequency: 'medium',
+        possibleValues: ['low', 'medium', 'high', 'critical', 'emergency'],
+      },
+      detection_count: {
+        initialValue: 3,
+        changeFrequency: 'high',
+        valueRange: [1, 50],
+      },
+      source_ip: {
+        initialValue: '10.0.0.50',
+        changeFrequency: 'low',
+        possibleValues: [
+          '192.168.1.100',
+          '10.0.0.50',
+          '172.16.0.25',
+          '203.0.113.45',
+          '198.51.100.123',
+        ],
+      },
+      attack_type: {
+        initialValue: 'ddos',
+        changeFrequency: 'low',
+        possibleValues: ['malware', 'ddos', 'phishing', 'sql-injection', 'xss'],
+      },
+      mitigation_status: {
+        initialValue: 'investigating',
+        changeFrequency: 'medium',
+        possibleValues: ['active', 'investigating', 'mitigated', 'resolved'],
+      },
+    },
+  },
+  {
+    id: 'threat-003',
+    name: 'phishing-attempt-003',
+    type: 'Threat',
+    properties: {
+      threat_score: {
+        initialValue: 0.2,
+        changeFrequency: 'high',
+        valueRange: [0.1, 0.95],
+      },
+      severity: {
+        initialValue: 'low',
+        changeFrequency: 'medium',
+        possibleValues: ['low', 'medium', 'high', 'critical', 'emergency'],
+      },
+      detection_count: {
+        initialValue: 1,
+        changeFrequency: 'high',
+        valueRange: [1, 50],
+      },
+      source_ip: {
+        initialValue: '172.16.0.25',
+        changeFrequency: 'low',
+        possibleValues: [
+          '192.168.1.100',
+          '10.0.0.50',
+          '172.16.0.25',
+          '203.0.113.45',
+          '198.51.100.123',
+        ],
+      },
+      attack_type: {
+        initialValue: 'phishing',
+        changeFrequency: 'low',
+        possibleValues: ['malware', 'ddos', 'phishing', 'sql-injection', 'xss'],
+      },
+      mitigation_status: {
+        initialValue: 'resolved',
+        changeFrequency: 'medium',
+        possibleValues: ['active', 'investigating', 'mitigated', 'resolved'],
+      },
+    },
+  },
+  {
+    id: 'threat-004',
+    name: 'critical-breach-004',
+    type: 'Threat',
+    properties: {
+      threat_score: {
+        initialValue: 0.9,
+        changeFrequency: 'high',
+        valueRange: [0.1, 0.95],
+      },
+      severity: {
+        initialValue: 'critical',
+        changeFrequency: 'medium',
+        possibleValues: ['low', 'medium', 'high', 'critical', 'emergency'],
+      },
+      detection_count: {
+        initialValue: 15,
+        changeFrequency: 'high',
+        valueRange: [1, 50],
+      },
+      source_ip: {
+        initialValue: '203.0.113.45',
+        changeFrequency: 'low',
+        possibleValues: [
+          '192.168.1.100',
+          '10.0.0.50',
+          '172.16.0.25',
+          '203.0.113.45',
+          '198.51.100.123',
+        ],
+      },
+      attack_type: {
+        initialValue: 'sql-injection',
+        changeFrequency: 'low',
+        possibleValues: ['malware', 'ddos', 'phishing', 'sql-injection', 'xss'],
+      },
+      mitigation_status: {
+        initialValue: 'active',
+        changeFrequency: 'medium',
+        possibleValues: ['active', 'investigating', 'mitigated', 'resolved'],
       },
     },
   },

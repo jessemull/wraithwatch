@@ -2,20 +2,20 @@ import React, { useMemo, useCallback } from 'react';
 import { ConnectionLine } from './ConnectionLine';
 import { ConnectionParticle } from './ConnectionParticle';
 import { NetworkNode } from './NetworkNode';
-import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
+import { Entity, EntityPosition } from '../../../types/entity';
 import { NETWORK_SCENE_CONFIG } from '../../../constants/visualization';
 import { NetworkLayout, NetworkConnection } from '../../../types/visualization';
 
 interface NetworkSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
+  positions: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const NetworkScene: React.FC<NetworkSceneProps> = ({
   entities,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -31,36 +31,44 @@ export const NetworkScene: React.FC<NetworkSceneProps> = ({
   );
 
   const entityPositions = useMemo(() => {
-    const positions = new Map<string, [number, number, number]>();
+    const positionMap = new Map<string, [number, number, number]>();
 
-    const positionEntities = (
-      entityList: Entity[],
-      level: keyof typeof NETWORK_SCENE_CONFIG.entityLevels
-    ) => {
-      const config = NETWORK_SCENE_CONFIG.entityLevels[level];
-      entityList.forEach((entity, i) => {
-        const angle = (i / Math.max(entityList.length, 1)) * Math.PI * 2;
-        const x = Math.cos(angle) * config.radius;
-        const z = Math.sin(angle) * config.radius;
-        const y = config.y;
-        positions.set(entity.id, [x, y, z]);
-      });
-    };
+    // Use real position data from server...
 
-    positionEntities(entityGroups.threats, 'threats');
-    positionEntities(entityGroups.aiAgents, 'aiAgents');
-    positionEntities(entityGroups.systems, 'systems');
-    positionEntities(entityGroups.networkNodes, 'networkNodes');
-    positionEntities(entityGroups.users, 'users');
+    entities.forEach(entity => {
+      const positionData = positions.find(p => p.entity_id === entity.id);
+      if (positionData) {
+        const { x, y, z } = positionData.network_position;
+        positionMap.set(entity.id, [x, y, z]);
+      }
+    });
 
-    const positionedEntities = new Set(positions.keys());
+    // For any entities without position data, create a more spherical distribution...
+
+    const positionedEntities = new Set(positionMap.keys());
     const unpositionedEntities = entities.filter(
       e => !positionedEntities.has(e.id)
     );
-    positionEntities(unpositionedEntities, 'default');
 
-    return positions;
-  }, [entities, entityGroups]);
+    unpositionedEntities.forEach((entity, index) => {
+      // Create a spherical distribution for fallback positioning...
+
+      const angle =
+        (index / Math.max(unpositionedEntities.length, 1)) * Math.PI * 2;
+      const elevation =
+        (index / Math.max(unpositionedEntities.length, 1)) * Math.PI -
+        Math.PI / 2;
+      const radius = 8 + Math.random() * 4; // 8-12 units from center
+
+      const x = radius * Math.cos(elevation) * Math.cos(angle);
+      const y = radius * Math.sin(elevation);
+      const z = radius * Math.cos(elevation) * Math.sin(angle);
+
+      positionMap.set(entity.id, [x, y, z]);
+    });
+
+    return positionMap;
+  }, [entities, positions]);
 
   const connections = useMemo(() => {
     const connectionList: NetworkConnection[] = [];

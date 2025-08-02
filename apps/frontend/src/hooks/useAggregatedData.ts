@@ -28,11 +28,29 @@ const getCurrentEntityState = (
       const key = change.property_name;
       const existing = propertyMap.get(key);
 
-      if (
-        !existing ||
-        new Date(change.timestamp) > new Date(existing.timestamp)
-      ) {
-        propertyMap.set(key, change);
+      try {
+        const changeTimestamp = new Date(change.timestamp);
+        if (isNaN(changeTimestamp.getTime())) {
+          return;
+        }
+
+        if (!existing) {
+          propertyMap.set(key, change);
+        } else {
+          try {
+            const existingTimestamp = new Date(existing.timestamp);
+            if (
+              !isNaN(existingTimestamp.getTime()) &&
+              changeTimestamp > existingTimestamp
+            ) {
+              propertyMap.set(key, change);
+            }
+          } catch {
+            propertyMap.set(key, change);
+          }
+        }
+      } catch {
+        return;
       }
     });
 
@@ -112,9 +130,17 @@ const calculateEntityChangesByDay = (
   // Count changes by day...
 
   changes.forEach(change => {
-    const changeDate = new Date(change.timestamp).toISOString().split('T')[0];
-    if (entityChangesByDay[changeDate] !== undefined) {
-      entityChangesByDay[changeDate]++;
+    try {
+      const timestamp = new Date(change.timestamp);
+      if (isNaN(timestamp.getTime())) {
+        return;
+      }
+      const changeDate = timestamp.toISOString().split('T')[0];
+      if (entityChangesByDay[changeDate] !== undefined) {
+        entityChangesByDay[changeDate]++;
+      }
+    } catch {
+      return;
     }
   });
 
@@ -164,25 +190,27 @@ export const useAggregatedData = (
 
     // Calculate total connections...
 
-    const totalConnections = entityStates
-      .filter(
-        state =>
-          state.connection_count !== undefined ||
-          state.network_connections !== undefined
-      )
-      .reduce((total, state) => {
-        const connectionCount = state.connection_count
-          ? typeof state.connection_count === 'string'
-            ? parseFloat(state.connection_count)
-            : Number(state.connection_count)
-          : 0;
-        const networkConnections = state.network_connections
-          ? typeof state.network_connections === 'string'
-            ? parseFloat(state.network_connections)
-            : Number(state.network_connections)
-          : 0;
-        return total + connectionCount + networkConnections;
-      }, 0);
+    const totalConnections = Math.round(
+      entityStates
+        .filter(
+          state =>
+            state.connection_count !== undefined ||
+            state.network_connections !== undefined
+        )
+        .reduce((total, state) => {
+          const connectionCount = state.connection_count
+            ? typeof state.connection_count === 'string'
+              ? parseFloat(state.connection_count)
+              : Number(state.connection_count)
+            : 0;
+          const networkConnections = state.network_connections
+            ? typeof state.network_connections === 'string'
+              ? parseFloat(state.network_connections)
+              : Number(state.network_connections)
+            : 0;
+          return total + connectionCount + networkConnections;
+        }, 0)
+    );
 
     // Calculate distributions...
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Entity } from '../../../types/entity';
 import { Text } from '@react-three/drei';
 import {
@@ -37,11 +37,39 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
     };
   }, [entity.type, isSelected]);
 
+  const [pulseScale, setPulseScale] = useState(1);
+
+  useEffect(() => {
+    if (!style.pulse) return;
+
+    let animationId: number;
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const pulseSpeed = 0.003; // Speed of the pulse
+      const pulseRange = 0.3; // Range of the pulse (0.7 to 1.3)
+
+      const scale = 1 + pulseRange * Math.sin(elapsed * pulseSpeed);
+      setPulseScale(scale);
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [style.pulse]);
+
   const pulseMesh = useMemo(() => {
     if (!style.pulse) return null;
 
     return (
-      <mesh>
+      <mesh scale={[pulseScale, pulseScale, pulseScale]}>
         <sphereGeometry
           args={[style.size * TIMELINE_CONFIG.pulse.scaleMultiplier, 16, 16]}
         />
@@ -54,16 +82,19 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
         />
       </mesh>
     );
-  }, [style.pulse, style.size, style.color, style.emissive]);
+  }, [style.pulse, style.size, style.color, style.emissive, pulseScale]);
 
   const textPosition = useMemo(
-    () => [0, style.size + 0.2, 0] as [number, number, number],
+    () => [0, style.size + 0.6, 0] as [number, number, number],
     [style.size]
   );
 
   return (
     <group position={position}>
-      <mesh onClick={onClick}>
+      <mesh
+        onClick={onClick}
+        scale={style.pulse ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}
+      >
         <sphereGeometry args={[style.size, 16, 16]} />
         <meshStandardMaterial
           color={style.color}

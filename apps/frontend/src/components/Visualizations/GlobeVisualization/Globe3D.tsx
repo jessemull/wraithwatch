@@ -1,20 +1,19 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
-import { GlobeScene } from './GlobeScene';
 import { OrbitControls } from '@react-three/drei';
+import { GlobeScene } from './GlobeScene';
+import { Entity, EntityPosition } from '../../../types/entity';
 
 interface Globe3DProps {
   entities: Entity[];
-  changes: EntityChange[];
+  positions: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const Globe3D: React.FC<Globe3DProps> = ({
   entities,
-  changes,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -37,7 +36,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({
           />
           <GlobeScene
             entities={entities}
-            changes={changes}
+            positions={positions}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />

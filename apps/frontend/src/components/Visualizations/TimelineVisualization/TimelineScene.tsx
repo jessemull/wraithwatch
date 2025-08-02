@@ -1,52 +1,50 @@
 import React, { useMemo, useCallback } from 'react';
-import { ChangeParticle } from './ChangeParticle';
-import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
+import { Entity, EntityPosition } from '../../../types/entity';
 import { EntityNode } from './EntityNode';
-
+import { ChangeParticle } from './ChangeParticle';
 import { TimeScale } from './TimeScale';
 
 interface TimelineSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
-  allChanges: EntityChange[];
+  positions: EntityPosition[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const TimelineScene: React.FC<TimelineSceneProps> = ({
   entities,
-  changes,
-  allChanges,
+  positions,
   selectedEntity,
   onEntitySelect,
 }) => {
-  // Memoize timeline bounds and entity positions...
+  // Memoize entity positions...
 
   const { entityPositions } = useMemo(() => {
-    const sortedChanges = [...allChanges].sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
+    // Use current time as timeline bounds...
 
-    const startTime = new Date(sortedChanges[0].timestamp).getTime();
+    const now = Date.now();
+    const startTime = now - 24 * 60 * 60 * 1000; // 24 hours ago
+    const endTime = now;
 
-    const endTime = new Date(
-      sortedChanges[sortedChanges.length - 1].timestamp
-    ).getTime();
+    // Calculate entity positions using real data or fallback to algorithmic positioning...
 
-    // Calculate all entity positions...
+    const calculatedPositions = entities.map((entity, index) => {
+      // Try to find real position data for this entity...
 
-    const positions = entities.map((entity, index) => {
-      // This ensures entities are spread across the entire timeline height...
+      const positionData = positions.find(p => p.entity_id === entity.id);
+
+      if (positionData) {
+        // Use real position data...
+
+        const { x, y, z } = positionData.timeline_position;
+        return [x, y, z] as [number, number, number];
+      }
+
+      // Fallback to algorithmic positioning...
 
       const entityY = (index / (entities.length - 1) - 0.5) * 16; // Spread across -8 to +8
-
-      // Position entities randomly around the timeline instead of in a perfect circle...
-
       const angle = Math.random() * Math.PI * 2; // Random angle
       const radius = 2 + Math.random() * 4; // Random radius between 2-6
-
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
 
@@ -55,9 +53,9 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
 
     return {
       timelineBounds: { startTime, endTime },
-      entityPositions: positions,
+      entityPositions: calculatedPositions,
     };
-  }, [allChanges, entities]);
+  }, [entities, positions]);
 
   const handleEntityClick = useCallback(
     (entity: Entity) => {
@@ -65,6 +63,55 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
     },
     [onEntitySelect]
   );
+
+  const changeParticles = useMemo(() => {
+    if (!selectedEntity) return null;
+
+    // Try to find real change particles for the selected entity...
+
+    const selectedEntityPosition = positions.find(
+      p => p.entity_id === selectedEntity.id
+    );
+
+    if (
+      selectedEntityPosition &&
+      selectedEntityPosition.change_particles.length > 0
+    ) {
+      // Use real change particles...
+
+      return selectedEntityPosition.change_particles.map((particle, index) => (
+        <ChangeParticle
+          key={`change-particle-${selectedEntity.id}-${index}`}
+          position={[particle.x, particle.y, particle.z]}
+        />
+      ));
+    }
+
+    // Fallback to algorithmic particles...
+
+    const particleCount = 150;
+    const selectedEntityIndex = entities.findIndex(
+      e => e.id === selectedEntity.id
+    );
+    const entityPosition = entityPositions[selectedEntityIndex];
+
+    return Array.from({ length: particleCount }, (_, index) => {
+      const seed = selectedEntity.id.charCodeAt(0) + index;
+      const angle = (seed * 137.5) % (Math.PI * 2);
+      const radius = 1 + (seed % 300) / 100;
+
+      const x = entityPosition[0] + Math.cos(angle) * radius;
+      const y = entityPosition[1] + ((seed % 1200) / 1000 - 0.5) * 12;
+      const z = entityPosition[2] + Math.sin(angle) * radius;
+
+      return (
+        <ChangeParticle
+          key={`change-particle-${selectedEntity.id}-${index}`}
+          position={[x, y, z]}
+        />
+      );
+    });
+  }, [selectedEntity, entities, entityPositions, positions]);
 
   return (
     <group>
@@ -95,35 +142,8 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           onClick={() => handleEntityClick(entity)}
         />
       ))}
-      {selectedEntity &&
-        changes.map((change, index) => {
-          // Find the selected entity's position...
-
-          const selectedEntityIndex = entities.findIndex(
-            e => e.id === selectedEntity.id
-          );
-
-          const entityPosition = entityPositions[selectedEntityIndex];
-
-          // Position change particles centered around the entity's position...
-
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
-
-          const x = entityPosition[0] + Math.cos(angle) * radius;
-          const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
-          const z = entityPosition[2] + Math.sin(angle) * radius;
-
-          return (
-            <ChangeParticle
-              key={`${change.entity_id}-${change.timestamp}-${index}`}
-              change={change}
-              position={[x, y, z]}
-            />
-          );
-        })}
-
-      {selectedEntity && <TimeScale changes={changes} position={[0, 0, 0]} />}
+      {changeParticles}
+      {selectedEntity && <TimeScale position={[0, 0, 0]} />}
     </group>
   );
 };

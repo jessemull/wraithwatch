@@ -11,13 +11,13 @@ import { Header } from './Header';
 import { DashboardMetrics } from './DashboardMetrics';
 import { EntityDetails } from './EntityDetails';
 import { VisualizationControls } from './VisualizationControls';
-import { useEntityData } from '../../hooks/useEntityData';
+import { useRealTimeData } from '../../hooks/useRealTimeData';
 import { useState, useMemo } from 'react';
 import { Entity } from '../../types/entity';
 import { VisualizationType } from '../../types/visualization';
 
 export const Dashboard: React.FC = () => {
-  const { entities, changes, loading, error } = useEntityData();
+  const { entities, changes, positions, loading, error } = useRealTimeData();
   const [selectedEntity, setSelectedEntity] = useState<Entity | undefined>();
   const [visualizationType, setVisualizationType] =
     useState<VisualizationType>('timeline');
@@ -25,11 +25,11 @@ export const Dashboard: React.FC = () => {
   const visualizationProps = useMemo(
     () => ({
       entities,
-      changes,
+      positions,
       selectedEntity,
       onEntitySelect: setSelectedEntity,
     }),
-    [entities, changes, selectedEntity]
+    [entities, positions, selectedEntity]
   );
 
   const renderVisualization = () => {
@@ -113,7 +113,7 @@ export const Dashboard: React.FC = () => {
           />
         </div>
         <div className="text-center text-gray-400 text-sm mt-8">
-          Static data mode - Real-time updates disabled
+          Real-Time Mode - Entities Updating Dynamically
         </div>
       </div>
     </div>

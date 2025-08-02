@@ -2,19 +2,16 @@ import React from 'react';
 import { DataFlowLine } from './DataFlowLine';
 import { DataParticle } from './DataParticle';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { MatrixNode } from './MatrixNode';
 
 interface MatrixSceneProps {
   entities: Entity[];
-  changes: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const MatrixScene: React.FC<MatrixSceneProps> = ({
   entities,
-  changes,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -88,18 +85,14 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           />
         );
       })}
-      {changes.slice(0, 30).map((change, index) => {
+      {Array.from({ length: 40 }, (_, index) => {
         const time = Date.now() * 0.001 + index * 0.1;
         const x = Math.sin(time) * 5;
         const y = Math.cos(time * 0.5) * 5;
         const z = Math.sin(time * 0.3) * 2;
 
         return (
-          <DataParticle
-            key={`${change.entity_id}-${change.timestamp}-${index}`}
-            change={change}
-            position={[x, y, z]}
-          />
+          <DataParticle key={`change-particle-${index}`} position={[x, y, z]} />
         );
       })}
     </group>
