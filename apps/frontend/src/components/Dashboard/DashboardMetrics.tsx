@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { EntityChange } from '../../types/api';
 import { KPICard } from './KPICard';
 import { ChartCard } from './ChartCard';
@@ -18,6 +18,20 @@ interface DashboardMetricsProps {
 export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   changes,
 }) => {
+  const {
+    activeThreatsValue,
+    threatScoreValue,
+    aiConfidenceValue,
+    totalConnectionsValue,
+  } = useMemo(() => {
+    return {
+      activeThreatsValue: `+${Math.floor(Math.random() * 5) + 1}`,
+      threatScoreValue: `-${(Math.random() * 0.2 + 0.05).toFixed(2)}`,
+      aiConfidenceValue: `+${Math.floor(Math.random() * 10) + 1}%`,
+      totalConnectionsValue: `+${Math.floor(Math.random() * 50) + 10}`,
+    };
+  }, []);
+
   const metrics = useAggregatedData(changes);
 
   return (
@@ -27,7 +41,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           title="Active Threats"
           value={metrics.activeThreats}
           change={{
-            value: `+${Math.floor(Math.random() * 5) + 1}`,
+            value: activeThreatsValue,
             isPositive: false,
           }}
           comparison="vs previous 24 hours"
@@ -36,7 +50,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           title="Threat Score"
           value={metrics.threatScore}
           change={{
-            value: `-${(Math.random() * 0.2 + 0.05).toFixed(2)}`,
+            value: threatScoreValue,
             isPositive: true,
           }}
           comparison="vs previous 24 hours"
@@ -45,7 +59,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           title="AI Confidence"
           value={`${metrics.aiConfidence}%`}
           change={{
-            value: `+${Math.floor(Math.random() * 10) + 1}%`,
+            value: aiConfidenceValue,
             isPositive: true,
           }}
           comparison="vs previous 24 hours"
@@ -54,7 +68,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           title="Total Connections"
           value={metrics.totalConnections}
           change={{
-            value: `+${Math.floor(Math.random() * 50) + 10}`,
+            value: totalConnectionsValue,
             isPositive: false,
           }}
           comparison="vs previous 24 hours"

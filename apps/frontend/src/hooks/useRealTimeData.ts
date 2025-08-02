@@ -5,7 +5,11 @@ import { WebSocketMessage } from '../types/websocket';
 import { WEBSOCKET_CONNECTION_STATUS } from '../constants';
 import { config } from '../config';
 import { updateEntityInList, updateEntityProperty } from '../util/entity';
-import { isEntityListMessage, isEntityUpdateMessage, isConnectionStatusMessage } from '../util/websocket';
+import {
+  isEntityListMessage,
+  isEntityUpdateMessage,
+  isConnectionStatusMessage,
+} from '../util/websocket';
 import cloneDeep from 'clone-deep';
 
 export const useRealTimeData = () => {
@@ -15,7 +19,7 @@ export const useRealTimeData = () => {
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
-  
+
   // This will hold the initial entities and never change
   const initialEntitiesRef = useRef<Entity[] | null>(null);
   const websocketRef = useRef<WebSocket | null>(null);
@@ -83,7 +87,7 @@ export const useRealTimeData = () => {
       setChanges(result.data);
       const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
-      
+
       // Set initial entities only once
       if (initialEntitiesRef.current === null) {
         console.log('Setting initial entities:', transformedEntities.length);
@@ -184,7 +188,7 @@ export const useRealTimeData = () => {
       setIsConnected(false);
     };
 
-    websocket.onmessage = (event) => {
+    websocket.onmessage = event => {
       try {
         const message: WebSocketMessage = JSON.parse(event.data);
         handleWebSocketMessage(message);
@@ -225,4 +229,4 @@ export const useRealTimeData = () => {
     getEntityHistory,
     getPropertyHistory,
   };
-}; 
+};

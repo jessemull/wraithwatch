@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataFlowLine } from './DataFlowLine';
 import { DataParticle } from './DataParticle';
-import { Entity } from '../../../types/entity';]
+import { Entity } from '../../../types/entity';
 import { MatrixNode } from './MatrixNode';
 
 interface MatrixSceneProps {
@@ -92,10 +92,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
         const z = Math.sin(time * 0.3) * 2;
 
         return (
-          <DataParticle
-            key={`change-particle-${index}`}
-            position={[x, y, z]}
-          />
+          <DataParticle key={`change-particle-${index}`} position={[x, y, z]} />
         );
       })}
     </group>

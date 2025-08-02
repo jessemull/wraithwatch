@@ -20,7 +20,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
   const { entityPositions } = useMemo(() => {
     // Use current time as timeline bounds
     const now = Date.now();
-    const startTime = now - (24 * 60 * 60 * 1000); // 24 hours ago
+    const startTime = now - 24 * 60 * 60 * 1000; // 24 hours ago
     const endTime = now;
 
     // Calculate all entity positions...
@@ -82,29 +82,30 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           isSelected={selectedEntity?.id === entity.id}
           onClick={() => handleEntityClick(entity)}
         />
-              ))}
-      {selectedEntity && Array.from({ length: 150 }, (_, index) => {
-        // Find the selected entity's position
-        const selectedEntityIndex = entities.findIndex(
-          e => e.id === selectedEntity.id
-        );
-        const entityPosition = entityPositions[selectedEntityIndex];
+      ))}
+      {selectedEntity &&
+        Array.from({ length: 150 }, (_, index) => {
+          // Find the selected entity's position
+          const selectedEntityIndex = entities.findIndex(
+            e => e.id === selectedEntity.id
+          );
+          const entityPosition = entityPositions[selectedEntityIndex];
 
-        // Generate random positions around the entity
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
+          // Generate random positions around the entity
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 1 + Math.random() * 3; // Moderate horizontal spread: 1-4 units from entity
 
-        const x = entityPosition[0] + Math.cos(angle) * radius;
-        const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
-        const z = entityPosition[2] + Math.sin(angle) * radius;
+          const x = entityPosition[0] + Math.cos(angle) * radius;
+          const y = entityPosition[1] + (Math.random() - 0.5) * 12; // Much more vertical spread: ±6 units around entity
+          const z = entityPosition[2] + Math.sin(angle) * radius;
 
-        return (
-          <ChangeParticle
-            key={`change-particle-${index}`}
-            position={[x, y, z]}
-          />
-        );
-      })}
+          return (
+            <ChangeParticle
+              key={`change-particle-${index}`}
+              position={[x, y, z]}
+            />
+          );
+        })}
       {selectedEntity && <TimeScale position={[0, 0, 0]} />}
     </group>
   );
