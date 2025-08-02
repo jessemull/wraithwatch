@@ -81,7 +81,6 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     };
   }, []);
 
-  // Use provided metrics or fallback to empty metrics
   const dashboardMetrics = metrics || {
     activeThreats: 0,
     threatScore: '0.00',

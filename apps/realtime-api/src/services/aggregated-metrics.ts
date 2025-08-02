@@ -25,7 +25,7 @@ export class AggregatedMetricsService {
 
   async calculateMetrics(changes: EntityChange[]): Promise<AggregatedMetrics> {
     // Create cache key based on data hash to ensure cache invalidation when data changes...
-    
+
     const dataHash = this.generateDataHash(changes);
     const cacheKey = `dashboard_metrics_${dataHash}`;
 
@@ -112,8 +112,9 @@ export class AggregatedMetricsService {
       entityStates,
       'severity'
     );
-    
-    // Count AI agents by status, but include all AI agents
+
+    // Count AI agents by status, but include all AI agents...
+
     const aiAgentActivity = this.countAIAgentsByStatus(entityStates);
 
     // Calculate protocol usage (Network Status Distribution)...
@@ -256,8 +257,10 @@ export class AggregatedMetricsService {
   private countAIAgentsByStatus(entityStates: any[]): Record<string, number> {
     const distribution: Record<string, number> = {};
 
-    const aiAgents = entityStates.filter(state => state.entity_type === 'AI_Agent');
-    
+    const aiAgents = entityStates.filter(
+      state => state.entity_type === 'AI_Agent'
+    );
+
     aiAgents.forEach(state => {
       const status = state.status || 'offline';
       const statusStr = String(status);

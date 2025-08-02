@@ -72,7 +72,7 @@ export const Dashboard: React.FC = () => {
     }),
     [entities, positions, selectedEntity]
   );
-  
+
   const renderVisualization = () => {
     switch (visualizationType) {
       case 'timeline':

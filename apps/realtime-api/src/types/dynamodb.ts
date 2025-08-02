@@ -24,27 +24,8 @@ export interface HistoricalDataQuery {
   limit?: number;
 }
 
-export interface QueryOptions {
-  propertyName?: string;
-  startTime?: string;
-  endTime?: string;
-  limit?: number;
-}
-
 export interface RecentChangesOptions {
   entityType?: string;
   limit?: number;
   hours?: number;
-}
-
-export interface EntitySummary {
-  entityId: string;
-  entityType: string;
-  properties: Record<string, PropertySummary>;
-}
-
-export interface PropertySummary {
-  currentValue: string | number;
-  changeCount: number;
-  lastChange: string;
 }

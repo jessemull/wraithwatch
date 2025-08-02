@@ -688,19 +688,21 @@ function generateEntityChanges(
   const timestamps = generateRandomTimestamps(startDate, endDate);
   const changes: EntityChange[] = [];
 
-  // First, ensure all properties are saved at least once
+  // First, ensure all properties are saved at least once...
+
   for (const prop of properties) {
-    const propConfig = config[prop];
     const initialValue = currentValues[prop];
     const timestamp = format(timestamps[0], "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-    
-    // Always save the initial value for each property
+
+    // Always save the initial value for each property...
+
     changes.push(
       createEntityChange(entity, prop, initialValue, initialValue, timestamp)
     );
   }
 
-  // Then generate random changes over time
+  // Then generate random changes over time...
+
   for (let i = 1; i < timestamps.length; i++) {
     const currentTime = timestamps[i];
     const propertiesToCheck = properties.filter(() => Math.random() < 0.3);

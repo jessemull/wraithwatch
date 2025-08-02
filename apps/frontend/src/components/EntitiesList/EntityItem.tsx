@@ -13,12 +13,13 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
   const getKeyProperties = () => {
     if (!entity.properties) return [];
 
-    // Define priority properties based on entity type
+    // Define priority properties based on entity type...
+
     let priorityProperties: string[];
-    
+
     if (entity.type === 'AI_Agent') {
       priorityProperties = [
-        'status', // Prioritize status for AI_Agent entities
+        'status',
         'confidence_score',
         'active_requests',
         'response_time',
@@ -27,7 +28,7 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
       ];
     } else if (entity.type === 'Network_Node') {
       priorityProperties = [
-        'routing_status', // Prioritize routing_status for Network_Node entities
+        'routing_status',
         'bandwidth_usage',
         'connection_count',
         'latency',
@@ -36,7 +37,7 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
       ];
     } else if (entity.type === 'Threat') {
       priorityProperties = [
-        'severity', // Prioritize severity for Threat entities
+        'severity',
         'threat_score',
         'detection_count',
         'mitigation_status',
@@ -44,7 +45,7 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
       ];
     } else if (entity.type === 'System') {
       priorityProperties = [
-        'status', // Prioritize status for System entities
+        'status',
         'cpu_usage',
         'memory_usage',
         'response_time',
@@ -53,14 +54,13 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
       ];
     } else if (entity.type === 'User') {
       priorityProperties = [
-        'last_activity', // Prioritize last_activity for User entities
+        'last_activity',
         'login_count',
         'session_duration',
         'permission_level',
         'failed_login_attempts',
       ];
     } else {
-      // Fallback for other entity types
       priorityProperties = [
         'cpu_usage',
         'memory_usage',
@@ -84,13 +84,14 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
       ];
     }
 
-    const filteredProperties = Object.entries(entity.properties)
-      .filter(([key]) => priorityProperties.includes(key));
-    
+    const filteredProperties = Object.entries(entity.properties).filter(
+      ([key]) => priorityProperties.includes(key)
+    );
+
     const sortedProperties = filteredProperties.sort(([a], [b]) => {
       return a.localeCompare(b);
     });
-    
+
     return sortedProperties.slice(0, 5);
   };
 

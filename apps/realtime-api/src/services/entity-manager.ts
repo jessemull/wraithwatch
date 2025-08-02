@@ -170,7 +170,11 @@ export class EntityManager {
       allowedProperties.forEach(propertyName => {
         if (!entity.properties[propertyName]) {
           // Create missing property with initial value
-          const initialValue = this.generatePropertyValue(propertyName, null, entityType);
+          const initialValue = this.generatePropertyValue(
+            propertyName,
+            null,
+            entityType
+          );
           entity.properties[propertyName] = {
             name: propertyName,
             currentValue: initialValue,
@@ -197,7 +201,11 @@ export class EntityManager {
 
         if (shouldChangeProperty(changeFrequency)) {
           const oldValue = property.currentValue;
-          const newValue = this.generatePropertyValue(propertyName, oldValue, entityType);
+          const newValue = this.generatePropertyValue(
+            propertyName,
+            oldValue,
+            entityType
+          );
 
           property.currentValue = newValue;
           property.lastChanged = new Date().toISOString();
@@ -300,7 +308,11 @@ export class EntityManager {
     return frequencyMap[propertyName] || 0.2;
   }
 
-  private generatePropertyValue(propertyName: string, currentValue: any, entityType: string): any {
+  private generatePropertyValue(
+    propertyName: string,
+    currentValue: any,
+    entityType: string
+  ): any {
     const valueGenerators: Record<string, () => any> = {
       // System properties...
 
