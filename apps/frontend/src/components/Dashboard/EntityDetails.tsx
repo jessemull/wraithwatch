@@ -5,6 +5,7 @@ import {
   getStatusColor,
   formatPropertyName,
   getUnit,
+  formatEntityType,
 } from '../../util/entity';
 
 interface EntityDetailsProps {
@@ -125,7 +126,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
           </h3>
         </div>
         <p className="text-sm text-gray-400">
-          {selectedEntity.type.replace('_', ' ')}
+          {formatEntityType(selectedEntity.type)}
         </p>
       </div>
       <div className="grid grid-cols-2 gap-4">

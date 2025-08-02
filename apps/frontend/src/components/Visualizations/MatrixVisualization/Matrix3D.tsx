@@ -1,20 +1,17 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Entity } from '../../../types/entity';
-import { EntityChange } from '../../../types/api';
 import { MatrixScene } from './MatrixScene';
 import { OrbitControls } from '@react-three/drei';
 
 interface Matrix3DProps {
   entities: Entity[];
-  changes: EntityChange[];
   selectedEntity?: Entity;
   onEntitySelect?: (entity: Entity) => void;
 }
 
 export const Matrix3D: React.FC<Matrix3DProps> = ({
   entities,
-  changes,
   selectedEntity,
   onEntitySelect,
 }) => {
@@ -37,7 +34,6 @@ export const Matrix3D: React.FC<Matrix3DProps> = ({
           />
           <MatrixScene
             entities={entities}
-            changes={changes}
             selectedEntity={selectedEntity}
             onEntitySelect={onEntitySelect}
           />

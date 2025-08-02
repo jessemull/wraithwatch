@@ -43,7 +43,7 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
     if (!style.pulse) return;
 
     let animationId: number;
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     const animate = () => {
       const elapsed = Date.now() - startTime;

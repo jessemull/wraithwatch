@@ -113,7 +113,7 @@ export const Dashboard: React.FC = () => {
           />
         </div>
         <div className="text-center text-gray-400 text-sm mt-8">
-          Real-time mode - Entities updating dynamically
+          Real-Time Mode - Entities Updating Dynamically
         </div>
       </div>
     </div>

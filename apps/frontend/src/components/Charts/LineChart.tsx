@@ -122,6 +122,9 @@ export const LineChart: React.FC<LineChartProps> = ({
           },
           ticks: {
             color: 'rgba(156, 163, 175, 1)',
+            font: {
+              size: 10,
+            },
           },
           title: {
             display: true,

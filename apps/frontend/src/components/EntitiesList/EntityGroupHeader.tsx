@@ -1,6 +1,6 @@
 import React from 'react';
 import { EntityGroupHeaderProps } from '../../types/entity';
-import { getEntityTypeColor, formatTime } from '../../util/entity';
+import { getEntityTypeColor, formatTime, formatEntityType } from '../../util/entity';
 
 export const EntityGroupHeader: React.FC<EntityGroupHeaderProps> = ({
   type,
@@ -19,7 +19,7 @@ export const EntityGroupHeader: React.FC<EntityGroupHeaderProps> = ({
         <div className={`w-3 h-3 rounded-full ${getEntityTypeColor(type)}`} />
         <div>
           <h3 className="text-sm font-medium text-white">
-            {type.replace('_', ' ')}
+            {formatEntityType(type)}
           </h3>
           <p className="text-xs text-gray-400">
             {entities.length} {entities.length === 1 ? 'entity' : 'entities'}

@@ -14,7 +14,7 @@ export const ENTITY_STYLES = {
     selected: { color: '#ff4444', emissiveIntensity: 1.0, size: 0.5 },
     default: { emissiveIntensity: 0.8, size: 0.4 },
   },
-  AI_Agent: {
+  AIAgent: {
     base: { color: '#4ecdc4', textColor: '#ffffff', pulse: false },
     selected: { emissiveIntensity: 0.8, size: 0.4 },
     default: { emissiveIntensity: 0.4, size: 0.3 },
@@ -160,7 +160,7 @@ export const NETWORK_NODE_CONFIG = {
   threatHaloOffset: 0.1,
   threatHighlightOffset: 0.05,
   labelOffset: 0.3,
-  labelFontSize: 0.3,
+  labelFontSize: 0.6,
   labelMaxWidth: 2,
   labelOutlineWidth: 0.02,
 } as const;

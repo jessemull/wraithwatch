@@ -96,13 +96,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
             color: 'rgba(156, 163, 175, 1)',
           },
           title: {
-            display: true,
-            text: 'Agent Status',
-            color: 'rgba(156, 163, 175, 1)',
-            font: {
-              size: 12,
-              weight: 'bold',
-            },
+            display: false,
           },
         },
       },
