@@ -84,7 +84,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
         />
       ))}
       {selectedEntity &&
-        Array.from({ length: 150 }, (_, index) => {
+        Array.from({ length: Math.floor(Math.random() * 101) + 100 }, (_, index) => {
           // Find the selected entity's position
           const selectedEntityIndex = entities.findIndex(
             e => e.id === selectedEntity.id
