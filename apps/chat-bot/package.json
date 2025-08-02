@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -63,8 +64,8 @@
     "coverage:open": "open ./coverage/lcov-report/index.html",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint --ext .ts",
-    "lint:fix": "eslint --ext .ts --fix",
+    "lint": "eslint --ext .ts --config eslint.config.js",
+    "lint:fix": "eslint --ext .ts --fix --config eslint.config.js",
     "package": "cd dist && zip -rq wraithwatch-chat-bot.zip ./*",
     "prebuild": "npm run clean",
     "prepare": "husky",

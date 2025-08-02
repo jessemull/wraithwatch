@@ -120,9 +120,7 @@ describe('Wraithwatch Chat Bot Handler', () => {
     });
 
     const responseBody = JSON.parse(result.body!);
-    expect(responseBody.message).toContain(
-      'Wraithwatch Chat Bot is running!'
-    );
+    expect(responseBody.message).toContain('Wraithwatch Chat Bot is running!');
     expect(responseBody.timestamp).toBeDefined();
     expect(responseBody.requestId).toBe('test-request-id');
     expect(responseBody.history).toEqual([]);
@@ -362,8 +360,12 @@ describe('Wraithwatch Chat Bot Handler', () => {
 
 describe('Barrel Exports', () => {
   it('should export all constants', async () => {
-    const { ALLOWED_ORIGINS, CLAUDE_MODEL, MAX_TOKENS, WRAITHWATCH_SYSTEM_PROMPT } =
-      await import('./constants');
+    const {
+      ALLOWED_ORIGINS,
+      CLAUDE_MODEL,
+      MAX_TOKENS,
+      WRAITHWATCH_SYSTEM_PROMPT,
+    } = await import('./constants');
     expect(ALLOWED_ORIGINS).toBeDefined();
     expect(CLAUDE_MODEL).toBeDefined();
     expect(MAX_TOKENS).toBeDefined();
