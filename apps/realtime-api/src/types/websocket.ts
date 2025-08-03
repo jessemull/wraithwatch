@@ -13,7 +13,7 @@ export interface WebSocketHandlers {
   onMessageReceived: (message: unknown) => void;
 }
 
-export interface WebSocketMessage {
+export interface WebSocketBaseMessage {
   type: string;
   payload: unknown;
 }

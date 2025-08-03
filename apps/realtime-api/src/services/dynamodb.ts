@@ -20,9 +20,23 @@ import NodeCache from 'node-cache';
 const logger = createComponentLogger('dynamodb-service');
 
 // Initialize DynamoDB client with enhanced features...
+// Use mock client in test environment to prevent real AWS connections
 
-const client = new DynamoDBClient({ region: AWS_REGION });
-const docClient = DynamoDBDocumentClient.from(client);
+const isTestEnvironment =
+  process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID;
+
+let client: DynamoDBClient;
+let docClient: DynamoDBDocumentClient;
+
+if (isTestEnvironment) {
+  // Create mock clients for testing
+  client = {} as DynamoDBClient;
+  docClient = {} as DynamoDBDocumentClient;
+} else {
+  // Create real clients for production/development
+  client = new DynamoDBClient({ region: AWS_REGION });
+  docClient = DynamoDBDocumentClient.from(client);
+}
 
 export class DynamoDBService {
   private readonly tableName = DYNAMODB_TABLE_NAME;

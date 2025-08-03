@@ -38,3 +38,6 @@ export const DYNAMODB_CONSTANTS = {
   ENTITY_SUMMARY_LIMIT: 1000,
   INDEX_NAME: 'TimestampEntityIndex',
 } as const;
+
+// Re-export property configuration
+export * from './property-config';
