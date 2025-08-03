@@ -153,13 +153,17 @@ describe('DynamoDBService error handling', () => {
   it('getRecentChanges throws and logs on error', async () => {
     mockDocClient.send.mockRejectedValueOnce(new Error('bucket query failed'));
 
-    await expect(service.getRecentChanges()).rejects.toThrow('bucket query failed');
+    await expect(service.getRecentChanges()).rejects.toThrow(
+      'bucket query failed'
+    );
   });
 
   it('getAllEntityPositions throws and logs on error', async () => {
     mockDocClient.send.mockRejectedValueOnce(new Error('scan failed'));
 
-    await expect(service.getAllEntityPositions()).rejects.toThrow('scan failed');
+    await expect(service.getAllEntityPositions()).rejects.toThrow(
+      'scan failed'
+    );
   });
 
   it('preloadCache throws and logs on error from getAllData', async () => {
@@ -172,7 +176,10 @@ describe('DynamoDBService error handling', () => {
     mockDocClient.send.mockRejectedValueOnce(new Error('put failed'));
 
     await expect(
-      service.createEntityChange({ entity_id: 'bad', timestamp: new Date().toISOString() } as any)
+      service.createEntityChange({
+        entity_id: 'bad',
+        timestamp: new Date().toISOString(),
+      } as any)
     ).rejects.toThrow('put failed');
   });
 
@@ -183,6 +190,8 @@ describe('DynamoDBService error handling', () => {
 
     mockDocClient.send.mockRejectedValueOnce(new Error('batch failed'));
 
-    await expect(service.batchCreateEntityChanges(changes as any)).rejects.toThrow('batch failed');
+    await expect(
+      service.batchCreateEntityChanges(changes as any)
+    ).rejects.toThrow('batch failed');
   });
 });

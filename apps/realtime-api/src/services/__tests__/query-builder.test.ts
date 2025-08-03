@@ -1,5 +1,3 @@
-// queryBuilder.test.ts
-
 import { QueryBuilder } from '../query-builder';
 import { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 
@@ -11,7 +9,7 @@ describe('QueryBuilder', () => {
   });
 
   test('initial state is correct', () => {
-    const result = (builder as any);
+    const result = builder as any;
     expect(result.keyConditionExpression).toBe('');
     expect(result.expressionAttributeValues).toEqual({});
     expect(result.sortKeyConditions).toEqual([]);
@@ -19,7 +17,7 @@ describe('QueryBuilder', () => {
 
   test('setPartitionKey sets the correct expression and value', () => {
     builder.setPartitionKey('user#123');
-    const result = (builder as any);
+    const result = builder as any;
 
     expect(result.keyConditionExpression).toBe('PK = :pk');
     expect(result.expressionAttributeValues).toEqual({
@@ -32,12 +30,9 @@ describe('QueryBuilder', () => {
     builder.addSortKeyCondition('=', 'order#1');
     builder.addSortKeyCondition('>', 'order#2');
 
-    const result = (builder as any);
+    const result = builder as any;
 
-    expect(result.sortKeyConditions).toEqual([
-      'SK = :sk0',
-      'SK > :sk1',
-    ]);
+    expect(result.sortKeyConditions).toEqual(['SK = :sk0', 'SK > :sk1']);
 
     expect(result.expressionAttributeValues).toEqual({
       ':pk': 'user#123',

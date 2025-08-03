@@ -1,4 +1,3 @@
-// __tests__/EntityManager.test.ts
 import { EntityManager } from '../../services/entity-manager';
 import { shouldChangeProperty } from '../../utils/entity-utils';
 import { transformDatabaseDataToEntities } from '../../utils/entity-transformer';
@@ -65,7 +64,6 @@ describe('EntityManager', () => {
       await manager.initializeFromDatabase();
 
       expect(entityCache.set).toHaveBeenCalledWith(dummyEntity.id, dummyEntity);
-      // internal isInitialized should now be true so generate updates works
     });
 
     it('throws if DB fails', async () => {
@@ -90,7 +88,6 @@ describe('EntityManager', () => {
     const client = { socket: { send: jest.fn() } };
 
     beforeEach(() => {
-      // Reset the mock before each test
       client.socket.send.mockClear();
     });
 
@@ -105,7 +102,6 @@ describe('EntityManager', () => {
     });
 
     it('sends connection status', () => {
-      // Don't mock getEntities for this test - it should send connection status directly
       manager.sendConnectionStatus(client as unknown as WebSocketConnection);
       const msg = JSON.parse(client.socket.send.mock.calls[0][0]);
       expect(msg.type).toBe('connection_status');
@@ -176,9 +172,6 @@ describe('EntityManager', () => {
       propertyGen.generatePropertyValue.mockReturnValue(20);
       manager.generateEntityUpdates();
       expect(e2.properties.accuracy).toBeDefined();
-      // The cache.set is called in updateEntityProperty, but since shouldChangeProperty returns false,
-      // no properties are updated, so cache.set is not called. The test expectation was incorrect.
-      // The missing property is created but not saved to cache until an actual update happens.
       expect(entityCache.set).not.toHaveBeenCalled();
     });
   });

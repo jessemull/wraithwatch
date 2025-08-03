@@ -1,6 +1,4 @@
-import {
-  QueryCommandInput,
-} from '@aws-sdk/lib-dynamodb';
+import { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 
 export class QueryBuilder {
   private keyConditionExpression: string;

@@ -13,7 +13,8 @@ export class PropertyValueGenerator implements IPropertyValueGenerator {
     entityType: string
   ): any {
     const valueGenerators: Record<string, () => any> = {
-      // System properties
+      // System properties...
+
       cpu_usage: () =>
         Math.floor(
           VALUE_RANGES.CPU_USAGE.min +
@@ -57,7 +58,8 @@ export class PropertyValueGenerator implements IPropertyValueGenerator {
         }
       },
 
-      // AI Agent properties
+      // AI Agent properties...
+
       confidence_score: () =>
         VALUE_RANGES.CONFIDENCE_SCORE.min +
         Math.random() *
@@ -82,7 +84,8 @@ export class PropertyValueGenerator implements IPropertyValueGenerator {
           Math.floor(Math.random() * STATUS_VALUES.TRAINING.length)
         ],
 
-      // Threat properties
+      // Threat properties...
+
       threat_score: () =>
         VALUE_RANGES.THREAT_SCORE.min +
         Math.random() *
@@ -111,7 +114,8 @@ export class PropertyValueGenerator implements IPropertyValueGenerator {
           Math.floor(Math.random() * STATUS_VALUES.MITIGATION.length)
         ],
 
-      // Network Node properties
+      // Network Node properties...
+
       bandwidth_usage: () =>
         Math.floor(
           VALUE_RANGES.BANDWIDTH_USAGE.min +
@@ -139,7 +143,8 @@ export class PropertyValueGenerator implements IPropertyValueGenerator {
           Math.floor(Math.random() * STATUS_VALUES.ROUTING.length)
         ],
 
-      // User properties
+      // User properties...
+
       login_count: () =>
         Math.floor(Math.random() * VALUE_RANGES.LOGIN_COUNT.max),
       last_activity: () =>
@@ -155,7 +160,8 @@ export class PropertyValueGenerator implements IPropertyValueGenerator {
       failed_login_attempts: () =>
         Math.floor(Math.random() * VALUE_RANGES.FAILED_LOGIN_ATTEMPTS.max),
 
-      // Sensor properties
+      // Sensor properties...
+
       temperature: () =>
         Math.floor(
           VALUE_RANGES.TEMPERATURE.min +

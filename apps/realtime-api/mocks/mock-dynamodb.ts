@@ -4,9 +4,7 @@ export class MockDynamoDBService {
   private mockData: EntityChange[] = [];
   private mockPositions: any[] = [];
 
-  constructor() {
-    // Initialize with empty data
-  }
+  constructor() {}
 
   async getAllData(limit?: number): Promise<EntityChange[]> {
     return this.mockData.slice(0, limit);
@@ -17,31 +15,24 @@ export class MockDynamoDBService {
   }
 
   async getRecentChanges(): Promise<EntityChange[]> {
-    // Mock implementation - return empty array
     return [];
   }
 
   async createEntityChange(change: EntityChange): Promise<void> {
-    // Mock implementation - no real database calls
     this.mockData.push(change);
   }
 
   async batchCreateEntityChanges(changes: EntityChange[]): Promise<void> {
-    // Mock implementation - no real database calls
     this.mockData.push(...changes);
   }
 
   async preloadCache(): Promise<void> {
-    // Mock implementation - actually call the methods to satisfy the test
     await this.getAllData();
     await this.getAllEntityPositions();
   }
 
-  clearCache(): void {
-    // Mock implementation
-  }
+  clearCache(): void {}
 
-  // Helper methods for testing
   setMockData(data: EntityChange[]): void {
     this.mockData = data;
   }

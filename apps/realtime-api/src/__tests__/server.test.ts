@@ -10,7 +10,6 @@ import {
 import { websocketPlugin } from '../plugins';
 import * as routes from '../routes';
 
-// Mock all dependencies
 jest.mock('fastify');
 jest.mock('@fastify/cors');
 jest.mock('../services');
@@ -35,10 +34,8 @@ describe('Server', () => {
   let mockListen: jest.Mock;
 
   beforeEach(() => {
-    // Reset all mocks
     jest.clearAllMocks();
 
-    // Mock Fastify instance
     mockRegister = jest.fn();
     mockListen = jest.fn();
     mockFastify = {
@@ -49,7 +46,6 @@ describe('Server', () => {
 
     (Fastify as unknown as jest.Mock).mockReturnValue(mockFastify);
 
-    // Mock service constructors
     (DynamoDBService as unknown as jest.Mock).mockImplementation(() => ({
       getAllData: jest.fn(),
       createEntityChange: jest.fn(),
@@ -72,7 +68,6 @@ describe('Server', () => {
       })
     );
 
-    // Mock plugin and routes
     (websocketPlugin as jest.Mock).mockImplementation(() => ({}));
     (routes.default as jest.Mock).mockImplementation(() => ({}));
   });
@@ -240,13 +235,8 @@ describe('Server', () => {
 
       const registerCalls = mockRegister.mock.calls;
 
-      // First call should be CORS
       expect(registerCalls[0][0]).toBe(cors);
-
-      // Second call should be websocket plugin
       expect(registerCalls[1][0]).toBe(websocketPlugin);
-
-      // Third call should be routes
       expect(registerCalls[2][0]).toBe(routes.default);
     });
 

@@ -1,6 +1,8 @@
 // Property change frequency configuration
+
 export const PROPERTY_CHANGE_FREQUENCIES: Record<string, number> = {
   // System properties
+
   cpu_usage: 0.8,
   memory_usage: 0.6,
   network_connections: 0.9,
@@ -8,6 +10,7 @@ export const PROPERTY_CHANGE_FREQUENCIES: Record<string, number> = {
   response_time: 0.7,
 
   // AI Agent properties
+
   confidence_score: 0.5,
   active_requests: 0.8,
   model_version: 0.01,
@@ -24,6 +27,7 @@ export const PROPERTY_CHANGE_FREQUENCIES: Record<string, number> = {
   mitigation_status: 0.08,
 
   // Network Node properties
+
   bandwidth_usage: 0.7,
   connection_count: 0.8,
   latency: 0.6,
@@ -32,6 +36,7 @@ export const PROPERTY_CHANGE_FREQUENCIES: Record<string, number> = {
   routing_status: 0.03,
 
   // User properties
+
   login_count: 0.2,
   last_activity: 0.3,
   session_duration: 0.4,
@@ -39,12 +44,14 @@ export const PROPERTY_CHANGE_FREQUENCIES: Record<string, number> = {
   failed_login_attempts: 0.1,
 
   // Sensor properties
+
   temperature: 0.6,
   humidity: 0.4,
   battery: 0.1,
 };
 
 // Entity type property mappings
+
 export const ENTITY_TYPE_PROPERTIES: Record<string, string[]> = {
   System: [
     'cpu_usage',
@@ -106,6 +113,7 @@ export const ENTITY_TYPE_PROPERTIES: Record<string, string[]> = {
 };
 
 // Value generator configurations
+
 export const STATUS_VALUES = {
   AI_AGENT: ['online', 'away', 'offline', 'busy'],
   DEFAULT: [
@@ -147,6 +155,7 @@ export const STATUS_VALUES = {
 } as const;
 
 // Value ranges for numeric properties
+
 export const VALUE_RANGES = {
   CPU_USAGE: { min: 10, max: 95 },
   MEMORY_USAGE: { min: 20, max: 90 },
