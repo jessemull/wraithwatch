@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './dist/index.js',
+  entry: './dist/src/index.js',
   target: 'node',
   mode: 'production',
   output: {
