@@ -6,8 +6,6 @@ Parameters:
     Description: 'S3 key for the lambda deployment package'
 
 Resources:
-
-
   WraithwatchLambdaAtEdgeFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -20,7 +18,7 @@ Resources:
         S3Bucket:
           Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
         S3Key: !Ref S3Key
-      Timeout: 30
+      Timeout: 5
       MemorySize: 128
 
 Outputs:
