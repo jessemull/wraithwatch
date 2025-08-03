@@ -1,7 +1,7 @@
-import { CloudFrontRequest, CloudFrontRequestEvent } from "aws-lambda";
-import { handler } from "./index";
+import { CloudFrontRequest, CloudFrontRequestEvent } from 'aws-lambda';
+import { handler } from './index';
 
-const getMockEvent = (uri = "/admin", cookie?: string) =>
+const getMockEvent = (uri = '/admin', cookie?: string) =>
   ({
     Records: [
       {
@@ -15,7 +15,7 @@ const getMockEvent = (uri = "/admin", cookie?: string) =>
     ],
   }) as unknown as CloudFrontRequestEvent;
 
-describe("WraithWatch Lambda@Edge Handler", () => {
+describe('WraithWatch Lambda@Edge Handler', () => {
   let originalConsoleError: typeof console.error;
 
   beforeEach(() => {
@@ -28,42 +28,42 @@ describe("WraithWatch Lambda@Edge Handler", () => {
     console.error = originalConsoleError;
   });
 
-  it("should return the request for URIs", async () => {
-    const event = getMockEvent("/");
+  it('should return the request for URIs', async () => {
+    const event = getMockEvent('/');
     const result = await handler(event);
     expect(result).toEqual(event.Records[0].cf.request);
   });
 
-  it("should normalize and append .html if no extension", async () => {
-    const event = getMockEvent("/about");
+  it('should normalize and append .html if no extension', async () => {
+    const event = getMockEvent('/about');
     const result = (await handler(event)) as CloudFrontRequest;
-    expect(result?.uri).toBe("/about.html");
+    expect(result?.uri).toBe('/about.html');
   });
 
-  it("should preserve query string when adding .html", async () => {
-    const event = getMockEvent("/about?foo=bar");
+  it('should preserve query string when adding .html', async () => {
+    const event = getMockEvent('/about?foo=bar');
     const result = (await handler(event)) as CloudFrontRequest;
-    expect(result?.uri).toBe("/about.html?foo=bar");
+    expect(result?.uri).toBe('/about.html?foo=bar');
   });
 
-  it("should handle uri with trailing slashes", async () => {
-    const event = getMockEvent("/about////");
+  it('should handle uri with trailing slashes', async () => {
+    const event = getMockEvent('/about////');
     const result = (await handler(event)) as CloudFrontRequest;
-    expect(result?.uri).toBe("/about.html");
+    expect(result?.uri).toBe('/about.html');
   });
 });
 
-describe("Redirect logic for canonical domain", () => {
+describe('Redirect logic for canonical domain', () => {
   const getEventWithHost = (
     uri: string,
     host: string,
     proto?: string,
-    querystring?: string,
+    querystring?: string
   ) => {
     const headers: Record<string, Array<{ value: string }>> = {
       host: [{ value: host }],
     };
-    if (proto) headers["cloudfront-forwarded-proto"] = [{ value: proto }];
+    if (proto) headers['cloudfront-forwarded-proto'] = [{ value: proto }];
     return {
       Records: [
         {
@@ -71,7 +71,7 @@ describe("Redirect logic for canonical domain", () => {
             request: {
               uri,
               headers,
-              querystring: querystring || "",
+              querystring: querystring || '',
             },
           },
         },
@@ -79,89 +79,89 @@ describe("Redirect logic for canonical domain", () => {
     } as unknown as CloudFrontRequestEvent;
   };
 
-  it("redirects root path from wraithwatch-demo.com to www.wraithwatch-demo.com", async () => {
-    const event = getEventWithHost("/", "wraithwatch-demo.com");
+  it('redirects root path from wraithwatch-demo.com to www.wraithwatch-demo.com', async () => {
+    const event = getEventWithHost('/', 'wraithwatch-demo.com');
     const result = await handler(event);
     expect(result).toMatchObject({
-      status: "301",
+      status: '301',
       headers: {
         location: [
           {
-            key: "Location",
-            value: "https://www.wraithwatch-demo.com/",
+            key: 'Location',
+            value: 'https://www.wraithwatch-demo.com/',
           },
         ],
       },
     });
   });
 
-  it("redirects subpage from wraithwatch-demo.com to www.wraithwatch-demo.com with .html", async () => {
-    const event = getEventWithHost("/about", "wraithwatch-demo.com");
+  it('redirects subpage from wraithwatch-demo.com to www.wraithwatch-demo.com with .html', async () => {
+    const event = getEventWithHost('/about', 'wraithwatch-demo.com');
     const result = await handler(event);
     expect(result).toMatchObject({
-      status: "301",
+      status: '301',
       headers: {
         location: [
           {
-            key: "Location",
-            value: "https://www.wraithwatch-demo.com/about.html",
+            key: 'Location',
+            value: 'https://www.wraithwatch-demo.com/about.html',
           },
         ],
       },
     });
   });
 
-  it("redirects with query string preserved", async () => {
+  it('redirects with query string preserved', async () => {
     const event = getEventWithHost(
-      "/about",
-      "wraithwatch-demo.com",
+      '/about',
+      'wraithwatch-demo.com',
       undefined,
-      "foo=bar",
+      'foo=bar'
     );
     const result = await handler(event);
     expect(result).toMatchObject({
-      status: "301",
+      status: '301',
       headers: {
         location: [
           {
-            key: "Location",
-            value: "https://www.wraithwatch-demo.com/about.html?foo=bar",
+            key: 'Location',
+            value: 'https://www.wraithwatch-demo.com/about.html?foo=bar',
           },
         ],
       },
     });
   });
 
-  it("redirects with protocol from cloudfront-forwarded-proto header", async () => {
-    const event = getEventWithHost("/about", "wraithwatch-demo.com", "http");
+  it('redirects with protocol from cloudfront-forwarded-proto header', async () => {
+    const event = getEventWithHost('/about', 'wraithwatch-demo.com', 'http');
     const result = await handler(event);
     expect(result).toMatchObject({
-      status: "301",
+      status: '301',
       headers: {
         location: [
           {
-            key: "Location",
-            value: "http://www.wraithwatch-demo.com/about.html",
+            key: 'Location',
+            value: 'http://www.wraithwatch-demo.com/about.html',
           },
         ],
       },
     });
   });
 
-  it("does not redirect for www.wraithwatch-demo.com", async () => {
-    const event = getEventWithHost("/about", "www.wraithwatch-demo.com");
+  it('does not redirect for www.wraithwatch-demo.com', async () => {
+    const event = getEventWithHost('/about', 'www.wraithwatch-demo.com');
     const result = await handler(event);
-    expect(result).not.toHaveProperty("status", "301");
-    expect((result as CloudFrontRequest).uri).toBe("/about.html");
+    expect(result).not.toHaveProperty('status', '301');
+    expect((result as CloudFrontRequest).uri).toBe('/about.html');
   });
 
-  it("redirects with default headers object when headers is undefined", async () => {
+  it('redirects with default headers object when headers is undefined', async () => {
     const event = {
       Records: [
         {
           cf: {
             request: {
-              uri: "/about",
+              uri: '/about',
               // No headers property...
             },
           },
@@ -170,17 +170,17 @@ describe("Redirect logic for canonical domain", () => {
     } as unknown as CloudFrontRequestEvent;
 
     const result = await handler(event);
-    expect((result as CloudFrontRequest).uri).toBe("/about.html");
+    expect((result as CloudFrontRequest).uri).toBe('/about.html');
   });
 
-  it("redirects with default requestPath when request.uri is undefined", async () => {
+  it('redirects with default requestPath when request.uri is undefined', async () => {
     const event = {
       Records: [
         {
           cf: {
             request: {
               // No uri property...
-              headers: { host: [{ value: "wraithwatch-demo.com" }] },
+              headers: { host: [{ value: 'wraithwatch-demo.com' }] },
             },
           },
         },
@@ -188,26 +188,26 @@ describe("Redirect logic for canonical domain", () => {
     } as unknown as CloudFrontRequestEvent;
     const result = await handler(event);
     expect(result).toMatchObject({
-      status: "301",
+      status: '301',
       headers: {
         location: [
           {
-            key: "Location",
-            value: "https://www.wraithwatch-demo.com/",
+            key: 'Location',
+            value: 'https://www.wraithwatch-demo.com/',
           },
         ],
       },
     });
   });
 
-  it("redirects with .html only if hasExtension is false, otherwise uses normalizedUri (hasExtension true)", async () => {
+  it('redirects with .html only if hasExtension is false, otherwise uses normalizedUri (hasExtension true)', async () => {
     const event = {
       Records: [
         {
           cf: {
             request: {
-              uri: "/robots.txt",
-              headers: { host: [{ value: "wraithwatch-demo.com" }] },
+              uri: '/robots.txt',
+              headers: { host: [{ value: 'wraithwatch-demo.com' }] },
             },
           },
         },
@@ -215,12 +215,12 @@ describe("Redirect logic for canonical domain", () => {
     } as unknown as CloudFrontRequestEvent;
     const result = await handler(event);
     expect(result).toMatchObject({
-      status: "301",
+      status: '301',
       headers: {
         location: [
           {
-            key: "Location",
-            value: "https://www.wraithwatch-demo.com/robots.txt",
+            key: 'Location',
+            value: 'https://www.wraithwatch-demo.com/robots.txt',
           },
         ],
       },

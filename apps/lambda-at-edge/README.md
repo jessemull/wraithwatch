@@ -143,4 +143,4 @@ apps/lambda-at-edge/
 
 ## License
 
-This project is part of the WraithWatch application suite. 
+This project is part of the WraithWatch application suite.

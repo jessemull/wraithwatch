@@ -6,7 +6,7 @@ Parameters:
     Type: String
     Description: 'Domain name for the website (e.g., www.wraithwatch-demo.com)'
     Default: 'www.wraithwatch-demo.com'
-  
+
   RootDomainName:
     Type: String
     Description: 'Root domain name (e.g., wraithwatch-demo.com)'

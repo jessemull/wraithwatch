@@ -11,7 +11,7 @@ on:
         options:
           - dev
           - prod
-  
+
 jobs:
   deploy-lambda:
     name: Deploy Lambda At Edge
@@ -73,14 +73,14 @@ jobs:
           ARTIFACT_NAME="wraithwatch-lambda-at-edge-${VERSION}-${COMMIT_HASH}-${TIMESTAMP}.zip"
           echo "Artifact: $ARTIFACT_NAME"
           echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
-          
+
       - name: Upload Lambda to S3
         run: |
           cd apps/lambda-at-edge
           S3_BUCKET="wraithwatch-lambda-at-edge-${{ github.event.inputs.environment }}"
           aws s3 cp "dist/wraithwatch-lambda-at-edge.zip" s3://${S3_BUCKET}/wraithwatch-lambda-at-edge/${ARTIFACT_NAME} --region us-east-1
 
-      - name: Check Change Set Update/Create 
+      - name: Check Change Set Update/Create
         id: change_set_type
         run: |
           ENVIRONMENT="${{ github.event.inputs.environment }}"
@@ -191,7 +191,7 @@ jobs:
             echo "Checking status..."
             sleep 10
           done
-      
+
       - name: Prune Backups
         run: |
           S3_BUCKET="wraithwatch-lambda-at-edge-${{ github.event.inputs.environment }}"
@@ -204,4 +204,4 @@ jobs:
             done
           else
             echo "Less than 5 objects found, no pruning needed..."
-          fi 
+          fi

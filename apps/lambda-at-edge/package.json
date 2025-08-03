@@ -71,4 +71,4 @@
     "test:watch": "jest --watch"
   },
   "version": "1.0.0"
-} 
+}

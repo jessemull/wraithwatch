@@ -3,8 +3,8 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   Environment:
     Type: String
-    Default: "dev"
-    Description: "The environment for the deployment (dev or prod)"
+    Default: 'dev'
+    Description: 'The environment for the deployment (dev or prod)'
     AllowedValues:
       - dev
       - prod
@@ -14,7 +14,7 @@ Resources:
   WraithwatchLambdaAtEdgeExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "wraithwatch-lambda-at-edge-role-${Environment}"
+      RoleName: !Sub 'wraithwatch-lambda-at-edge-role-${Environment}'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -29,24 +29,24 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: "Allow"
+              - Effect: 'Allow'
                 Action:
-                  - "s3:GetObject"
+                  - 's3:GetObject'
                 Resource:
                   - Fn::Sub:
-                      - "arn:aws:s3:::${BucketName}/*"
+                      - 'arn:aws:s3:::${BucketName}/*'
                       - BucketName:
-                          Fn::ImportValue: !Sub "WraithwatchLambdaAtEdgeBucketName-${Environment}"
+                          Fn::ImportValue: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}'
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: "arn:aws:logs:*:*:*"
+                Resource: 'arn:aws:logs:*:*:*'
 
 Outputs:
   WraithwatchLambdaAtEdgeExecutionRoleArn:
     Value: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
-    Description: "Lambda execution role ARN"
+    Description: 'Lambda execution role ARN'
     Export:
-      Name: !Sub "WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}" 
+      Name: !Sub 'WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}'

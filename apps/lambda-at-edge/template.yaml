@@ -1,9 +1,9 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
   Environment:
     Type: String
-    Description: "The environment for the deployment (dev or prod)"
+    Description: 'The environment for the deployment (dev or prod)'
     AllowedValues:
       - dev
       - prod
@@ -17,18 +17,18 @@ Resources:
   WraithwatchLambdaAtEdgeFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub "wraithwatch-lambda-at-edge-${Environment}"
+      FunctionName: !Sub 'wraithwatch-lambda-at-edge-${Environment}'
       Runtime: nodejs20.x
       Role:
-        Fn::ImportValue: !Sub "WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}"
+        Fn::ImportValue: !Sub 'WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}'
       Handler: index.handler
       Code:
         S3Bucket:
-          Fn::ImportValue: !Sub "WraithwatchLambdaAtEdgeBucketName-${Environment}"
+          Fn::ImportValue: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}'
         S3Key: !Ref S3Key
       Timeout: 5
       MemorySize: 128
-      
+
   MyLambdaVersion:
     Type: AWS::Lambda::Version
     Properties:
@@ -36,7 +36,7 @@ Resources:
 
 Outputs:
   WraithwatchLambdaAtEdgeFunctionArn:
-    Description: "ARN of the Lambda@Edge function"
+    Description: 'ARN of the Lambda@Edge function'
     Value: !Ref MyLambdaVersion
     Export:
-      Name: !Sub "WraithwatchLambdaAtEdgeFunctionArn-${Environment}" 
+      Name: !Sub 'WraithwatchLambdaAtEdgeFunctionArn-${Environment}'
