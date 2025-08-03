@@ -80,7 +80,7 @@ The Wraithwatch ChatBot provides an intelligent interface for security analysts 
 2. **Set environment variables**
    ```bash
    # Edit .env with environment variables (see below)
-   cp .env.example .env
+   touch .env
    ```
 
 3. **Build the application**
@@ -115,7 +115,7 @@ apps/chat-bot/
 
 ### Chat Endpoint
 ```http
-POST /chat
+POST https://api.chat.wraithwatch-demo.com/api/chat
 ```
 
 **Request Body:**
@@ -142,7 +142,7 @@ POST /chat
 
 ### Health Check
 ```http
-GET /health
+GET https://api.chat.wraithwatch-demo.com/api/health
 ```
 
 **Response:**
@@ -154,12 +154,6 @@ GET /health
   "requestId": "request-123"
 }
 ```
-
-### Chat Endpoints
-- **POST /chat**: Main chat endpoint
-- **GET /health**: Health check endpoint
-- **Error Responses**: Standard error handling
-- **Rate Limiting**: Request rate limitations
 
 ## Development
 
@@ -196,39 +190,20 @@ TEMPERATURE=0.7
 
 ### Development Workflow
 
-1. **Set up local development**
-   ```bash
-   yarn dev
-   ```
-
-2. **Run tests**
+1. **Run tests**
    ```bash
    yarn test
    ```
 
-3. **Check code quality**
+2. **Check code quality**
    ```bash
-   yarn lint
+   yarn lint:fix
    ```
 
-4. **Build for production**
+3. **Build for production**
    ```bash
    yarn build
    ```
-
-## Testing Strategy
-
-### Unit Testing
-- **Jest**: Test runner and assertion library
-- **Lambda Testing**: AWS Lambda function testing
-- **Mocking**: Claude API and AWS service mocking
-- **Coverage**: 70%+ threshold enforced
-
-### Integration Testing
-- **API Testing**: Endpoint integration testing
-- **AI Testing**: Claude API integration testing
-- **Error Testing**: Error scenario testing
-- **Performance Testing**: Response time testing
 
 ## Deployment
 
@@ -250,29 +225,13 @@ The chatbot is deployed via GitHub Actions workflow and AWS CloudFormation:
    - Configure API Gateway integration
    - Set environment variables
 
-### Infrastructure Components
+## Infrastructure Components
 
 - **Lambda Function**: `wraithwatch-chat-bot` with 30-second timeout
 - **API Gateway**: REST API with CORS support
 - **S3 Bucket**: `wraithwatch-chat-bot` for deployment artifacts
 - **CloudFormation**: Stack management and versioning
 - **IAM Roles**: Execution permissions for Lambda
-
-### Environment Configuration
-
-```bash
-# Production
-NODE_ENV=production
-CLAUDE_API_KEY=your_production_api_key
-AWS_REGION=us-east-1
-MAX_TOKENS=4000
-
-# Development
-NODE_ENV=development
-CLAUDE_API_KEY=your_development_api_key
-AWS_REGION=us-east-1
-MAX_TOKENS=2000
-```
 
 ## Performance Optimization
 
@@ -351,6 +310,7 @@ MAX_TOKENS=2000
 ### Technical Implementation
 ```typescript
 // Example: Enhanced handler with entity context
+
 interface ChatRequest {
   message: string;
   sessionId: string;
@@ -362,18 +322,13 @@ interface ChatRequest {
 }
 
 // Enhanced Claude prompt with entity context
+
 const buildPrompt = (message: string, entityContext?: any) => {
   const basePrompt = "You are a cybersecurity analyst assistant...";
   const entityInfo = entityContext ? `\nEntity Context: ${JSON.stringify(entityContext)}` : "";
   return `${basePrompt}${entityInfo}\n\nUser: ${message}`;
 };
 ```
-
-### Security Insights Features
-- **Trend Analysis**: Implement time-series analysis of threat data
-- **Anomaly Detection**: Use statistical models to identify unusual patterns
-- **Compliance Checking**: Validate security posture against compliance frameworks
-- **Best Practices**: Provide recommendations based on industry standards
 
 ---
 
