@@ -57,6 +57,20 @@ jest.mock('../../../../constants/visualization', () => ({
   },
 }));
 describe('NetworkScene', () => {
+  let originalError: typeof console.error;
+  let originalWarn: typeof console.warn;
+
+  beforeAll(() => {
+    originalError = console.error;
+    originalWarn = console.warn;
+    console.error = jest.fn();
+    console.warn = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
+    console.warn = originalWarn;
+  });
   const mockEntities = [
     {
       id: 'ai-1',

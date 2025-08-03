@@ -15,7 +15,7 @@ export const useRealTimeData = () => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [positions, setPositions] = useState<EntityPosition[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);

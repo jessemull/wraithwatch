@@ -22,7 +22,7 @@ export const DataParticle: React.FC<DataParticleProps> = ({
         color={color}
         emissive={color}
         emissiveIntensity={0.8 + pulse * 0.4}
-        transparent="true"
+        transparent={true}
         opacity={0.7 + pulse * 0.3}
       />
     </mesh>

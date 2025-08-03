@@ -43,12 +43,26 @@ jest.mock('../../../../constants/visualization', () => ({
     },
     particleMaterial: {
       emissiveIntensity: 0.8,
-      transparent: 'true',
+      transparent: true,
       opacity: 0.7,
     },
   },
 }));
 describe('ConnectionParticle', () => {
+  let originalError: typeof console.error;
+  let originalWarn: typeof console.warn;
+
+  beforeAll(() => {
+    originalError = console.error;
+    originalWarn = console.warn;
+    console.error = jest.fn();
+    console.warn = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
+    console.warn = originalWarn;
+  });
   it('renders ConnectionParticle with group and particles', () => {
     const start: [number, number, number] = [0, 0, 0];
     const end: [number, number, number] = [1, 1, 1];

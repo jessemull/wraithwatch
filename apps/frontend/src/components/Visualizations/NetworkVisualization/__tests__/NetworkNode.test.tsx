@@ -61,6 +61,20 @@ jest.mock('../../../../constants/visualization', () => ({
   },
 }));
 describe('NetworkNode', () => {
+  let originalError: typeof console.error;
+  let originalWarn: typeof console.warn;
+
+  beforeAll(() => {
+    originalError = console.error;
+    originalWarn = console.warn;
+    console.error = jest.fn();
+    console.warn = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
+    console.warn = originalWarn;
+  });
   const mockEntity = {
     id: 'entity-1',
     name: 'Test Entity',

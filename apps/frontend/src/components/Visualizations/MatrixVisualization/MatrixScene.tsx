@@ -27,7 +27,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
         <boxGeometry args={[12, 0.05, 8]} />
         <meshStandardMaterial
           color="#333333"
-          transparent="true"
+          transparent={true}
           opacity={0.2}
         />
       </mesh>
@@ -36,7 +36,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           <boxGeometry args={[12, 0.02, 0.02]} />
           <meshStandardMaterial
             color="#444444"
-            transparent="true"
+            transparent={true}
             opacity={0.3}
           />
         </mesh>
@@ -46,7 +46,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           <boxGeometry args={[0.02, 8, 0.02]} />
           <meshStandardMaterial
             color="#444444"
-            transparent="true"
+            transparent={true}
             opacity={0.3}
           />
         </mesh>

@@ -183,7 +183,7 @@ describe('useRealTimeData', () => {
       ok: true,
       json: async () => mockData,
     });
-    const mockWebSocket: any = {
+    const mockWebSocket = {
       close: jest.fn(),
       send: jest.fn(),
       onopen: null,

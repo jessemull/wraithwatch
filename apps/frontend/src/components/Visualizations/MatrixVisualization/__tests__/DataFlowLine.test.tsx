@@ -2,6 +2,20 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { DataFlowLine } from '../DataFlowLine';
 describe('DataFlowLine', () => {
+  let originalError: typeof console.error;
+  let originalWarn: typeof console.warn;
+
+  beforeAll(() => {
+    originalError = console.error;
+    originalWarn = console.warn;
+    console.error = jest.fn();
+    console.warn = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
+    console.warn = originalWarn;
+  });
   it('renders DataFlowLine with mesh', () => {
     const start: [number, number, number] = [0, 0, 0];
     const end: [number, number, number] = [1, 1, 1];

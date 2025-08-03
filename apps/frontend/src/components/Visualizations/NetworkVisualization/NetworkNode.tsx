@@ -79,7 +79,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           />
           <meshStandardMaterial
             color={NETWORK_NODE_CONFIG.entityColors.Threat}
-            transparent="true"
+            transparent={true}
             opacity={0.3}
             emissive={NETWORK_NODE_CONFIG.entityColors.Threat}
             emissiveIntensity={0.2}
@@ -95,7 +95,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
           />
           <meshStandardMaterial
             color={NETWORK_NODE_CONFIG.entityColors.Threat}
-            transparent="true"
+            transparent={true}
             opacity={0.2}
             emissive={NETWORK_NODE_CONFIG.entityColors.Threat}
             emissiveIntensity={0.1}
