@@ -1,20 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Parameters:
-  Environment:
-    Type: String
-    Default: 'dev'
-    Description: 'The environment for the deployment (dev or prod)'
-    AllowedValues:
-      - dev
-      - prod
-    ConstraintDescription: "Must be either 'dev' or 'prod'."
-
 Resources:
   WraithwatchLambdaAtEdgeExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'wraithwatch-lambda-at-edge-role-${Environment}'
+      RoleName: 'wraithwatch-lambda-at-edge-role'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -36,7 +26,7 @@ Resources:
                   - Fn::Sub:
                       - 'arn:aws:s3:::${BucketName}/*'
                       - BucketName:
-                          Fn::ImportValue: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}'
+                          Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -49,4 +39,4 @@ Outputs:
     Value: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
     Description: 'Lambda execution role ARN'
     Export:
-      Name: !Sub 'WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}'
+      Name: 'WraithwatchLambdaAtEdgeExecutionRoleArn'

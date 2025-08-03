@@ -1,14 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-  Environment:
-    Type: String
-    Default: 'dev'
-    Description: 'The environment for the deployment (dev or prod)'
-    AllowedValues:
-      - dev
-      - prod
-    ConstraintDescription: "Must be either 'dev' or 'prod'."
   S3Key:
     Type: String
     Description: 'S3 key for the lambda deployment package'
@@ -21,12 +13,12 @@ Resources:
   WraithwatchLambdaAtEdgeBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${WraithwatchLambdaAtEdgeBucketName}-${Environment}'
+      BucketName: !Ref WraithwatchLambdaAtEdgeBucketName
 
   WraithwatchLambdaAtEdgeExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'wraithwatch-lambda-at-edge-role-${Environment}'
+      RoleName: 'wraithwatch-lambda-at-edge-role'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -56,8 +48,8 @@ Resources:
   WraithwatchLambdaAtEdgeFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub 'wraithwatch-lambda-at-edge-${Environment}'
-      Runtime: nodejs18.x
+      FunctionName: 'wraithwatch-lambda-at-edge'
+      Runtime: nodejs20.x
       Handler: index.handler
       Role: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
       Code:
@@ -65,17 +57,14 @@ Resources:
         S3Key: !Ref S3Key
       Timeout: 30
       MemorySize: 128
-      Environment:
-        Variables:
-          ENVIRONMENT: !Ref Environment
 
 Outputs:
   WraithwatchLambdaAtEdgeFunctionArn:
     Value: !GetAtt WraithwatchLambdaAtEdgeFunction.Arn
     Description: 'Lambda function ARN'
     Export:
-      Name: !Sub 'WraithwatchLambdaAtEdgeFunctionArn-${Environment}'
+      Name: 'WraithwatchLambdaAtEdgeFunctionArn'
   WraithwatchLambdaAtEdgeBucketName:
     Value: !Ref WraithwatchLambdaAtEdgeBucket
     Export:
-      Name: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}'
+      Name: 'WraithwatchLambdaAtEdgeBucketName'

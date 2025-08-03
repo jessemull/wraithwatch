@@ -1,14 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-  Environment:
-    Type: String
-    Default: 'dev'
-    Description: 'The environment for the deployment (dev or prod)'
-    AllowedValues:
-      - dev
-      - prod
-    ConstraintDescription: "Must be either 'dev' or 'prod'."
   WraithwatchLambdaAtEdgeBucketName:
     Type: String
     Default: 'wraithwatch-lambda-at-edge'
@@ -18,10 +10,10 @@ Resources:
   WraithwatchLambdaAtEdgeBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${WraithwatchLambdaAtEdgeBucketName}-${Environment}'
+      BucketName: !Ref WraithwatchLambdaAtEdgeBucketName
 
 Outputs:
   WraithwatchLambdaAtEdgeBucketName:
     Value: !Ref WraithwatchLambdaAtEdgeBucket
     Export:
-      Name: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}'
+      Name: 'WraithwatchLambdaAtEdgeBucketName'

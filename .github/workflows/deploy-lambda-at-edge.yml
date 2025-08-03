@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload Lambda to S3
         run: |
-          S3_BUCKET="wraithwatch-lambda-at-edge-dev"
+          S3_BUCKET="wraithwatch-lambda-at-edge"
           aws s3 cp "apps/lambda-at-edge/dist/wraithwatch-lambda-at-edge.zip" s3://${S3_BUCKET}/wraithwatch-lambda-at-edge/${ARTIFACT_NAME} --region us-east-1
 
       - name: Check Change Set Update/Create
@@ -101,7 +101,6 @@ jobs:
             --template-body file://$TEMPLATE_FILE \
             --parameters \
               "ParameterKey=S3Key,ParameterValue=wraithwatch-lambda-at-edge/${ARTIFACT_NAME}" \
-              "ParameterKey=Environment,ParameterValue=dev" \
             --change-set-name $CHANGE_SET_NAME \
             --capabilities CAPABILITY_NAMED_IAM
 
