@@ -17,6 +17,7 @@ A high-performance WebSocket server built with Fastify and TypeScript, designed 
 - [Performance Optimization](#performance-optimization)
 - [Monitoring & Logging](#monitoring--logging)
 - [Security](#security)
+- [Future Improvements](#future-improvements)
 
 ## Overview
 
@@ -366,28 +367,6 @@ The Realtime API is deployed via GitHub Actions workflow and AWS ECS Fargate:
    - Update load balancer
    - Set environment variables
 
-### Deployment Steps
-
-1. **Trigger Deployment**
-   ```bash
-   # Go to GitHub Actions and trigger "Deploy WebSocket Server" workflow
-   ```
-
-2. **Monitor Deployment**
-   - Watch ECS service updates
-   - Check task definition changes
-   - Verify load balancer health
-   - Monitor CloudWatch logs
-
-3. **Verify Deployment**
-   ```bash
-   # Test health endpoint
-   curl https://api.wraithwatch-demo.com/health
-   
-   # Test WebSocket connection
-   wscat -c wss://api.wraithwatch-demo.com/ws
-   ```
-
 ## Infrastructure Components
 
 - **ECS Fargate**: Container orchestration with auto-scaling
@@ -462,6 +441,41 @@ The Realtime API is deployed via GitHub Actions workflow and AWS ECS Fargate:
 - **Image Scanning**: Container image security scanning
 - **Secrets Management**: Environment variable security
 - **Network Isolation**: Container network isolation
+
+## Future Improvements
+
+### Data Pipeline & Streaming
+- **Real Streaming Integration**: Replace mock data with actual AWS Kinesis, Apache Kafka, or Apache Pulsar
+- **Data Ingestion**: Real-time data ingestion from multiple sources (logs, metrics, alerts)
+- **Stream Processing**: Apache Flink or AWS Kinesis Data Analytics for real-time processing
+- **Data Quality**: Schema validation, data cleansing, and anomaly detection
+
+### Aggregation & Storage
+- **Pre-computed Aggregations**: Store aggregated metrics in DynamoDB instead of runtime calculation
+- **Time-series Database**: InfluxDB or TimescaleDB for historical data
+- **Data Warehousing**: Amazon Redshift or Snowflake for analytics
+- **Caching Strategy**: Redis for high-frequency data, multi-layer caching
+
+### Scalability & Performance
+- **Horizontal Scaling**: Auto-scaling ECS services based on load
+- **Load Balancing**: Application Load Balancer with WebSocket support
+- **Database Sharding**: Partition data across multiple DynamoDB tables
+- **CDN Integration**: CloudFront for global content delivery
+- **Connection Pooling**: Efficient WebSocket connection management
+
+### Security & Compliance
+- **Authentication**: JWT tokens, OAuth2, or AWS Cognito
+- **Authorization**: Role-based access control (RBAC)
+- **Data Encryption**: At-rest and in-transit encryption
+- **Audit Logging**: Comprehensive audit trails
+- **Compliance**: SOC2, GDPR, HIPAA compliance features
+
+### Monitoring & Observability
+- **Distributed Tracing**: AWS X-Ray or Jaeger for request tracing
+- **Metrics Collection**: Prometheus, CloudWatch, or DataDog
+- **Alerting**: Real-time alerts for anomalies and failures
+- **Health Checks**: Comprehensive health monitoring
+- **Performance Monitoring**: APM tools for performance insights
 
 ---
 

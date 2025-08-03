@@ -56,6 +56,8 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
 ### Development Tools
 - **Jest**: Testing framework
 - **ESLint**: Code linting
+
+### CI/CD
 - **Webpack**: Bundle optimization
 - **GitHub Actions**: Deployment workflows
 
@@ -212,27 +214,6 @@ The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFo
    - Deploy Lambda function with new version
    - Associate with CloudFront distribution
    - Set environment variables
-
-### Deployment Steps
-
-1. **Trigger Deployment**
-   ```bash
-   # Go to GitHub Actions and trigger "Deploy Lambda at Edge" workflow
-   ```
-
-2. **Monitor Deployment**
-   - Watch CloudFormation stack updates
-   - Check Lambda function version creation
-   - Verify CloudFront association
-
-3. **Verify Deployment**
-   ```bash
-   # Test domain redirect
-   curl -I https://wraithwatch-demo.com
-   
-   # Test URL normalization
-   curl -I https://www.wraithwatch-demo.com/about
-   ```
 
 ## Infrastructure Components
 
