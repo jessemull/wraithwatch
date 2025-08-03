@@ -7,11 +7,6 @@ Parameters:
     Description: 'Domain name for the website (e.g., www.wraithwatch-demo.com)'
     Default: 'www.wraithwatch-demo.com'
 
-  RootDomainName:
-    Type: String
-    Description: 'Root domain name (e.g., wraithwatch-demo.com)'
-    Default: 'wraithwatch-demo.com'
-
   CertificateArn:
     Type: String
     Description: 'ARN of the SSL certificate for the domain'
@@ -62,12 +57,12 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
-        Comment: !Sub 'CloudFront distribution for ${DomainName} and ${RootDomainName}'
+        Comment: !Sub 'CloudFront distribution for ${DomainName}'
         Enabled: true
         DefaultRootObject: index.html
         Aliases: !If
           - HasCustomDomain
-          - [!Ref DomainName, !Ref RootDomainName]
+          - [!Ref DomainName]
           - !Ref AWS::NoValue
         Origins:
           - Id: S3Origin
