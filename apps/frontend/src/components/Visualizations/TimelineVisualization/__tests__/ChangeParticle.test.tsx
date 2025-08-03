@@ -2,16 +2,9 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ChangeParticle } from '../ChangeParticle';
 
-// Mock Three.js components
-jest.mock('@react-three/fiber', () => ({
-  useFrame: jest.fn(),
-}));
-
-describe('ChangeParticle (NetworkVisualization)', () => {
+describe('ChangeParticle (TimelineVisualization)', () => {
   it('renders mesh at the given position', () => {
-    const { container } = render(
-      <ChangeParticle position={[1, 2, 3]} change={{} as any} />
-    );
+    const { container } = render(<ChangeParticle position={[4, 5, 6]} />);
     // Should render a mesh element
     expect(container.querySelector('mesh')).toBeInTheDocument();
     // Should render a sphereGeometry element
