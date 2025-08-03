@@ -25,6 +25,54 @@ export default [
     ],
   },
 
+  // Config files (Node.js environment)
+  {
+    files: [
+      'apps/frontend/.lighthouserc.js',
+      'apps/frontend/cypress.config.js',
+      'apps/frontend/next-sitemap.config.js',
+    ],
+    languageOptions: {
+      globals: {
+        process: true,
+        module: true,
+        require: true,
+        __dirname: true,
+        __filename: true,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'error',
+      'no-var': 'error',
+    },
+  },
+
+  // Cypress test files
+  {
+    files: ['apps/frontend/cypress/**/*.{js,ts}'],
+    languageOptions: {
+      globals: {
+        describe: true,
+        it: true,
+        cy: true,
+        Cypress: true,
+        expect: true,
+        beforeEach: true,
+        afterEach: true,
+        before: true,
+        after: true,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'error',
+      'no-var': 'error',
+    },
+  },
+
   // Frontend (Next.js) overrides...
 
   {

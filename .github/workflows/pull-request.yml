@@ -52,18 +52,37 @@ jobs:
         run: |
           yarn workspace @wraithwatch/realtime-api test
 
-      - name: Upload Coverage Report
+      - name: Run Frontend Tests
+        run: |
+          yarn workspace @wraithwatch/frontend test
+
+      - name: Upload Backend Coverage Report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: backend-coverage-report
           path: apps/realtime-api/coverage
           retention-days: 7
 
-      - name: Coverage Threshold Check
+      - name: Upload Frontend Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: apps/frontend/coverage
+          retention-days: 7
+
+      - name: Backend Coverage Threshold Check
         run: |
           cd apps/realtime-api
           if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 70 ]]; then
-            echo "Code coverage is below threshold. Please update test coverage and try again."
+            echo "Backend code coverage is below threshold. Please update test coverage and try again."
+            exit 1
+          fi
+
+      - name: Frontend Coverage Threshold Check
+        run: |
+          cd apps/frontend
+          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 70 ]]; then
+            echo "Frontend code coverage is below threshold. Please update test coverage and try again."
             exit 1
           fi
 
@@ -89,6 +108,48 @@ jobs:
         run: |
           yarn workspace @wraithwatch/frontend build
 
+      - name: Copy Sitemap and Robots Files
+        run: |
+          cp apps/frontend/public/sitemap.xml apps/frontend/out/
+          cp apps/frontend/public/robots.txt apps/frontend/out/
+          cp apps/frontend/public/sitemap-0.xml apps/frontend/out/
+
+      - name: Archive Frontend Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: apps/frontend/out
+          retention-days: 1
+
       - name: Build Backend
         run: |
           yarn workspace @wraithwatch/realtime-api build
+
+  e2e_tests:
+    name: Run E2E Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: Start Next.js Server Locally
+        run: |
+          cd apps/frontend
+          nohup yarn dev &
+          npx wait-on http://localhost:3000
+
+      - name: Run Cypress Tests
+        run: |
+          cd apps/frontend
+          npx cypress run --config baseUrl=http://localhost:3000

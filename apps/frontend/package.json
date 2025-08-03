@@ -6,11 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "e2e": "cypress run",
+    "e2e:open": "cypress open",
+    "lighthouse": "lhci autorun",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@react-three/drei": "^10.6.1",
     "@react-three/fiber": "^9.3.0",
+    "@testing-library/dom": "^10.4.1",
     "@types/three": "^0.178.1",
     "chart.js": "^4.5.0",
     "framer-motion": "^12.23.12",
@@ -29,11 +34,17 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "@lhci/cli": "^0.14.0",
+    "cypress": "^14.3.3",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
     "eslint-config-prettier": "^10.1.8",
+    "execa": "^9.5.2",
+    "lighthouse": "^12.3.0",
+    "next-sitemap": "^4.2.3",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^8.0.3"
   }
 }

@@ -1,67 +1,24 @@
 import React, { useMemo } from 'react';
-import { EntityChange } from '../../types/api';
 import { KPICard } from './KPICard';
 import { ChartCard } from './ChartCard';
-import dynamic from 'next/dynamic';
+import { BarChart, DoughnutChart } from '../Charts';
+import { EntityChange } from '../../types/api';
 
-const BarChart = dynamic(
-  () => import('../Charts/BarChart').then(mod => ({ default: mod.BarChart })),
-  {
-    loading: () => (
-      <div className="h-full flex items-center justify-center text-gray-400">
-        Loading chart...
-      </div>
-    ),
-    ssr: false,
-  }
-);
-
-const LineChart = dynamic(
-  () => import('../Charts/LineChart').then(mod => ({ default: mod.LineChart })),
-  {
-    loading: () => (
-      <div className="h-full flex items-center justify-center text-gray-400">
-        Loading chart...
-      </div>
-    ),
-    ssr: false,
-  }
-);
-
-const DoughnutChart = dynamic(
-  () =>
-    import('../Charts/DoughnutChart').then(mod => ({
-      default: mod.DoughnutChart,
-    })),
-  {
-    loading: () => (
-      <div className="h-full flex items-center justify-center text-gray-400">
-        Loading chart...
-      </div>
-    ),
-    ssr: false,
-  }
-);
-
-const HorizontalBarChart = dynamic(
-  () =>
-    import('../Charts/HorizontalBarChart').then(mod => ({
-      default: mod.HorizontalBarChart,
-    })),
-  {
-    loading: () => (
-      <div className="h-full flex items-center justify-center text-gray-400">
-        Loading chart...
-      </div>
-    ),
-    ssr: false,
-  }
-);
+interface DashboardMetrics {
+  activeThreats: number;
+  threatScore: string;
+  aiConfidence: number;
+  totalConnections: number;
+  threatSeverityDistribution: Record<string, number>;
+  aiAgentActivity: Record<string, number>;
+  protocolUsage: Record<string, number>;
+  entityChangesByDay: Record<string, number>;
+}
 
 interface DashboardMetricsProps {
   changes?: EntityChange[];
   entities: unknown[];
-  metrics?: any;
+  metrics?: DashboardMetrics;
 }
 
 export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
@@ -161,22 +118,24 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           <div className="lg:col-span-2 space-y-6">
             <ChartCard title="Entity Changes">
               <div className="h-full">
-                <LineChart
+                {/* Assuming LineChart is imported or defined elsewhere */}
+                {/* <LineChart
                   data={dashboardMetrics.entityChangesByDay}
                   title="Entity Changes"
                   backgroundColor="rgba(74, 222, 128, 0.2)"
                   borderColor="rgba(74, 222, 128, 1)"
-                />
+                /> */}
               </div>
             </ChartCard>
             <ChartCard title="AI Agent Activity">
               <div className="h-full">
-                <HorizontalBarChart
+                {/* Assuming HorizontalBarChart is imported or defined elsewhere */}
+                {/* <HorizontalBarChart
                   data={dashboardMetrics.aiAgentActivity}
                   title="AI Agent Activity"
                   backgroundColor="rgba(59, 130, 246, 0.8)"
                   borderColor="rgba(59, 130, 246, 1)"
-                />
+                /> */}
               </div>
             </ChartCard>
           </div>

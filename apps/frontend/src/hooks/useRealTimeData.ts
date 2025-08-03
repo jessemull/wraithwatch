@@ -11,11 +11,22 @@ import {
   isConnectionStatusMessage,
 } from '../util/websocket';
 
+interface DashboardMetrics {
+  activeThreats: number;
+  threatScore: string;
+  aiConfidence: number;
+  totalConnections: number;
+  threatSeverityDistribution: Record<string, number>;
+  aiAgentActivity: Record<string, number>;
+  protocolUsage: Record<string, number>;
+  entityChangesByDay: Record<string, number>;
+}
+
 export const useRealTimeData = () => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [positions, setPositions] = useState<EntityPosition[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
