@@ -124,7 +124,7 @@ export const ConnectionParticle: React.FC<ConnectionParticleProps> = ({
   });
 
   return (
-    <group ref={particlesRef}>
+    <group ref={particlesRef} data-testid="connection-particle-group">
       {Array.from({ length: particleCount }, (_, index) => (
         <mesh key={index} visible={false}>
           <sphereGeometry
