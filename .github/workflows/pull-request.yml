@@ -52,6 +52,10 @@ jobs:
         run: |
           yarn workspace @wraithwatch/realtime-api test
 
+      - name: Run Frontend Tests
+        run: |
+          yarn workspace @wraithwatch/frontend test
+
       - name: Upload Backend Coverage Report
         uses: actions/upload-artifact@v4
         with:
@@ -59,11 +63,26 @@ jobs:
           path: apps/realtime-api/coverage
           retention-days: 7
 
+      - name: Upload Frontend Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: apps/frontend/coverage
+          retention-days: 7
+
       - name: Backend Coverage Threshold Check
         run: |
           cd apps/realtime-api
           if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 70 ]]; then
             echo "Backend code coverage is below threshold. Please update test coverage and try again."
+            exit 1
+          fi
+
+      - name: Frontend Coverage Threshold Check
+        run: |
+          cd apps/frontend
+          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 70 ]]; then
+            echo "Frontend code coverage is below threshold. Please update test coverage and try again."
             exit 1
           fi
 

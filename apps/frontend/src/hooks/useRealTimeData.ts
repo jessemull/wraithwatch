@@ -15,7 +15,7 @@ export const useRealTimeData = () => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [changes, setChanges] = useState<EntityChange[]>([]);
   const [positions, setPositions] = useState<EntityPosition[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -100,7 +100,9 @@ export const useRealTimeData = () => {
       const transformedEntities = transformChangesToEntities(result.data);
       setEntities(transformedEntities);
     } catch (err) {
-      console.error('Error loading initial data:', err);
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('Error loading initial data:', err);
+      }
       setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
       setLoading(false);
@@ -180,17 +182,23 @@ export const useRealTimeData = () => {
     const websocket = new WebSocket(config.websocket.url);
 
     websocket.onopen = () => {
-      console.log('WebSocket connected');
+      if (process.env.NODE_ENV !== 'test') {
+        console.log('WebSocket connected');
+      }
       setIsConnected(true);
     };
 
     websocket.onclose = () => {
-      console.log('WebSocket disconnected');
+      if (process.env.NODE_ENV !== 'test') {
+        console.log('WebSocket disconnected');
+      }
       setIsConnected(false);
     };
 
     websocket.onerror = (error: Event) => {
-      console.error('WebSocket error:', error);
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('WebSocket error:', error);
+      }
       setIsConnected(false);
     };
 

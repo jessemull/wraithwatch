@@ -34,6 +34,18 @@ jobs:
         run: |
           yarn lint
 
+      - name: Run Frontend Tests
+        run: |
+          yarn workspace @wraithwatch/frontend test
+
+      - name: Frontend Coverage Threshold Check
+        run: |
+          cd apps/frontend
+          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 70 ]]; then
+            echo "Frontend code coverage is below threshold. Please update test coverage and try again."
+            exit 1
+          fi
+
       - name: Build Frontend
         run: |
           yarn workspace @wraithwatch/frontend build

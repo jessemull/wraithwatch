@@ -25,18 +25,30 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
       <pointLight position={[-10, -10, -10]} intensity={0.5} />
       <mesh position={[0, 2, 0]}>
         <boxGeometry args={[12, 0.05, 8]} />
-        <meshStandardMaterial color="#333333" transparent opacity={0.2} />
+        <meshStandardMaterial
+          color="#333333"
+          transparent={true}
+          opacity={0.2}
+        />
       </mesh>
       {Array.from({ length: 5 }, (_, i) => (
         <mesh key={`x-grid-${i}`} position={[0, (i - 1) * 2, 0]}>
           <boxGeometry args={[12, 0.02, 0.02]} />
-          <meshStandardMaterial color="#444444" transparent opacity={0.3} />
+          <meshStandardMaterial
+            color="#444444"
+            transparent={true}
+            opacity={0.3}
+          />
         </mesh>
       ))}
       {Array.from({ length: 7 }, (_, i) => (
         <mesh key={`z-grid-${i}`} position={[0, 2, (i - 3) * 2]}>
           <boxGeometry args={[0.02, 8, 0.02]} />
-          <meshStandardMaterial color="#444444" transparent opacity={0.3} />
+          <meshStandardMaterial
+            color="#444444"
+            transparent={true}
+            opacity={0.3}
+          />
         </mesh>
       ))}
       <Text
@@ -168,10 +180,6 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
         const positionData = positions.find(p => p.entity_id === entity.id);
 
         if (!positionData?.matrix_position) {
-          console.log(
-            'MatrixScene - no matrix_position for entity:',
-            entity.id
-          );
           return null;
         }
 
