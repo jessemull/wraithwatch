@@ -49,4 +49,4 @@ Outputs:
     Value: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
     Description: 'Lambda execution role ARN'
     Export:
-      Name: !Sub 'WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}'
+      Name: !Sub 'WraithwatchLambdaAtEdgeExecutionRoleArn-${Environment}' 

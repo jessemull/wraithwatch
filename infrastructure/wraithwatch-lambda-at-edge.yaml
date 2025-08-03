@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: 'dev'
+    Description: 'The environment for the deployment (dev or prod)'
+    AllowedValues:
+      - dev
+      - prod
+    ConstraintDescription: "Must be either 'dev' or 'prod'."
+  S3Key:
+    Type: String
+    Description: 'S3 key for the lambda deployment package'
+  WraithwatchLambdaAtEdgeBucketName:
+    Type: String
+    Default: 'wraithwatch-lambda-at-edge'
+    Description: 'S3 bucket for storing wraithwatch-lambda-at-edge lambda deployment'
+
+Resources:
+  WraithwatchLambdaAtEdgeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${WraithwatchLambdaAtEdgeBucketName}-${Environment}'
+
+  WraithwatchLambdaAtEdgeExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'wraithwatch-lambda-at-edge-role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 's3:GetObject'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${WraithwatchLambdaAtEdgeBucket}/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+
+  WraithwatchLambdaAtEdgeFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'wraithwatch-lambda-at-edge-${Environment}'
+      Runtime: nodejs18.x
+      Handler: index.handler
+      Role: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref WraithwatchLambdaAtEdgeBucket
+        S3Key: !Ref S3Key
+      Timeout: 30
+      MemorySize: 128
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+
+Outputs:
+  WraithwatchLambdaAtEdgeFunctionArn:
+    Value: !GetAtt WraithwatchLambdaAtEdgeFunction.Arn
+    Description: 'Lambda function ARN'
+    Export:
+      Name: !Sub 'WraithwatchLambdaAtEdgeFunctionArn-${Environment}'
+  WraithwatchLambdaAtEdgeBucketName:
+    Value: !Ref WraithwatchLambdaAtEdgeBucket
+    Export:
+      Name: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}' 
