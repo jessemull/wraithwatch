@@ -50,7 +50,7 @@ jest.mock('../../../../constants/visualization', () => ({
     },
     particleMaterial: {
       emissiveIntensity: 0.8,
-      transparent: true,
+      transparent: "true",
       opacity: 0.7,
     },
   },

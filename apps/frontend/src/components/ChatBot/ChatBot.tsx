@@ -75,7 +75,9 @@ const ChatBot: React.FC = () => {
 
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('Chat error:', error);
+      }
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { Dashboard } from '../Dashboard';
 
 // Mock the useRealTimeData hook
@@ -61,8 +61,10 @@ jest.mock('../../EntitiesList', () => ({
 }));
 
 describe('Dashboard', () => {
-  it('renders dashboard with all sections', () => {
-    render(<Dashboard />);
+  it('renders dashboard with all sections', async () => {
+    await act(async () => {
+      render(<Dashboard />);
+    });
 
     expect(screen.getByText('Visualization')).toBeInTheDocument();
     expect(screen.getByText('Entity List')).toBeInTheDocument();
@@ -71,28 +73,38 @@ describe('Dashboard', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders header component', () => {
-    render(<Dashboard />);
+  it('renders header component', async () => {
+    await act(async () => {
+      render(<Dashboard />);
+    });
     expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 
-  it('renders dashboard metrics component', () => {
-    render(<Dashboard />);
+  it('renders dashboard metrics component', async () => {
+    await act(async () => {
+      render(<Dashboard />);
+    });
     expect(screen.getByTestId('dashboard-metrics')).toBeInTheDocument();
   });
 
-  it('renders entity details component', () => {
-    render(<Dashboard />);
+  it('renders entity details component', async () => {
+    await act(async () => {
+      render(<Dashboard />);
+    });
     expect(screen.getByTestId('entity-details')).toBeInTheDocument();
   });
 
-  it('renders entities list component', () => {
-    render(<Dashboard />);
+  it('renders entities list component', async () => {
+    await act(async () => {
+      render(<Dashboard />);
+    });
     expect(screen.getByTestId('entities-list')).toBeInTheDocument();
   });
 
-  it('renders visualization controls', () => {
-    render(<Dashboard />);
+  it('renders visualization controls', async () => {
+    await act(async () => {
+      render(<Dashboard />);
+    });
     expect(screen.getByTestId('visualization-controls')).toBeInTheDocument();
   });
 });

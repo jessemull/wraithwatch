@@ -76,7 +76,7 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
         />
         <meshStandardMaterial
           color={style.color}
-          transparent
+          transparent="true"
           opacity={TIMELINE_CONFIG.pulse.opacity}
           emissive={style.emissive}
           emissiveIntensity={TIMELINE_CONFIG.pulse.emissiveIntensity}

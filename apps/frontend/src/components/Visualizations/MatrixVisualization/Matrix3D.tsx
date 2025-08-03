@@ -53,10 +53,7 @@ export const Matrix3D: React.FC<Matrix3DProps> = ({
     }
   }, []);
 
-  console.log('Matrix3D - rendering with:', {
-    entities: entities.length,
-    positions: positions?.length,
-  });
+
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>

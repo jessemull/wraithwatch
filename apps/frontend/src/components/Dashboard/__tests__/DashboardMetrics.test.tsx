@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { DashboardMetrics } from '../DashboardMetrics';
 
 describe('DashboardMetrics', () => {
-  it('renders KPI cards with default metrics', () => {
-    render(<DashboardMetrics entities={[]} />);
+  it('renders KPI cards with default metrics', async () => {
+    await act(async () => {
+      render(<DashboardMetrics entities={[]} />);
+    });
 
     expect(screen.getByText('Key Performance Indicators')).toBeInTheDocument();
     expect(screen.getByText('Active Threats')).toBeInTheDocument();
@@ -13,8 +15,10 @@ describe('DashboardMetrics', () => {
     expect(screen.getByText('Total Connections')).toBeInTheDocument();
   });
 
-  it('renders analytics charts section', () => {
-    render(<DashboardMetrics entities={[]} />);
+  it('renders analytics charts section', async () => {
+    await act(async () => {
+      render(<DashboardMetrics entities={[]} />);
+    });
 
     expect(screen.getByText('Analytics & Charts')).toBeInTheDocument();
     expect(
@@ -25,7 +29,7 @@ describe('DashboardMetrics', () => {
     expect(screen.getByText('AI Agent Activity')).toBeInTheDocument();
   });
 
-  it('renders with custom metrics', () => {
+  it('renders with custom metrics', async () => {
     const customMetrics = {
       activeThreats: 5,
       threatScore: '0.75',
@@ -37,7 +41,9 @@ describe('DashboardMetrics', () => {
       entityChangesByDay: {},
     };
 
-    render(<DashboardMetrics entities={[]} metrics={customMetrics} />);
+    await act(async () => {
+      render(<DashboardMetrics entities={[]} metrics={customMetrics} />);
+    });
 
     expect(screen.getByText('5')).toBeInTheDocument();
     expect(screen.getByText('0.75')).toBeInTheDocument();

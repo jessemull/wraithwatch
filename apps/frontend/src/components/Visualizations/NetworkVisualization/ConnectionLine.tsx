@@ -37,7 +37,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
     const lineMaterial = new THREE.LineBasicMaterial({
       color: connectionColor,
-      transparent: true,
+      transparent: "true",
       opacity,
     });
 

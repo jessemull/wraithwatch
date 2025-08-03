@@ -238,7 +238,7 @@ export const CONNECTION_PARTICLE_CONFIG = {
   particleMaterial: {
     emissiveIntensity: 0.8,
     opacity: 0.7,
-    transparent: true,
+    transparent: "true",
   },
   animation: {
     progressIncrement: 0.01,

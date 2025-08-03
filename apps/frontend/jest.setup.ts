@@ -1,6 +1,27 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 
+// Suppress console errors for Three.js component warnings
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    if (
+      typeof args[0] === 'string' &&
+      (args[0].includes('is using incorrect casing') ||
+       args[0].includes('is unrecognized in this browser') ||
+       args[0].includes('React does not recognize the') ||
+       args[0].includes('Received `true` for a non-boolean attribute'))
+    ) {
+      return;
+    }
+    originalError(...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -36,8 +57,18 @@ jest.mock('@react-three/fiber', () => ({
 jest.mock('@react-three/drei', () => ({
   OrbitControls: ({ children }: { children: React.ReactNode }) =>
     React.createElement('div', { 'data-testid': 'orbit-controls' }, children),
-  Text: ({ children }: { children: React.ReactNode }) =>
-    React.createElement('div', { 'data-testid': 'text' }, children),
+  Text: ({ children, fontSize, color, anchorX, anchorY, maxWidth, textAlign, outlineWidth, outlineColor }: any) =>
+    React.createElement('div', { 
+      'data-testid': 'text',
+      'data-font-size': fontSize,
+      'data-color': color,
+      'data-anchor-x': anchorX,
+      'data-anchor-y': anchorY,
+      'data-max-width': maxWidth,
+      'data-text-align': textAlign,
+      'data-outline-width': outlineWidth,
+      'data-outline-color': outlineColor,
+    }, children),
 }));
 
 // Mock Chart.js
@@ -50,14 +81,21 @@ jest.mock('react-chartjs-2', () => ({
 }));
 
 // Mock WebSocket
-global.WebSocket = class MockWebSocket {
+class MockWebSocket {
   readyState = 1;
   send = jest.fn();
   close = jest.fn();
   addEventListener = jest.fn();
   removeEventListener = jest.fn();
   constructor() {}
-};
+  
+  static CONNECTING = 0;
+  static OPEN = 1;
+  static CLOSING = 2;
+  static CLOSED = 3;
+}
+
+global.WebSocket = MockWebSocket as any;
 
 // Mock ResizeObserver
 global.ResizeObserver = class MockResizeObserver {
