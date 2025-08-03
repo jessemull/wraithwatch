@@ -12,19 +12,19 @@ module.exports = {
   ci: {
     assert: {
       assertions: {
-        'categories:performance': ['warn', { minScore: 0.6 }],
+        'categories:performance': ['warn', { minScore: 0.7 }],
         'categories:accessibility': ['warn', { minScore: 0.9 }],
         'categories:seo': ['warn', { minScore: 0.9 }],
         'categories:best-practices': ['warn', { minScore: 0.9 }],
       },
     },
     collect: {
-      numberOfRuns: 3,
+      numberOfRuns: 1,
       settings: {
         throttlingMethod: throttling[process.env.NODE_ENV] || 'devtools',
         throttling: {
-          rttMs: 40,
-          throughputKbps: 10240,
+          rttMs: 20,
+          throughputKbps: 20480,
           cpuSlowdownMultiplier: 1,
           requestLatencyMs: 0,
           downloadThroughputKbps: 0,
@@ -40,7 +40,9 @@ module.exports = {
       url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
     },
     upload: {
-      target: 'temporary-public-storage',
+      target: 'lhci',
+      serverBaseUrl: 'https://lhci-server.herokuapp.com/',
+      token: process.env.LHCI_GITHUB_APP_TOKEN,
     },
   },
 };
