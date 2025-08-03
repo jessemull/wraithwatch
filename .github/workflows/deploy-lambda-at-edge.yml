@@ -1,11 +1,6 @@
 name: Deploy Lambda at Edge
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/lambda-at-edge/**'
-      - '.github/workflows/deploy-lambda-at-edge.yml'
   workflow_dispatch:
 
 jobs:
@@ -102,28 +97,71 @@ jobs:
             --parameters \
               "ParameterKey=S3Key,ParameterValue=wraithwatch-lambda-at-edge/${ARTIFACT_NAME}" \
             --change-set-name $CHANGE_SET_NAME \
-            --capabilities CAPABILITY_NAMED_IAM
+            --change-set-type $CHANGE_SET_TYPE \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region us-east-1
+          echo "Waiting for change set to be created..."
+          aws cloudformation wait change-set-create-complete \
+            --stack-name $STACK_NAME \
+            --change-set-name $CHANGE_SET_NAME \
+            --region us-east-1
 
-      - name: Wait for Change Set Creation
+      - name: Check for Applied Changes
         run: |
           STACK_NAME="wraithwatch-lambda-at-edge-stack"
           CHANGE_SET_NAME="wraithwatch-lambda-at-edge-change-set"
-          aws cloudformation wait change-set-create-complete \
-            --stack-name $STACK_NAME \
-            --change-set-name $CHANGE_SET_NAME
+          CHANGES=$(aws cloudformation describe-change-set \
+                    --stack-name $STACK_NAME \
+                    --change-set-name $CHANGE_SET_NAME \
+                    --query "Changes" \
+                    --region us-east-1)
+          if [ "$(echo "$CHANGES" | jq length)" -eq 0 ]; then
+            echo "No changes in the change set, skipping execution."
+            echo "no_changes=true" >> $GITHUB_ENV
+          else
+            echo "Changes detected, proceeding with execution."
+            echo "no_changes=false" >> $GITHUB_ENV
+          fi
 
       - name: Execute CloudFormation Change Set
+        if: env.no_changes == 'false'
         run: |
           STACK_NAME="wraithwatch-lambda-at-edge-stack"
           CHANGE_SET_NAME="wraithwatch-lambda-at-edge-change-set"
           aws cloudformation execute-change-set \
             --stack-name $STACK_NAME \
-            --change-set-name $CHANGE_SET_NAME
+            --change-set-name $CHANGE_SET_NAME \
+            --region us-east-1
 
-      - name: Wait for Stack Update
+      - name: Monitor CloudFormation Stack Status
+        if: env.no_changes == 'false'
         run: |
+          DONE_STATUSES=("CREATE_COMPLETE" "UPDATE_COMPLETE" "ROLLBACK_COMPLETE" "UPDATE_ROLLBACK_COMPLETE" "DELETE_COMPLETE")
+          FAILED_STATUSES=("CREATE_FAILED" "UPDATE_FAILED" "ROLLBACK_FAILED" "DELETE_FAILED" "UPDATE_ROLLBACK_FAILED" "ROLLBACK_IN_PROGRESS" "DELETE_IN_PROGRESS")
           STACK_NAME="wraithwatch-lambda-at-edge-stack"
-          aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+          MAX_RETRIES=30
+          RETRY_COUNT=0
+          while true; do
+            STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query "Stacks[0].StackStatus" --output text)
+            echo "Status: $STATUS"
+            if [[ " ${DONE_STATUSES[@]} " =~ " ${STATUS} " ]]; then
+              echo "Stack update completed successfully!"
+              echo "Status: $STATUS"
+              break
+            elif [[ " ${FAILED_STATUSES[@]} " =~ " ${STATUS} " ]]; then
+              echo "Stack failed to update!"
+              echo "Status: $STATUS"
+              aws cloudformation describe-stack-events --stack-name $STACK_NAME --region us-east-1 --query "StackEvents[?ResourceStatus=='$STATUS'].[LogicalResourceId, ResourceStatus, ResourceStatusReason]" --output table
+              exit 1
+            fi
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+              echo "Timeout waiting for stack to complete"
+              exit 1
+            fi
+            echo "Waiting for stack to complete... (attempt $RETRY_COUNT/$MAX_RETRIES)"
+            sleep 30
+          done
 
       - name: Get Stack Outputs
         run: |
