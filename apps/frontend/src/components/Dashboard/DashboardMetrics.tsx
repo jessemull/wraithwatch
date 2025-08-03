@@ -72,7 +72,7 @@ interface DashboardMetrics {
 interface DashboardMetricsProps {
   changes?: EntityChange[];
   entities: unknown[];
-  metrics?: DashboardMetrics;
+  metrics?: Record<string, unknown> | null;
 }
 
 export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
@@ -92,15 +92,17 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     };
   }, []);
 
-  const dashboardMetrics = metrics || {
-    activeThreats: 0,
-    threatScore: '0.00',
-    aiConfidence: 0,
-    totalConnections: 0,
-    threatSeverityDistribution: {},
-    aiAgentActivity: {},
-    protocolUsage: {},
-    entityChangesByDay: {},
+  const dashboardMetrics = {
+    activeThreats: (metrics?.activeThreats as number) ?? 0,
+    threatScore: (metrics?.threatScore as string) ?? '0.00',
+    aiConfidence: (metrics?.aiConfidence as number) ?? 0,
+    totalConnections: (metrics?.totalConnections as number) ?? 0,
+    threatSeverityDistribution:
+      (metrics?.threatSeverityDistribution as Record<string, number>) ?? {},
+    aiAgentActivity: (metrics?.aiAgentActivity as Record<string, number>) ?? {},
+    protocolUsage: (metrics?.protocolUsage as Record<string, number>) ?? {},
+    entityChangesByDay:
+      (metrics?.entityChangesByDay as Record<string, number>) ?? {},
   };
 
   return (
