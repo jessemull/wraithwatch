@@ -37,7 +37,7 @@ export class EntityManager {
       entityCache ||
       new NodeCacheEntityCache(
         new NodeCache({
-          stdTTL: 3600,
+          stdTTL: 3 * 60 * 60,
           checkperiod: 600,
         })
       );

@@ -50,8 +50,8 @@ export class DynamoDBService {
     // Cache with very long TTL for demo (30 days)...
 
     this.docClient = docClientOverride || docClient;
-    this.dataCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
-    this.positionsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
+    this.dataCache = new NodeCache({ stdTTL: 3 * 60 * 60 });
+    this.positionsCache = new NodeCache({ stdTTL: 3 * 60 * 60 });
   }
 
   // Get all data with pagination...
