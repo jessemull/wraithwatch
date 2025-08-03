@@ -8,9 +8,9 @@ beforeAll(() => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('is using incorrect casing') ||
-       args[0].includes('is unrecognized in this browser') ||
-       args[0].includes('React does not recognize the') ||
-       args[0].includes('Received `true` for a non-boolean attribute'))
+        args[0].includes('is unrecognized in this browser') ||
+        args[0].includes('React does not recognize the') ||
+        args[0].includes('Received `true` for a non-boolean attribute'))
     ) {
       return;
     }
@@ -57,18 +57,32 @@ jest.mock('@react-three/fiber', () => ({
 jest.mock('@react-three/drei', () => ({
   OrbitControls: ({ children }: { children: React.ReactNode }) =>
     React.createElement('div', { 'data-testid': 'orbit-controls' }, children),
-  Text: ({ children, fontSize, color, anchorX, anchorY, maxWidth, textAlign, outlineWidth, outlineColor }: any) =>
-    React.createElement('div', { 
-      'data-testid': 'text',
-      'data-font-size': fontSize,
-      'data-color': color,
-      'data-anchor-x': anchorX,
-      'data-anchor-y': anchorY,
-      'data-max-width': maxWidth,
-      'data-text-align': textAlign,
-      'data-outline-width': outlineWidth,
-      'data-outline-color': outlineColor,
-    }, children),
+  Text: ({
+    children,
+    fontSize,
+    color,
+    anchorX,
+    anchorY,
+    maxWidth,
+    textAlign,
+    outlineWidth,
+    outlineColor,
+  }: any) =>
+    React.createElement(
+      'div',
+      {
+        'data-testid': 'text',
+        'data-font-size': fontSize,
+        'data-color': color,
+        'data-anchor-x': anchorX,
+        'data-anchor-y': anchorY,
+        'data-max-width': maxWidth,
+        'data-text-align': textAlign,
+        'data-outline-width': outlineWidth,
+        'data-outline-color': outlineColor,
+      },
+      children
+    ),
 }));
 
 // Mock Chart.js
@@ -88,7 +102,7 @@ class MockWebSocket {
   addEventListener = jest.fn();
   removeEventListener = jest.fn();
   constructor() {}
-  
+
   static CONNECTING = 0;
   static OPEN = 1;
   static CLOSING = 2;

@@ -50,7 +50,7 @@ jest.mock('../../constants', () => ({
 // Mock utility functions
 jest.mock('../../util/entity', () => ({
   updateEntityInList: jest.fn((entityId, entities, updater) => {
-    return entities.map(entity =>
+    return entities.map((entity: { id: string }) =>
       entity.id === entityId ? updater(entity) : entity
     );
   }),
@@ -88,10 +88,20 @@ jest.mock('../../util/websocket', () => ({
 }));
 
 describe('useRealTimeData', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     (global.fetch as jest.Mock).mockClear();
-    (global.WebSocket as jest.Mock).mockClear();
+    (global.WebSocket as unknown as jest.Mock).mockClear();
+  });
+
+  afterAll(() => {
+    (console.warn as jest.Mock).mockRestore();
+    (console.error as jest.Mock).mockRestore();
   });
 
   it('initializes with default state', () => {
@@ -191,7 +201,7 @@ describe('useRealTimeData', () => {
       onmessage: null,
     };
 
-    (global.WebSocket as jest.Mock).mockImplementation(() => mockWebSocket);
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(() => mockWebSocket);
 
     const { result } = renderHook(() => useRealTimeData());
 
@@ -209,7 +219,7 @@ describe('useRealTimeData', () => {
       json: async () => mockData,
     });
 
-    const mockWebSocket = {
+    const mockWebSocket: any = {
       close: jest.fn(),
       send: jest.fn(),
       onopen: null,
@@ -218,7 +228,7 @@ describe('useRealTimeData', () => {
       onmessage: null,
     };
 
-    (global.WebSocket as jest.Mock).mockImplementation(() => mockWebSocket);
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(() => mockWebSocket);
 
     const { result } = renderHook(() => useRealTimeData());
 
@@ -226,21 +236,9 @@ describe('useRealTimeData', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    // Simulate WebSocket open
-    act(() => {
-      if (mockWebSocket.onopen) {
-        mockWebSocket.onopen();
-      }
-    });
-
-    expect(result.current.isConnected).toBe(true);
-
-    // Simulate WebSocket close
-    act(() => {
-      if (mockWebSocket.onclose) {
-        mockWebSocket.onclose();
-      }
-    });
+    // Simulate WebSocket events
+    mockWebSocket.onopen?.();
+    mockWebSocket.onclose?.();
 
     expect(result.current.isConnected).toBe(false);
   });

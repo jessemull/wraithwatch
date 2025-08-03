@@ -53,8 +53,6 @@ export const Matrix3D: React.FC<Matrix3DProps> = ({
     }
   }, []);
 
-
-
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Canvas camera={cameraConfig} style={CANVAS_STYLE}>
