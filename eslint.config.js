@@ -25,8 +25,6 @@ export default [
     ],
   },
 
-<<<<<<< Updated upstream
-=======
   // Config files (Node.js environment)
 
   {
@@ -77,7 +75,6 @@ export default [
     },
   },
 
->>>>>>> Stashed changes
   // Frontend (Next.js) overrides...
 
   {
