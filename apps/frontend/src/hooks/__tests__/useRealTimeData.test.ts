@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { useRealTimeData } from '../useRealTimeData';
 
 global.fetch = jest.fn();
@@ -22,7 +22,11 @@ global.WebSocket = jest.fn(() => ({
   extensions: '',
   bufferedAmount: 0,
   binaryType: 'blob',
-}));
+})) as any;
+(global.WebSocket as any).CONNECTING = 0;
+(global.WebSocket as any).OPEN = 1;
+(global.WebSocket as any).CLOSING = 2;
+(global.WebSocket as any).CLOSED = 3;
 jest.mock('../../config', () => ({
   config: {
     api: {
@@ -64,6 +68,7 @@ jest.mock('../../util/entity', () => ({
             ],
           },
         },
+        lastSeen: timestamp,
       };
     }
   ),
@@ -75,20 +80,24 @@ jest.mock('../../util/websocket', () => ({
     message => message.type === 'connection_status'
   ),
 }));
+
 describe('useRealTimeData', () => {
   beforeAll(() => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
+
   beforeEach(() => {
     jest.clearAllMocks();
     (global.fetch as jest.Mock).mockClear();
     (global.WebSocket as unknown as jest.Mock).mockClear();
   });
+
   afterAll(() => {
     (console.warn as jest.Mock).mockRestore();
     (console.error as jest.Mock).mockRestore();
   });
+
   it('initializes with default state', () => {
     const { result } = renderHook(() => useRealTimeData());
     expect(result.current.entities).toEqual([]);
@@ -100,6 +109,7 @@ describe('useRealTimeData', () => {
     expect(result.current.isConnected).toBe(false);
     expect(result.current.lastUpdate).toBeNull();
   });
+
   it('fetches initial data successfully', async () => {
     const mockData = [
       {
@@ -132,6 +142,7 @@ describe('useRealTimeData', () => {
     expect(result.current.metrics).toEqual(mockResponse.metrics);
     expect(result.current.error).toBeNull();
   });
+
   it('handles API error during initial data fetch', async () => {
     (global.fetch as jest.Mock).mockRejectedValueOnce(
       new Error('Network error')
@@ -143,6 +154,7 @@ describe('useRealTimeData', () => {
     expect(result.current.error).toBe('Network error');
     expect(result.current.entities).toEqual([]);
   });
+
   it('handles invalid API response', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
@@ -154,6 +166,29 @@ describe('useRealTimeData', () => {
     });
     expect(result.current.error).toBe('Invalid response from API');
   });
+
+  it('handles HTTP error response', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.error).toBe('HTTP 500: Internal Server Error');
+  });
+
+  it('handles non-Error exceptions', async () => {
+    (global.fetch as jest.Mock).mockRejectedValueOnce('String error');
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.error).toBe('Failed to load data');
+  });
+
   it('connects to WebSocket after initial data load', async () => {
     const mockData = { success: true, data: [] };
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -177,6 +212,7 @@ describe('useRealTimeData', () => {
     });
     expect(global.WebSocket).toHaveBeenCalledWith('ws://localhost:3000/ws');
   });
+
   it('handles WebSocket connection status messages', async () => {
     const mockData = { success: true, data: [] };
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -202,6 +238,207 @@ describe('useRealTimeData', () => {
     mockWebSocket.onclose?.();
     expect(result.current.isConnected).toBe(false);
   });
+
+  it('handles WebSocket error events', async () => {
+    const mockData = { success: true, data: [] };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    });
+    const mockWebSocket = {
+      close: jest.fn(),
+      send: jest.fn(),
+      onopen: null,
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+    };
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(
+      () => mockWebSocket
+    );
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    mockWebSocket.onerror?.(new Event('error'));
+    expect(result.current.isConnected).toBe(false);
+  });
+
+  it('handles WebSocket message parsing errors', async () => {
+    const mockData = { success: true, data: [] };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    });
+    const mockWebSocket = {
+      close: jest.fn(),
+      send: jest.fn(),
+      onopen: null,
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+    };
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(
+      () => mockWebSocket
+    );
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    mockWebSocket.onmessage?.({ data: 'invalid json' } as MessageEvent);
+    expect(console.error).toHaveBeenCalledWith(
+      'Error parsing WebSocket message:',
+      expect.any(Error)
+    );
+  });
+
+  it('handles entity list messages', async () => {
+    const mockData = { success: true, data: [] };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    });
+    const mockWebSocket = {
+      close: jest.fn(),
+      send: jest.fn(),
+      onopen: null,
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+    };
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(
+      () => mockWebSocket
+    );
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    const entityListMessage = {
+      type: 'entity_list',
+      payload: {
+        entities: [
+          {
+            id: 'entity-1',
+            name: 'Test Entity',
+            type: 'System',
+            properties: {},
+            lastSeen: '2023-01-01T12:00:00Z',
+            changesToday: 0,
+          },
+        ],
+      },
+    };
+    mockWebSocket.onmessage?.({
+      data: JSON.stringify(entityListMessage),
+    } as MessageEvent);
+    await waitFor(() => {
+      expect(result.current.entities).toEqual(
+        entityListMessage.payload.entities
+      );
+    });
+  });
+
+  it('handles entity update messages', async () => {
+    const mockData = { success: true, data: [] };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    });
+    const mockWebSocket = {
+      close: jest.fn(),
+      send: jest.fn(),
+      onopen: null,
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+    };
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(
+      () => mockWebSocket
+    );
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    const entityUpdateMessage = {
+      type: 'entity_update',
+      payload: {
+        entityId: 'entity-1',
+        newValue: 'new-value',
+        oldValue: 'old-value',
+        property: 'status',
+        timestamp: '2023-01-01T12:00:00Z',
+      },
+    };
+    mockWebSocket.onmessage?.({
+      data: JSON.stringify(entityUpdateMessage),
+    } as MessageEvent);
+    await waitFor(() => {
+      expect(result.current.lastUpdate).toBe(
+        entityUpdateMessage.payload.timestamp
+      );
+    });
+  });
+
+  it('handles connection status messages', async () => {
+    const mockData = { success: true, data: [] };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    });
+    const mockWebSocket = {
+      close: jest.fn(),
+      send: jest.fn(),
+      onopen: null,
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+    };
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(
+      () => mockWebSocket
+    );
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    const connectionStatusMessage = {
+      type: 'connection_status',
+      payload: {
+        status: 'connected',
+      },
+    };
+    mockWebSocket.onmessage?.({
+      data: JSON.stringify(connectionStatusMessage),
+    } as MessageEvent);
+    await waitFor(() => {
+      expect(result.current.isConnected).toBe(true);
+    });
+  });
+
+  it('closes WebSocket on cleanup', async () => {
+    const mockData = { success: true, data: [] };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    });
+    const mockWebSocket = {
+      close: jest.fn(),
+      send: jest.fn(),
+      onopen: null,
+      onclose: null,
+      onerror: null,
+      onmessage: null,
+    };
+    (global.WebSocket as unknown as jest.Mock).mockImplementation(
+      () => mockWebSocket
+    );
+    const { result, unmount } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    unmount();
+    expect(mockWebSocket.close).toHaveBeenCalled();
+  });
+
   it('provides refetch function', async () => {
     const mockData = { success: true, data: [] };
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -214,6 +451,7 @@ describe('useRealTimeData', () => {
     });
     expect(typeof result.current.refetch).toBe('function');
   });
+
   it('provides getEntityHistory function', async () => {
     const mockData = { success: true, data: [] };
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -226,6 +464,7 @@ describe('useRealTimeData', () => {
     });
     expect(typeof result.current.getEntityHistory).toBe('function');
   });
+
   it('provides getPropertyHistory function', async () => {
     const mockData = { success: true, data: [] };
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -237,5 +476,116 @@ describe('useRealTimeData', () => {
       expect(result.current.loading).toBe(false);
     });
     expect(typeof result.current.getPropertyHistory).toBe('function');
+  });
+
+  it('transforms changes to entities correctly', async () => {
+    const mockData = [
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        property_name: 'cpu_usage',
+        value: 75,
+        timestamp: '2023-01-01T12:00:00Z',
+      },
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        property_name: 'memory_usage',
+        value: 50,
+        timestamp: '2023-01-01T12:01:00Z',
+      },
+    ];
+    const mockResponse = {
+      success: true,
+      data: mockData,
+    };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.entities).toHaveLength(1);
+    expect(result.current.entities[0].properties).toHaveProperty('cpu_usage');
+    expect(result.current.entities[0].properties).toHaveProperty(
+      'memory_usage'
+    );
+  });
+
+  it('handles invalid timestamps in transformChangesToEntities', async () => {
+    const mockData = [
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        property_name: 'cpu_usage',
+        value: 75,
+        timestamp: 'invalid-timestamp',
+      },
+    ];
+    const mockResponse = {
+      success: true,
+      data: mockData,
+    };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+    const { result } = renderHook(() => useRealTimeData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.entities).toHaveLength(1);
+  });
+});
+
+describe('useIsMobile', () => {
+  beforeEach(() => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+  });
+
+  it('returns false for desktop width', () => {
+    const { result } = renderHook(() => {
+      const { useIsMobile } = require('../useRealTimeData');
+      return useIsMobile();
+    });
+    expect(result.current).toBe(false);
+  });
+
+  it('returns true for mobile width', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 375,
+    });
+    const { result } = renderHook(() => {
+      const { useIsMobile } = require('../useRealTimeData');
+      return useIsMobile();
+    });
+    expect(result.current).toBe(true);
+  });
+
+  it('updates on window resize', () => {
+    const { result } = renderHook(() => {
+      const { useIsMobile } = require('../useRealTimeData');
+      return useIsMobile();
+    });
+    expect(result.current).toBe(false);
+
+    act(() => {
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 375,
+      });
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    expect(result.current).toBe(true);
   });
 });
