@@ -42,10 +42,7 @@ module.exports = {
     upload: {
       target: 'lhci',
       serverBaseUrl: 'https://lhci-server.herokuapp.com/',
-<<<<<<< HEAD
-      token: process.env.LHCI_GITHUB_APP_TOKEN,
-=======
->>>>>>> origin/main
+      token: process.env.LHCI_GITHUB_APP_TOKEN, origin/main
     },
   },
 };
