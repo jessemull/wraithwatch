@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { EntityDetails } from '../EntityDetails';
-
 describe('EntityDetails', () => {
   it('renders no entity selected state', () => {
     render(<EntityDetails selectedEntity={undefined} />);
@@ -12,7 +11,6 @@ describe('EntityDetails', () => {
       )
     ).toBeInTheDocument();
   });
-
   it('renders entity details', () => {
     const mockEntity = {
       id: 'entity-1',
@@ -34,7 +32,6 @@ describe('EntityDetails', () => {
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('ONLINE')).toBeInTheDocument();
   });
-
   it('renders source_ip property if present', () => {
     const mockEntity = {
       id: 'entity-2',

@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { NetworkGraph3D } from '../NetworkGraph3D';
-
-// Mock Three.js components
 jest.mock('@react-three/fiber', () => ({
   Canvas: ({ children, style }: any) => (
     <div data-testid="canvas" style={style}>
@@ -10,14 +8,11 @@ jest.mock('@react-three/fiber', () => ({
     </div>
   ),
 }));
-
 jest.mock('@react-three/drei', () => ({
   OrbitControls: ({ ...props }: any) => (
     <div data-testid="orbit-controls" {...props} />
   ),
 }));
-
-// Mock the NetworkScene component
 jest.mock('../NetworkScene', () => ({
   NetworkScene: ({ entities, positions }: any) => (
     <div data-testid="network-scene">
@@ -25,8 +20,6 @@ jest.mock('../NetworkScene', () => ({
     </div>
   ),
 }));
-
-// Mock the ControlPanel component
 jest.mock('../../TimelineVisualization/ControlPanel', () => ({
   ControlPanel: ({ onZoomIn, onZoomOut, onReset }: any) => (
     <div data-testid="control-panel">
@@ -36,20 +29,15 @@ jest.mock('../../TimelineVisualization/ControlPanel', () => ({
     </div>
   ),
 }));
-
-// Mock the useIsMobile hook
 jest.mock('../../../../hooks/useRealTimeData', () => ({
   useIsMobile: () => false,
 }));
-
-// Mock constants
 jest.mock('../../../../constants/visualization', () => ({
   CANVAS_STYLE: { width: '100%', height: '100%' },
   CONTROLS_CONFIG: { zoomFactor: 1.2 },
   MOBILE_CONTROLS_CONFIG: { zoomFactor: 1.5 },
   MOBILE_NETWORK_CAMERA_CONFIG: { position: [0, 0, 20], fov: 60 },
 }));
-
 describe('NetworkGraph3D', () => {
   const mockEntities = [
     {
@@ -61,14 +49,12 @@ describe('NetworkGraph3D', () => {
       changesToday: 5,
     },
   ];
-
   const mockPositions = [
     {
       entity_id: 'entity-1',
       network_position: { x: 0, y: 0, z: 0 },
     },
   ];
-
   it('renders NetworkGraph3D component with canvas and controls', () => {
     render(
       <NetworkGraph3D
@@ -78,13 +64,11 @@ describe('NetworkGraph3D', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('canvas')).toBeInTheDocument();
     expect(screen.getByTestId('orbit-controls')).toBeInTheDocument();
     expect(screen.getByTestId('network-scene')).toBeInTheDocument();
     expect(screen.getByTestId('control-panel')).toBeInTheDocument();
   });
-
   it('renders with correct number of entities and positions', () => {
     render(
       <NetworkGraph3D
@@ -94,12 +78,10 @@ describe('NetworkGraph3D', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(
       screen.getByText('Network Scene (1 entities, 1 positions)')
     ).toBeInTheDocument();
   });
-
   it('renders control panel with zoom and reset buttons', () => {
     render(
       <NetworkGraph3D
@@ -109,12 +91,10 @@ describe('NetworkGraph3D', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByText('Zoom In')).toBeInTheDocument();
     expect(screen.getByText('Zoom Out')).toBeInTheDocument();
     expect(screen.getByText('Reset')).toBeInTheDocument();
   });
-
   it('renders with empty entities array', () => {
     render(
       <NetworkGraph3D
@@ -124,12 +104,10 @@ describe('NetworkGraph3D', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(
       screen.getByText('Network Scene (0 entities, 0 positions)')
     ).toBeInTheDocument();
   });
-
   it('renders with selected entity', () => {
     render(
       <NetworkGraph3D
@@ -139,7 +117,6 @@ describe('NetworkGraph3D', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('network-scene')).toBeInTheDocument();
   });
 });

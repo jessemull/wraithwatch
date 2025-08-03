@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { NetworkNode } from '../NetworkNode';
-
-// Mock Three.js components
 jest.mock('@react-three/drei', () => ({
   Text: ({
     children,
@@ -33,13 +31,9 @@ jest.mock('@react-three/drei', () => ({
     </div>
   ),
 }));
-
-// Mock the getEntityName utility
 jest.mock('../../../../util/entity', () => ({
   getEntityName: (id: string) => `Entity ${id}`,
 }));
-
-// Mock constants
 jest.mock('../../../../constants/visualization', () => ({
   NETWORK_NODE_CONFIG: {
     nodeSizes: {
@@ -66,7 +60,6 @@ jest.mock('../../../../constants/visualization', () => ({
     threatHighlightOffset: 0.1,
   },
 }));
-
 describe('NetworkNode', () => {
   const mockEntity = {
     id: 'entity-1',
@@ -76,7 +69,6 @@ describe('NetworkNode', () => {
     lastSeen: '2023-01-01T12:00:00Z',
     changesToday: 5,
   };
-
   it('renders NetworkNode with mesh and text', () => {
     render(
       <NetworkNode
@@ -86,10 +78,8 @@ describe('NetworkNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('text')).toBeInTheDocument();
   });
-
   it('renders entity name correctly', () => {
     render(
       <NetworkNode
@@ -99,13 +89,10 @@ describe('NetworkNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText('Entity entity-1')).toBeInTheDocument();
   });
-
   it('handles click events', () => {
     const mockOnClick = jest.fn();
-
     render(
       <NetworkNode
         entity={mockEntity}
@@ -114,12 +101,8 @@ describe('NetworkNode', () => {
         onClick={mockOnClick}
       />
     );
-
-    // Since we're mocking Three.js components, we can't easily test the mesh click
-    // But we can verify the onClick prop is passed correctly
     expect(mockOnClick).not.toHaveBeenCalled();
   });
-
   it('renders different entity types with correct colors', () => {
     const entityTypes = [
       'AI_Agent',
@@ -128,13 +111,11 @@ describe('NetworkNode', () => {
       'Threat',
       'Network_Node',
     ] as const;
-
     entityTypes.forEach(entityType => {
       const entity = {
         ...mockEntity,
         type: entityType,
       };
-
       const { rerender } = render(
         <NetworkNode
           entity={entity}
@@ -143,20 +124,15 @@ describe('NetworkNode', () => {
           onClick={jest.fn()}
         />
       );
-
       expect(screen.getByText(`Entity ${mockEntity.id}`)).toBeInTheDocument();
-
-      // Clean up for next iteration
       rerender(<div />);
     });
   });
-
   it('renders threat entity with halo effect', () => {
     const threatEntity = {
       ...mockEntity,
       type: 'Threat' as const,
     };
-
     render(
       <NetworkNode
         entity={threatEntity}
@@ -165,10 +141,8 @@ describe('NetworkNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText('Entity entity-1')).toBeInTheDocument();
   });
-
   it('renders selected state correctly', () => {
     render(
       <NetworkNode
@@ -178,17 +152,14 @@ describe('NetworkNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText('Entity entity-1')).toBeInTheDocument();
   });
-
   it('renders with different positions', () => {
     const positions: [number, number, number][] = [
       [0, 0, 0],
       [1, 2, 3],
       [-1, -2, -3],
     ];
-
     positions.forEach(position => {
       const { rerender } = render(
         <NetworkNode
@@ -198,21 +169,16 @@ describe('NetworkNode', () => {
           onClick={jest.fn()}
         />
       );
-
       expect(screen.getByText('Entity entity-1')).toBeInTheDocument();
-
-      // Clean up for next iteration
       rerender(<div />);
     });
   });
-
   it('handles different entity IDs', () => {
     const entities = [
       { ...mockEntity, id: 'ai-1' },
       { ...mockEntity, id: 'system-1' },
       { ...mockEntity, id: 'user-1' },
     ];
-
     entities.forEach(entity => {
       const { rerender } = render(
         <NetworkNode
@@ -222,10 +188,7 @@ describe('NetworkNode', () => {
           onClick={jest.fn()}
         />
       );
-
       expect(screen.getByText(`Entity ${entity.id}`)).toBeInTheDocument();
-
-      // Clean up for next iteration
       rerender(<div />);
     });
   });

@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 
-// Suppress console errors for Three.js component warnings
+// Suppress console errors for Three.js component warnings...
+
 const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
@@ -22,7 +23,8 @@ afterAll(() => {
   console.error = originalError;
 });
 
-// Mock Next.js router
+// Mock Next.js router...
+
 jest.mock('next/navigation', () => ({
   useRouter() {
     return {
@@ -42,7 +44,8 @@ jest.mock('next/navigation', () => ({
   },
 }));
 
-// Mock Three.js for 3D components
+// Mock Three.js for 3D components...
+
 jest.mock('@react-three/fiber', () => ({
   Canvas: ({ children }: { children: React.ReactNode }) =>
     React.createElement('div', { 'data-testid': 'canvas' }, children),
@@ -85,7 +88,8 @@ jest.mock('@react-three/drei', () => ({
     ),
 }));
 
-// Mock Chart.js
+// Mock Chart.js...
+
 jest.mock('react-chartjs-2', () => ({
   Line: () => React.createElement('canvas', { 'data-testid': 'line-chart' }),
   Bar: () => React.createElement('canvas', { 'data-testid': 'bar-chart' }),
@@ -94,7 +98,8 @@ jest.mock('react-chartjs-2', () => ({
   Pie: () => React.createElement('canvas', { 'data-testid': 'pie-chart' }),
 }));
 
-// Mock WebSocket
+// Mock WebSocket...
+
 class MockWebSocket {
   readyState = 1;
   send = jest.fn();
@@ -111,7 +116,8 @@ class MockWebSocket {
 
 global.WebSocket = MockWebSocket as any;
 
-// Mock ResizeObserver
+// Mock ResizeObserver...
+
 global.ResizeObserver = class MockResizeObserver {
   observe = jest.fn();
   unobserve = jest.fn();
@@ -119,7 +125,8 @@ global.ResizeObserver = class MockResizeObserver {
   constructor() {}
 };
 
-// Mock fetch
+// Mock fetch...
+
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,

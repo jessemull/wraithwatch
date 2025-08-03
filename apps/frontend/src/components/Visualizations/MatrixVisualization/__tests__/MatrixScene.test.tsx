@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MatrixScene } from '../MatrixScene';
-
-// Mock Three.js components
 jest.mock('@react-three/drei', () => ({
   Text: ({ children, fontSize, color }: any) => (
     <div data-testid="text" style={{ position: 'absolute', fontSize, color }}>
@@ -10,8 +8,6 @@ jest.mock('@react-three/drei', () => ({
     </div>
   ),
 }));
-
-// Mock the MatrixNode component
 jest.mock('../MatrixNode', () => ({
   MatrixNode: ({ entity, isSelected, onClick }: any) => (
     <div
@@ -24,7 +20,6 @@ jest.mock('../MatrixNode', () => ({
     </div>
   ),
 }));
-
 describe('MatrixScene', () => {
   const mockEntities = [
     {
@@ -44,14 +39,12 @@ describe('MatrixScene', () => {
       changesToday: 2,
     },
   ];
-
   const mockPositions = [
     {
       entity_id: 'threat-1',
       matrix_position: { x: 0, y: 2, z: 0 },
     },
   ];
-
   it('renders MatrixScene with lights and grid', () => {
     render(
       <MatrixScene
@@ -61,13 +54,10 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render text labels
     expect(screen.getByText('SEVERITY')).toBeInTheDocument();
     expect(screen.getByText('DETECTION COUNT')).toBeInTheDocument();
     expect(screen.getByText('THREAT SCORE')).toBeInTheDocument();
   });
-
   it('renders threat severity labels', () => {
     render(
       <MatrixScene
@@ -77,13 +67,11 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByText('Critical')).toBeInTheDocument();
     expect(screen.getByText('High')).toBeInTheDocument();
     expect(screen.getByText('Medium')).toBeInTheDocument();
     expect(screen.getByText('Low')).toBeInTheDocument();
   });
-
   it('renders threat entities with positions', () => {
     render(
       <MatrixScene
@@ -93,10 +81,8 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByText('Matrix Node: Test Threat')).toBeInTheDocument();
   });
-
   it('renders selected entity correctly', () => {
     render(
       <MatrixScene
@@ -106,12 +92,10 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     const matrixNode = screen.getByTestId('matrix-node');
     expect(matrixNode).toHaveAttribute('data-selected', 'true');
     expect(matrixNode).toHaveAttribute('data-entity-id', 'threat-1');
   });
-
   it('filters to only threat entities', () => {
     render(
       <MatrixScene
@@ -121,14 +105,11 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should only render the threat entity, not the system entity
     expect(screen.getByText('Matrix Node: Test Threat')).toBeInTheDocument();
     expect(
       screen.queryByText('Matrix Node: Test System')
     ).not.toBeInTheDocument();
   });
-
   it('handles missing positions gracefully', () => {
     render(
       <MatrixScene
@@ -138,12 +119,9 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should still render the scene but no matrix nodes
     expect(screen.getByText('SEVERITY')).toBeInTheDocument();
     expect(screen.queryByTestId('matrix-node')).not.toBeInTheDocument();
   });
-
   it('handles entity without position data', () => {
     const entitiesWithoutPosition = [
       {
@@ -155,7 +133,6 @@ describe('MatrixScene', () => {
         changesToday: 5,
       },
     ];
-
     render(
       <MatrixScene
         entities={entitiesWithoutPosition}
@@ -164,8 +141,6 @@ describe('MatrixScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should still render the scene but no matrix nodes
     expect(screen.getByText('SEVERITY')).toBeInTheDocument();
     expect(screen.queryByTestId('matrix-node')).not.toBeInTheDocument();
   });

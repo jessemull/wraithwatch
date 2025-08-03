@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { EntityItem } from '../EntityItem';
-
 const mockEntity = {
   id: '1',
   type: 'server',
@@ -10,7 +9,6 @@ const mockEntity = {
   lastSeen: new Date().toISOString(),
   changesToday: 5,
 };
-
 describe('EntityItem', () => {
   it('renders entity id and type', () => {
     render(<EntityItem entity={mockEntity} />);

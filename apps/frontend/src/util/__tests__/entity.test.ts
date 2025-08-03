@@ -11,7 +11,6 @@ import {
   getEntityName,
 } from '../entity';
 import { Entity } from '../../types';
-
 describe('Entity Utility Functions', () => {
   describe('getEntityTypeColor', () => {
     it('returns correct color for known entity types', () => {
@@ -21,12 +20,10 @@ describe('Entity Utility Functions', () => {
       expect(getEntityTypeColor('System')).toBe('bg-yellow-500');
       expect(getEntityTypeColor('User')).toBe('bg-purple-500');
     });
-
     it('returns default color for unknown entity types', () => {
       expect(getEntityTypeColor('UnknownType')).toBe('bg-gray-500');
     });
   });
-
   describe('getStatusColor', () => {
     it('returns correct colors for routing_status', () => {
       expect(getStatusColor('routing_status', 'optimal')).toBe(
@@ -42,7 +39,6 @@ describe('Entity Utility Functions', () => {
         'bg-gray-500 text-white'
       );
     });
-
     it('returns correct colors for severity', () => {
       expect(getStatusColor('severity', 'critical')).toBe(
         'bg-red-500 text-white'
@@ -55,14 +51,12 @@ describe('Entity Utility Functions', () => {
       );
       expect(getStatusColor('severity', 'low')).toBe('bg-green-500 text-white');
     });
-
     it('returns default color for unknown status types', () => {
       expect(getStatusColor('unknown_status', 'value')).toBe(
         'bg-gray-500 text-white'
       );
     });
   });
-
   describe('formatPropertyName', () => {
     it('formats property names correctly', () => {
       expect(formatPropertyName('cpu_usage')).toBe('Cpu Usage');
@@ -72,7 +66,6 @@ describe('Entity Utility Functions', () => {
       );
     });
   });
-
   describe('formatText', () => {
     it('formats text correctly', () => {
       expect(formatText('hello_world')).toBe('Hello World');
@@ -80,7 +73,6 @@ describe('Entity Utility Functions', () => {
       expect(formatText('simple')).toBe('Simple');
     });
   });
-
   describe('formatEntityType', () => {
     it('formats entity types correctly', () => {
       expect(formatEntityType('AI_Agent')).toBe('AI Agent');
@@ -88,7 +80,6 @@ describe('Entity Utility Functions', () => {
       expect(formatEntityType('System')).toBe('System');
     });
   });
-
   describe('getUnit', () => {
     it('returns correct units for different property types', () => {
       expect(getUnit('error_rate')).toBe('%');
@@ -100,7 +91,6 @@ describe('Entity Utility Functions', () => {
       expect(getUnit('unknown_property')).toBe('');
     });
   });
-
   describe('formatTime', () => {
     it('formats time correctly', () => {
       const testDate = new Date('2023-01-01T12:00:00Z');
@@ -109,7 +99,6 @@ describe('Entity Utility Functions', () => {
       expect(result).toMatch(/\d{1,2}:\d{2}:\d{2}/);
     });
   });
-
   describe('updateEntityProperty', () => {
     const mockEntity: Entity = {
       id: 'test-entity',
@@ -127,7 +116,6 @@ describe('Entity Utility Functions', () => {
       lastSeen: '2023-01-01T10:00:00Z',
       changesToday: 1,
     };
-
     it('updates existing property correctly', () => {
       const updatedEntity = updateEntityProperty(
         mockEntity,
@@ -136,7 +124,6 @@ describe('Entity Utility Functions', () => {
         'cpu_usage',
         '2023-01-01T11:00:00Z'
       );
-
       expect(updatedEntity.properties?.cpu_usage?.currentValue).toBe(75);
       expect(updatedEntity.properties?.cpu_usage?.lastChanged).toBe(
         '2023-01-01T11:00:00Z'
@@ -144,7 +131,6 @@ describe('Entity Utility Functions', () => {
       expect(updatedEntity.lastSeen).toBe('2023-01-01T11:00:00Z');
       expect(updatedEntity.changesToday).toBe(2);
     });
-
     it('creates new property if it does not exist', () => {
       const updatedEntity = updateEntityProperty(
         mockEntity,
@@ -153,12 +139,10 @@ describe('Entity Utility Functions', () => {
         'memory_usage',
         '2023-01-01T11:00:00Z'
       );
-
       expect(updatedEntity.properties?.memory_usage?.currentValue).toBe(100);
       expect(updatedEntity.properties?.memory_usage?.name).toBe('memory_usage');
       expect(updatedEntity.properties?.memory_usage?.history).toHaveLength(1);
     });
-
     it('creates properties object if it does not exist', () => {
       const entityWithoutProperties: Entity = {
         id: 'test-entity',
@@ -166,7 +150,6 @@ describe('Entity Utility Functions', () => {
         lastSeen: '2023-01-01T10:00:00Z',
         changesToday: 0,
       };
-
       const updatedEntity = updateEntityProperty(
         entityWithoutProperties,
         100,
@@ -174,12 +157,10 @@ describe('Entity Utility Functions', () => {
         'cpu_usage',
         '2023-01-01T11:00:00Z'
       );
-
       expect(updatedEntity.properties).toBeDefined();
       expect(updatedEntity.properties?.cpu_usage?.currentValue).toBe(100);
     });
   });
-
   describe('updateEntityInList', () => {
     const mockEntities: Entity[] = [
       {
@@ -195,39 +176,32 @@ describe('Entity Utility Functions', () => {
         changesToday: 0,
       },
     ];
-
     it('updates the correct entity in the list', () => {
       const updateFunction = (entity: Entity): Entity => ({
         ...entity,
         changesToday: entity.changesToday + 1,
       });
-
       const updatedEntities = updateEntityInList(
         'entity-1',
         mockEntities,
         updateFunction
       );
-
       expect(updatedEntities[0].changesToday).toBe(1);
       expect(updatedEntities[1].changesToday).toBe(0);
     });
-
     it('returns unchanged list if entity not found', () => {
       const updateFunction = (entity: Entity): Entity => ({
         ...entity,
         changesToday: entity.changesToday + 1,
       });
-
       const updatedEntities = updateEntityInList(
         'entity-3',
         mockEntities,
         updateFunction
       );
-
       expect(updatedEntities).toEqual(mockEntities);
     });
   });
-
   describe('getEntityName', () => {
     it('returns mapped names for known entity IDs', () => {
       expect(getEntityName('system-001')).toBe('Production Server Alpha');
@@ -236,7 +210,6 @@ describe('Entity Utility Functions', () => {
       expect(getEntityName('network-node-001')).toBe('Core Router Alpha');
       expect(getEntityName('user-001')).toBe('Admin User');
     });
-
     it('returns entity ID for unknown entity IDs', () => {
       expect(getEntityName('unknown-entity')).toBe('unknown-entity');
     });

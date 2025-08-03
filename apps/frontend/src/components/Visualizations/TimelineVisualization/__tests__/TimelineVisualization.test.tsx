@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TimelineVisualization } from '../TimelineVisualization';
-
-// Mock Three.js components
 jest.mock('@react-three/fiber', () => ({
   Canvas: ({ children, style }: any) => (
     <div data-testid="canvas" style={style}>
@@ -10,14 +8,11 @@ jest.mock('@react-three/fiber', () => ({
     </div>
   ),
 }));
-
 jest.mock('@react-three/drei', () => ({
   OrbitControls: ({ ...props }: any) => (
     <div data-testid="orbit-controls" {...props} />
   ),
 }));
-
-// Mock the TimelineScene component
 jest.mock('../TimelineScene', () => ({
   TimelineScene: ({ entities, positions }: any) => (
     <div data-testid="timeline-scene">
@@ -25,8 +20,6 @@ jest.mock('../TimelineScene', () => ({
     </div>
   ),
 }));
-
-// Mock the ControlPanel component
 jest.mock('../ControlPanel', () => ({
   ControlPanel: ({ onZoomIn, onZoomOut, onReset }: any) => (
     <div data-testid="control-panel">
@@ -36,13 +29,9 @@ jest.mock('../ControlPanel', () => ({
     </div>
   ),
 }));
-
-// Mock the useIsMobile hook
 jest.mock('../../../../hooks/useRealTimeData', () => ({
   useIsMobile: () => false,
 }));
-
-// Mock constants
 jest.mock('../../../../constants/visualization', () => ({
   CAMERA_CONFIG: { position: [0, 0, 10], fov: 60 },
   MOBILE_CAMERA_CONFIG: { position: [0, 0, 15], fov: 60 },
@@ -57,7 +46,6 @@ jest.mock('../../../../constants/visualization', () => ({
   MOBILE_CONTROLS_CONFIG: { zoomFactor: 1.5 },
   CANVAS_STYLE: { width: '100%', height: '100%' },
 }));
-
 describe('TimelineVisualization', () => {
   const mockEntities = [
     {
@@ -69,14 +57,12 @@ describe('TimelineVisualization', () => {
       changesToday: 5,
     },
   ];
-
   const mockPositions = [
     {
       entity_id: 'entity-1',
       timeline_position: { x: 0, y: 0, z: 0 },
     },
   ];
-
   it('renders TimelineVisualization component with canvas and controls', () => {
     render(
       <TimelineVisualization
@@ -86,13 +72,11 @@ describe('TimelineVisualization', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('canvas')).toBeInTheDocument();
     expect(screen.getByTestId('orbit-controls')).toBeInTheDocument();
     expect(screen.getByTestId('timeline-scene')).toBeInTheDocument();
     expect(screen.getByTestId('control-panel')).toBeInTheDocument();
   });
-
   it('renders with correct number of entities and positions', () => {
     render(
       <TimelineVisualization
@@ -102,12 +86,10 @@ describe('TimelineVisualization', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(
       screen.getByText('Timeline Scene (1 entities, 1 positions)')
     ).toBeInTheDocument();
   });
-
   it('renders control panel with zoom and reset buttons', () => {
     render(
       <TimelineVisualization
@@ -117,12 +99,10 @@ describe('TimelineVisualization', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByText('Zoom In')).toBeInTheDocument();
     expect(screen.getByText('Zoom Out')).toBeInTheDocument();
     expect(screen.getByText('Reset')).toBeInTheDocument();
   });
-
   it('renders with empty entities array', () => {
     render(
       <TimelineVisualization
@@ -132,12 +112,10 @@ describe('TimelineVisualization', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(
       screen.getByText('Timeline Scene (0 entities, 0 positions)')
     ).toBeInTheDocument();
   });
-
   it('renders with selected entity', () => {
     render(
       <TimelineVisualization
@@ -147,7 +125,6 @@ describe('TimelineVisualization', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('timeline-scene')).toBeInTheDocument();
   });
 });

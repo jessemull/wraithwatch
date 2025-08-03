@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { EntitiesList } from '../EntitiesList';
-
 const mockEntities = [
   {
     id: '1',
@@ -12,7 +11,6 @@ const mockEntities = [
     changesToday: 5,
   },
 ];
-
 describe('EntitiesList', () => {
   it('renders without crashing', () => {
     render(<EntitiesList entities={mockEntities} />);

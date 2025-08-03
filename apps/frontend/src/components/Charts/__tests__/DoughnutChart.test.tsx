@@ -1,8 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { DoughnutChart } from '../DoughnutChart';
-
-// Mock the constants
 jest.mock('../../../constants/charts', () => ({
   DEFAULT_COLORS: [
     'rgba(59, 130, 246, 0.5)',
@@ -21,7 +19,6 @@ jest.mock('../../../constants/charts', () => ({
     'rgba(14, 165, 233, 1)',
   ],
 }));
-
 describe('DoughnutChart', () => {
   const mockData = {
     servers: 25,
@@ -29,44 +26,33 @@ describe('DoughnutChart', () => {
     networks: 10,
     applications: 20,
   };
-
   it('renders doughnut chart with data', () => {
     render(<DoughnutChart data={mockData} />);
-
-    // The chart should render without errors
     expect(
       document.querySelector('[data-testid="doughnut-chart"]')
     ).toBeInTheDocument();
   });
-
   it('renders with custom colors', () => {
     const customColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
     render(<DoughnutChart data={mockData} colors={customColors} />);
-
     expect(
       document.querySelector('[data-testid="doughnut-chart"]')
     ).toBeInTheDocument();
   });
-
   it('renders with custom border width', () => {
     render(<DoughnutChart data={mockData} borderWidth={3} />);
-
     expect(
       document.querySelector('[data-testid="doughnut-chart"]')
     ).toBeInTheDocument();
   });
-
   it('renders without legend', () => {
     render(<DoughnutChart data={mockData} showLegend={false} />);
-
     expect(
       document.querySelector('[data-testid="doughnut-chart"]')
     ).toBeInTheDocument();
   });
-
   it('renders with custom legend position', () => {
     render(<DoughnutChart data={mockData} legendPosition="right" />);
-
     expect(
       document.querySelector('[data-testid="doughnut-chart"]')
     ).toBeInTheDocument();

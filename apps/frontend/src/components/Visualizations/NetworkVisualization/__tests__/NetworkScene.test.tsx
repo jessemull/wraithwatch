@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { NetworkScene } from '../NetworkScene';
-
-// Mock the child components
 jest.mock('../NetworkNode', () => ({
   NetworkNode: ({ entity, position, isSelected, onClick }: any) => (
     <div
@@ -16,7 +14,6 @@ jest.mock('../NetworkNode', () => ({
     </div>
   ),
 }));
-
 jest.mock('../ConnectionLine', () => ({
   ConnectionLine: ({ start, end, strength, type }: any) => (
     <div
@@ -30,7 +27,6 @@ jest.mock('../ConnectionLine', () => ({
     </div>
   ),
 }));
-
 jest.mock('../ConnectionParticle', () => ({
   ConnectionParticle: ({ start, end, type, speed, particleCount }: any) => (
     <div
@@ -45,8 +41,6 @@ jest.mock('../ConnectionParticle', () => ({
     </div>
   ),
 }));
-
-// Mock constants
 jest.mock('../../../../constants/visualization', () => ({
   NETWORK_SCENE_CONFIG: {
     connectionRules: {
@@ -62,7 +56,6 @@ jest.mock('../../../../constants/visualization', () => ({
     ],
   },
 }));
-
 describe('NetworkScene', () => {
   const mockEntities = [
     {
@@ -98,7 +91,6 @@ describe('NetworkScene', () => {
       changesToday: 8,
     },
   ];
-
   const mockPositions = [
     {
       entity_id: 'ai-1',
@@ -117,7 +109,6 @@ describe('NetworkScene', () => {
       network_position: { x: 5, y: 5, z: 0 },
     },
   ];
-
   it('renders NetworkScene with all entities', () => {
     render(
       <NetworkScene
@@ -127,13 +118,11 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByText('Network Node: AI Agent 1')).toBeInTheDocument();
     expect(screen.getByText('Network Node: System 1')).toBeInTheDocument();
     expect(screen.getByText('Network Node: User 1')).toBeInTheDocument();
     expect(screen.getByText('Network Node: Threat 1')).toBeInTheDocument();
   });
-
   it('renders connection lines between entities', () => {
     render(
       <NetworkScene
@@ -143,12 +132,9 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render connection lines
     const connectionLines = screen.getAllByTestId('connection-line');
     expect(connectionLines.length).toBeGreaterThan(0);
   });
-
   it('renders connection particles', () => {
     render(
       <NetworkScene
@@ -158,12 +144,9 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render connection particles
     const connectionParticles = screen.getAllByTestId('connection-particle');
     expect(connectionParticles.length).toBeGreaterThan(0);
   });
-
   it('handles selected entity correctly', () => {
     render(
       <NetworkScene
@@ -173,14 +156,12 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     const networkNodes = screen.getAllByTestId('network-node');
     const selectedNode = networkNodes.find(
       node => node.getAttribute('data-entity-id') === 'ai-1'
     );
     expect(selectedNode).toHaveAttribute('data-selected', 'true');
   });
-
   it('handles entities without position data', () => {
     const entitiesWithoutPositions = [
       {
@@ -192,7 +173,6 @@ describe('NetworkScene', () => {
         changesToday: 5,
       },
     ];
-
     render(
       <NetworkScene
         entities={entitiesWithoutPositions}
@@ -201,11 +181,8 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should still render the entity with fallback positioning
     expect(screen.getByText('Network Node: Entity 1')).toBeInTheDocument();
   });
-
   it('handles empty entities array', () => {
     render(
       <NetworkScene
@@ -215,11 +192,8 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render without errors
     expect(screen.queryByTestId('network-node')).not.toBeInTheDocument();
   });
-
   it('groups entities by type correctly', () => {
     render(
       <NetworkScene
@@ -229,8 +203,6 @@ describe('NetworkScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render all entity types
     expect(screen.getByText('Network Node: AI Agent 1')).toBeInTheDocument();
     expect(screen.getByText('Network Node: System 1')).toBeInTheDocument();
     expect(screen.getByText('Network Node: User 1')).toBeInTheDocument();

@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TimelineScene } from '../TimelineScene';
-
-// Mock the child components
 jest.mock('../EntityNode', () => ({
   EntityNode: ({ entity, position, isSelected, onClick }: any) => (
     <div
@@ -16,7 +14,6 @@ jest.mock('../EntityNode', () => ({
     </div>
   ),
 }));
-
 jest.mock('../ChangeParticle', () => ({
   ChangeParticle: ({ position }: any) => (
     <div data-testid="change-particle" data-position={JSON.stringify(position)}>
@@ -24,7 +21,6 @@ jest.mock('../ChangeParticle', () => ({
     </div>
   ),
 }));
-
 jest.mock('../TimeScale', () => ({
   TimeScale: ({ position }: any) => (
     <div data-testid="time-scale" data-position={JSON.stringify(position)}>
@@ -32,7 +28,6 @@ jest.mock('../TimeScale', () => ({
     </div>
   ),
 }));
-
 describe('TimelineScene', () => {
   const mockEntities = [
     {
@@ -52,7 +47,6 @@ describe('TimelineScene', () => {
       changesToday: 3,
     },
   ];
-
   const mockPositions = [
     {
       entity_id: 'entity-1',
@@ -65,7 +59,6 @@ describe('TimelineScene', () => {
       change_particles: [],
     },
   ];
-
   it('renders TimelineScene with all entities', () => {
     render(
       <TimelineScene
@@ -75,11 +68,9 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByText('Entity Node: Entity 1')).toBeInTheDocument();
     expect(screen.getByText('Entity Node: Entity 2')).toBeInTheDocument();
   });
-
   it('renders timeline axis and markers', () => {
     render(
       <TimelineScene
@@ -89,11 +80,8 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render without errors (timeline axis and markers are Three.js components)
     expect(document.body).toBeInTheDocument();
   });
-
   it('handles selected entity correctly', () => {
     render(
       <TimelineScene
@@ -103,14 +91,12 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     const entityNodes = screen.getAllByTestId('entity-node');
     const selectedNode = entityNodes.find(
       node => node.getAttribute('data-entity-id') === 'entity-1'
     );
     expect(selectedNode).toHaveAttribute('data-selected', 'true');
   });
-
   it('renders change particles for selected entity', () => {
     render(
       <TimelineScene
@@ -120,12 +106,9 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render change particles for selected entity
     const changeParticles = screen.getAllByTestId('change-particle');
     expect(changeParticles.length).toBeGreaterThan(0);
   });
-
   it('renders time scale when entity is selected', () => {
     render(
       <TimelineScene
@@ -135,10 +118,8 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('time-scale')).toBeInTheDocument();
   });
-
   it('does not render time scale when no entity is selected', () => {
     render(
       <TimelineScene
@@ -148,10 +129,8 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
     expect(screen.queryByTestId('time-scale')).not.toBeInTheDocument();
   });
-
   it('handles entities without position data', () => {
     const entitiesWithoutPositions = [
       {
@@ -163,7 +142,6 @@ describe('TimelineScene', () => {
         changesToday: 5,
       },
     ];
-
     render(
       <TimelineScene
         entities={entitiesWithoutPositions}
@@ -172,11 +150,8 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should still render the entity with fallback positioning
     expect(screen.getByText('Entity Node: Entity 1')).toBeInTheDocument();
   });
-
   it('handles empty entities array', () => {
     render(
       <TimelineScene
@@ -186,11 +161,8 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render without errors
     expect(screen.queryByTestId('entity-node')).not.toBeInTheDocument();
   });
-
   it('calculates timeline bounds correctly', () => {
     render(
       <TimelineScene
@@ -200,8 +172,6 @@ describe('TimelineScene', () => {
         onEntitySelect={jest.fn()}
       />
     );
-
-    // Should render without errors and calculate timeline bounds
     expect(document.body).toBeInTheDocument();
   });
 });

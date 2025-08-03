@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MatrixNode } from '../MatrixNode';
-
-// Mock Three.js components
 jest.mock('@react-three/drei', () => ({
   Text: ({ children, fontSize, color, maxWidth, textAlign }: any) => (
     <div
@@ -13,7 +11,6 @@ jest.mock('@react-three/drei', () => ({
     </div>
   ),
 }));
-
 describe('MatrixNode', () => {
   const mockEntity = {
     id: 'threat-1',
@@ -23,7 +20,6 @@ describe('MatrixNode', () => {
     lastSeen: '2023-01-01T12:00:00Z',
     changesToday: 5,
   };
-
   it('renders MatrixNode with mesh and text', () => {
     render(
       <MatrixNode
@@ -33,10 +29,8 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByTestId('text')).toBeInTheDocument();
   });
-
   it('renders threat entity with correct label', () => {
     render(
       <MatrixNode
@@ -46,20 +40,17 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/Test Threat/)).toBeInTheDocument();
     expect(screen.getByText(/medium/)).toBeInTheDocument();
     expect(screen.getByText(/50%/)).toBeInTheDocument();
     expect(screen.getByText(/medium detections/)).toBeInTheDocument();
   });
-
   it('renders non-threat entity with simple label', () => {
     const nonThreatEntity = {
       ...mockEntity,
       type: 'System' as const,
       name: 'Test System',
     };
-
     render(
       <MatrixNode
         entity={nonThreatEntity}
@@ -68,13 +59,10 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText('Test System')).toBeInTheDocument();
   });
-
   it('handles click events', () => {
     const mockOnClick = jest.fn();
-
     render(
       <MatrixNode
         entity={mockEntity}
@@ -83,17 +71,12 @@ describe('MatrixNode', () => {
         onClick={mockOnClick}
       />
     );
-
-    // Since we're mocking Three.js components, we can't easily test the mesh click
-    // But we can verify the onClick prop is passed correctly
     expect(mockOnClick).not.toHaveBeenCalled();
   });
-
   it('renders with different threat severity levels', () => {
     const criticalPosition: [number, number, number] = [0, 6, 0];
     const highPosition: [number, number, number] = [0, 4, 0];
     const lowPosition: [number, number, number] = [0, 0, 0];
-
     const { rerender } = render(
       <MatrixNode
         entity={mockEntity}
@@ -102,9 +85,7 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/critical/)).toBeInTheDocument();
-
     rerender(
       <MatrixNode
         entity={mockEntity}
@@ -113,9 +94,7 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/high/)).toBeInTheDocument();
-
     rerender(
       <MatrixNode
         entity={mockEntity}
@@ -124,14 +103,11 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/low/)).toBeInTheDocument();
   });
-
   it('renders with different threat scores', () => {
     const highScorePosition: [number, number, number] = [0, 2, 3];
     const lowScorePosition: [number, number, number] = [0, 2, -3];
-
     const { rerender } = render(
       <MatrixNode
         entity={mockEntity}
@@ -140,9 +116,7 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/100%/)).toBeInTheDocument();
-
     rerender(
       <MatrixNode
         entity={mockEntity}
@@ -151,14 +125,11 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/0%/)).toBeInTheDocument();
   });
-
   it('renders with different detection levels', () => {
     const highDetectionPosition: [number, number, number] = [3, 2, 0];
     const lowDetectionPosition: [number, number, number] = [-2, 2, 0];
-
     const { rerender } = render(
       <MatrixNode
         entity={mockEntity}
@@ -167,9 +138,7 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/high detections/)).toBeInTheDocument();
-
     rerender(
       <MatrixNode
         entity={mockEntity}
@@ -178,7 +147,6 @@ describe('MatrixNode', () => {
         onClick={jest.fn()}
       />
     );
-
     expect(screen.getByText(/low detections/)).toBeInTheDocument();
   });
 });
