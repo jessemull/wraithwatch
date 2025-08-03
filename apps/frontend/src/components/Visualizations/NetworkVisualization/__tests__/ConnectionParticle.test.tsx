@@ -141,4 +141,90 @@ describe('ConnectionParticle', () => {
     render(<ConnectionParticle start={start} end={end} particleSize={0.2} />);
     expect(document.body).toBeInTheDocument();
   });
+
+  it('renders with very small particle size', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} particleSize={0.01} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with very large particle size', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} particleSize={1.0} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with zero particle count', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} particleCount={0} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with large particle count', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} particleCount={10} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with very slow speed', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} speed={0.1} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with very fast speed', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} speed={2.0} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with zero speed', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} speed={0} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with negative speed', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(<ConnectionParticle start={start} end={end} speed={-0.5} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with extreme coordinates', () => {
+    const start: [number, number, number] = [1000, 1000, 1000];
+    const end: [number, number, number] = [-1000, -1000, -1000];
+    render(<ConnectionParticle start={start} end={end} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with decimal coordinates', () => {
+    const start: [number, number, number] = [0.1, 0.2, 0.3];
+    const end: [number, number, number] = [0.9, 0.8, 0.7];
+    render(<ConnectionParticle start={start} end={end} />);
+    expect(document.body).toBeInTheDocument();
+  });
+
+  it('renders with all props customized', () => {
+    const start: [number, number, number] = [0, 0, 0];
+    const end: [number, number, number] = [1, 1, 1];
+    render(
+      <ConnectionParticle
+        start={start}
+        end={end}
+        type="agent"
+        speed={0.8}
+        particleCount={5}
+        particleSize={0.15}
+      />
+    );
+    expect(document.body).toBeInTheDocument();
+  });
 });
