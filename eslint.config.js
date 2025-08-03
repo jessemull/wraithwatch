@@ -111,6 +111,18 @@ export default [
     },
   },
 
+  // Test files override - disable no-explicit-any for test files
+  {
+    files: [
+      '**/*.test.{js,jsx,ts,tsx}',
+      '**/*.spec.{js,jsx,ts,tsx}',
+      '**/__tests__/**/*.{js,jsx,ts,tsx}',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
   // Backend (Node.js) overrides...
 
   {

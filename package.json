@@ -25,7 +25,12 @@
     "install:all": "yarn install",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --quiet && prettier --write .",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --quiet --fix && prettier --write .",
-    "setup": "husky install"
+    "setup": "husky install",
+    "test": "yarn workspaces run test",
+    "test:frontend": "yarn --cwd apps/frontend test",
+    "test:backend": "yarn --cwd apps/realtime-api test",
+    "e2e": "yarn --cwd apps/frontend e2e",
+    "lighthouse": "yarn --cwd apps/frontend lighthouse"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

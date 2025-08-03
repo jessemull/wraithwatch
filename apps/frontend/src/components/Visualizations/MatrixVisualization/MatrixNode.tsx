@@ -70,7 +70,7 @@ export const MatrixNode: React.FC<MatrixNodeProps> = ({
           color={color}
           emissive={color}
           emissiveIntensity={isSelected ? 0.8 : 0.3}
-          transparent
+          transparent={true}
           opacity={0.8}
         />
       </mesh>
