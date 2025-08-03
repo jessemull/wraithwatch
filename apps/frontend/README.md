@@ -1,72 +1,91 @@
-# Wraithwatch Frontend Dashboard
+# Wraithwatch Frontend
 
-A real-time cybersecurity threat monitoring dashboard built with Next.js 14, featuring 3D visualizations, AI-powered analytics, and responsive design for security operations centers.
+A modern React-based cybersecurity dashboard built with Next.js 15 and TypeScript, designed to provide real-time threat monitoring and entity visualization through interactive 3D renderings and dynamic charts.
 
-## 🎯 Overview
+## Table of Contents
 
-The Wraithwatch frontend provides an intuitive interface for security analysts to monitor and understand how cybersecurity entities and their properties change over time. Built with modern web technologies, it demonstrates effective UX patterns for navigating infinite dataspace toward useful outcomes.
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Component Architecture](#component-architecture)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Performance Optimization](#performance-optimization)
+- [Monitoring & Analytics](#monitoring--analytics)
 
-## ✨ Features
+## Overview
 
-### 🎨 Dashboard Components
-- **Real-time Metrics**: Live threat counts, AI confidence scores, connection tracking
-- **KPI Cards**: Active threats, threat scores, AI confidence, total connections
-- **Entity Details**: Comprehensive entity information with property evolution
-- **Connection Status**: WebSocket connection monitoring with auto-reconnect
+The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that displays real-time entity updates, threat monitoring, and interactive 3D visualizations. Built with modern web technologies, it demonstrates effective patterns for real-time data visualization and user experience design in security operations.
 
-### 🌐 3D Visualizations
-- **Matrix Visualization**: Threat positioning by severity, detection count, and threat score
-- **Network Visualization**: Entity connections with data flow animations
-- **Timeline Visualization**: Historical changes with time-based filtering
-- **Interactive Controls**: Camera manipulation, entity selection, filtering
+## Features
 
-### 🤖 AI Integration
-- **ChatBot Interface**: AI-powered threat analysis and entity queries
-- **Real-time Responses**: Claude 3.5 Sonnet integration
-- **Context Awareness**: Entity-specific threat analysis
-- **Conversation History**: Persistent chat sessions
+### Dashboard Components
+- **Real-time Entity List**: Live entity updates with property changes
+- **Interactive Charts**: Dynamic metrics visualization with Chart.js
+- **Entity Details Panel**: Detailed entity information and history
+- **Connection Status**: WebSocket connection monitoring
+- **Welcome Section**: User onboarding and system status
 
-### 📊 Data Management
-- **Entity Types**: Systems, Threats, AI Agents, Network Nodes
-- **Property Evolution**: Dynamic property change tracking
-- **Time-series Data**: Historical change visualization
-- **Real-time Updates**: WebSocket-powered live data streaming
+### 3D Visualizations
+- **Timeline Visualization**: Time-based entity progression
+- **Network Visualization**: Entity relationships and connections
+- **Matrix Visualization**: Spatial entity positioning
+- **Dynamic Loading**: Lazy-loaded 3D components for performance
+- **Entity Selection**: Interactive entity selection and highlighting
 
-## 🛠️ Technology Stack
+### Real-time Data Integration
+- **WebSocket Communication**: Real-time data streaming
+- **REST API Integration**: Historical data and metrics
+- **Data Transformation**: Entity change to visualization mapping
+- **Error Handling**: Graceful connection and data error management
+- **Connection Recovery**: Automatic WebSocket reconnection
+
+### User Experience
+- **Responsive Design**: Mobile and desktop optimization
+- **Loading States**: Smooth loading transitions
+- **Error Boundaries**: Graceful error handling
+- **Performance Monitoring**: Lighthouse CI integration
+- **Accessibility**: WCAG compliance features
+
+## Technology Stack
 
 ### Core Framework
-- **Next.js 14**: React framework with App Router
+- **Next.js 15**: React framework with App Router
+- **React 19**: Latest React with concurrent features
 - **TypeScript**: Type-safe development
-- **React 18**: Concurrent features and hooks
+- **Tailwind CSS**: Utility-first styling
 
-### 3D Graphics
-- **Three.js**: 3D visualization library
+### 3D Visualization
+- **Three.js**: 3D graphics library
 - **React Three Fiber**: React renderer for Three.js
-- **Drei**: Useful helpers for Three.js
-- **Custom Shaders**: Advanced visual effects
+- **Drei**: Three.js helpers and utilities
+- **Framer Motion**: Animation library
 
-### Styling & UI
-- **Tailwind CSS**: Utility-first CSS framework
-- **Headless UI**: Accessible UI components
-- **Custom Components**: Specialized cybersecurity components
+### Data Visualization
+- **Chart.js**: Interactive charts and graphs
+- **React Chart.js 2**: React wrapper for Chart.js
+- **Lucide React**: Icon library
 
-### State Management
-- **React Hooks**: useState, useEffect, useContext
-- **Custom Hooks**: useRealTimeData, useWebSocket
-- **Context API**: Global state management
-
-### Testing
-- **Jest**: Unit testing framework
-- **React Testing Library**: Component testing
+### Development Tools
+- **Jest**: Testing framework
+- **ESLint**: Code linting
 - **Cypress**: End-to-end testing
-- **Coverage**: 70%+ threshold
+- **Lighthouse CI**: Performance monitoring
 
-## 🚀 Quick Start
+### CI/CD
+- **GitHub Actions**: Deployment workflows
+- **AWS S3**: Static website hosting
+- **CloudFront**: Global CDN
+- **CloudFormation**: Infrastructure management
+
+## Quick Start
 
 ### Prerequisites
 - Node.js 22+
 - Yarn package manager
-- WebSocket-capable browser
+- API and WebSocket endpoints configured
 
 ### Installation
 
@@ -77,8 +96,8 @@ The Wraithwatch frontend provides an intuitive interface for security analysts t
 
 2. **Set environment variables**
    ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your API endpoints
+   # Edit .env.local with environment variables (see below)
+   touch .env.local
    ```
 
 3. **Start development server**
@@ -86,59 +105,63 @@ The Wraithwatch frontend provides an intuitive interface for security analysts t
    yarn dev
    ```
 
-4. **Open browser**
-   ```
-   http://localhost:3000
+4. **Open the application**
+   ```bash
+   # Navigate to http://localhost:3000
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 apps/frontend/
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   ├── components/             # React components
-│   │   ├── Charts/            # Chart components
-│   │   ├── ChatBot/           # AI chatbot interface
-│   │   ├── ConnectionStatus/  # WebSocket status
-│   │   ├── Dashboard/         # Main dashboard
-│   │   ├── EntitiesList/      # Entity management
+│   ├── app/                   # Next.js App Router
+│   ├── components/            # React components
+│   │   ├── Charts/            # Chart.js components
+│   │   ├── Dashboard/         # Dashboard components
+│   │   ├── EntitiesList/      # Entity list components
 │   │   └── Visualizations/    # 3D visualization components
-│   ├── config/                # Configuration files
+│   ├── config/                # Application configuration
 │   ├── constants/             # Application constants
 │   ├── hooks/                 # Custom React hooks
 │   ├── types/                 # TypeScript type definitions
 │   └── util/                  # Utility functions
 ├── public/                    # Static assets
-├── cypress/                   # E2E test configuration
+├── cypress/                   # End-to-end tests
 └── package.json               # Dependencies and scripts
 ```
 
-## 🎨 Component Architecture
+## Component Architecture
 
 ### Dashboard Components
-- **Dashboard.tsx**: Main dashboard layout and orchestration
-- **DashboardMetrics.tsx**: Real-time KPI display
-- **Header.tsx**: Navigation and status indicators
-- **WelcomeSection.tsx**: Onboarding and help content
+- **Dashboard**: Main dashboard container and layout
+- **Header**: Navigation and connection status
+- **DashboardMetrics**: Real-time metrics display
+- **EntityDetails**: Entity information panel
+- **VisualizationControls**: 3D visualization controls
+- **WelcomeSection**: User onboarding section
 
 ### Visualization Components
-- **Matrix3D.tsx**: 3D matrix visualization for threats
-- **NetworkGraph3D.tsx**: Network topology visualization
-- **TimelineVisualization.tsx**: Historical data visualization
-- **DataParticle.tsx**: Animated data flow particles
+- **TimelineVisualization**: Time-based entity progression
+- **NetworkGraph3D**: Entity relationship visualization
+- **Matrix3D**: Spatial entity positioning
+- **EntityNode**: Individual entity representation
+- **ControlPanel**: Visualization controls
 
-### Entity Management
-- **EntitiesList.tsx**: Entity listing and filtering
-- **EntityItem.tsx**: Individual entity display
-- **EntityDetails.tsx**: Detailed entity information
-- **EntityGroupHeader.tsx**: Entity type grouping
+### Chart Components
+- **BarChart**: Vertical bar chart component
+- **LineChart**: Time-series line chart
+- **PieChart**: Pie chart component
+- **DoughnutChart**: Doughnut chart component
+- **HorizontalBarChart**: Horizontal bar chart
 
-### AI Integration
-- **ChatBot.tsx**: AI chatbot interface
-- **ChatBot.test.tsx**: ChatBot component tests
+### Entity Components
+- **EntitiesList**: Entity list container
+- **EntityItem**: Individual entity item
+- **EntityGroupHeader**: Entity group headers
+- **ConnectionStatus**: WebSocket connection status
 
-## 🔧 Development
+## Development
 
 ### Available Scripts
 
@@ -152,13 +175,17 @@ yarn start            # Start production server
 yarn test             # Run unit tests
 yarn test:watch       # Run tests in watch mode
 yarn test:coverage    # Generate coverage report
-yarn cypress:open     # Open Cypress test runner
-yarn cypress:run      # Run E2E tests
+yarn coverage:open    # Open coverage report
+
+# E2E Testing
+yarn e2e              # Run Cypress tests
+yarn e2e:open         # Open Cypress UI
 
 # Code Quality
 yarn lint             # Run ESLint
-yarn lint:fix         # Fix linting issues
-yarn type-check       # TypeScript type checking
+
+# Performance
+yarn lighthouse       # Run Lighthouse CI
 ```
 
 ### Environment Variables
@@ -166,11 +193,11 @@ yarn type-check       # TypeScript type checking
 ```bash
 # Required
 NEXT_PUBLIC_API_URL=https://api.wraithwatch-demo.com
-NEXT_PUBLIC_WEBSOCKET_URL=wss://api.wraithwatch-demo.com
+NEXT_PUBLIC_WEBSOCKET_URL=wss://api.wraithwatch-demo.com/ws
 
 # Optional
-NEXT_PUBLIC_CHATBOT_URL=https://chatbot.wraithwatch-demo.com
-NEXT_PUBLIC_ENVIRONMENT=production
+NODE_ENV=development
+NEXT_PUBLIC_APP_ENV=development
 ```
 
 ### Development Workflow
@@ -183,13 +210,11 @@ NEXT_PUBLIC_ENVIRONMENT=production
 2. **Run tests**
    ```bash
    yarn test
-   yarn cypress:run
    ```
 
 3. **Check code quality**
    ```bash
    yarn lint
-   yarn type-check
    ```
 
 4. **Build for production**
@@ -197,146 +222,104 @@ NEXT_PUBLIC_ENVIRONMENT=production
    yarn build
    ```
 
-## 🧪 Testing Strategy
+## Deployment
 
-### Unit Testing
-- **Jest**: Test runner and assertion library
-- **React Testing Library**: Component testing utilities
-- **Coverage**: 70%+ threshold enforced
-- **Mocking**: WebSocket and API mocking
+### GitHub Actions Deployment
 
-### Integration Testing
-- **Cypress**: End-to-end testing
-- **Custom Commands**: Reusable test utilities
-- **Visual Testing**: Screenshot comparisons
-- **Performance Testing**: Lighthouse CI integration
+The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 
-### Test Structure
-```
-__tests__/
-├── components/          # Component unit tests
-├── hooks/              # Custom hook tests
-├── util/               # Utility function tests
-└── cypress/
-    └── e2e/           # End-to-end tests
-```
+1. **Automatic Trigger**: Deploy on push to main branch
+2. **Build Process**: 
+   - Install dependencies
+   - Lint code
+   - Run unit tests
+   - Check coverage threshold (70%)
+   - Build Next.js application
+   - Copy sitemap and robots files
 
-## 🎨 Styling Guidelines
+3. **S3 Deployment**:
+   - Upload build artifacts to S3 bucket
+   - Sync with CloudFront distribution
+   - Set environment variables
 
-### Design System
-- **Tailwind CSS**: Utility-first approach
-- **Custom Components**: Specialized cybersecurity components
-- **Responsive Design**: Mobile-first approach
-- **Accessibility**: WCAG 2.1 AA compliance
+### Deployment Steps
 
-### Color Palette
-- **Primary**: Cybersecurity blues and grays
-- **Threat Colors**: Red gradients for threat severity
-- **Success**: Green for positive metrics
-- **Warning**: Yellow/Orange for alerts
+1. **Trigger Deployment**
+   ```bash
+   # Push to main branch or trigger workflow manually
+   git push origin main
+   ```
 
-### Typography
-- **Headings**: Inter font family
-- **Body**: System font stack
-- **Monospace**: Code and technical data
+2. **Monitor Deployment**
+   - Watch GitHub Actions workflow
+   - Check S3 bucket upload
+   - Verify CloudFront distribution
+   - Monitor build artifacts
 
-## 📊 Performance Optimization
+3. **Verify Deployment**
+   ```bash
+   # Test production site
+   curl https://www.wraithwatch-demo.com
+   
+   # Check WebSocket connection
+   wscat -c wss://api.wraithwatch-demo.com/ws
+   ```
 
-### Bundle Optimization
+## Infrastructure Components
+
+- **S3 Bucket**: `wraithwatch-frontend` for static hosting
+- **CloudFront Distribution**: Global CDN with custom domain
+- **Route 53**: DNS management for custom domain
+- **ACM Certificate**: SSL certificate for HTTPS
+- **CloudFormation**: Infrastructure management
+
+## Performance Optimization
+
+### Next.js Optimization
+- **App Router**: Latest Next.js routing system
+- **Static Generation**: Pre-rendered pages for performance
+- **Image Optimization**: Automatic image optimization
+- **Code Splitting**: Automatic code splitting
+- **Bundle Analysis**: Webpack bundle analysis
+
+### 3D Visualization Optimization
+- **Lazy Loading**: Dynamic imports for 3D components
+- **Three.js Optimization**: Efficient 3D rendering
+- **Memory Management**: Proper cleanup and disposal
+- **Frame Rate Optimization**: 60fps rendering targets
+
+### Data Optimization
+- **WebSocket Efficiency**: Optimized real-time communication
+- **Caching Strategy**: Client-side data caching
+- **Error Recovery**: Graceful error handling
+- **Connection Management**: Efficient WebSocket management
+
+### Build Optimization
 - **Tree Shaking**: Unused code elimination
-- **Code Splitting**: Route-based splitting
-- **Dynamic Imports**: Lazy loading of heavy components
-- **Image Optimization**: Next.js image optimization
+- **Minification**: Code and asset minification
+- **Compression**: Gzip and Brotli compression
+- **CDN Integration**: Global content delivery
 
-### Runtime Performance
-- **React.memo**: Component memoization
-- **useMemo/useCallback**: Hook optimization
-- **Virtual Scrolling**: Large list optimization
-- **WebGL Optimization**: Three.js performance tuning
-
-### Lighthouse Score
-- **Target**: 80+ performance score
-- **Optimizations**: 
-  - Image compression
-  - Bundle size reduction
-  - Critical CSS inlining
-  - Service worker caching
-
-## 🚀 Deployment
-
-### Production Build
-```bash
-# Build application
-yarn build
-
-# Export static files
-yarn export
-
-# Deploy to S3
-aws s3 sync out/ s3://wraithwatch-frontend/
-```
-
-### CI/CD Pipeline
-- **GitHub Actions**: Automated testing and deployment
-- **Lighthouse CI**: Performance monitoring
-- **CloudFront**: Global CDN distribution
-- **S3**: Static hosting
-
-### Environment Configuration
-```bash
-# Production
-NODE_ENV=production
-NEXT_PUBLIC_API_URL=https://api.wraithwatch-demo.com
-
-# Development
-NODE_ENV=development
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
-
-## 🔍 Monitoring & Analytics
+## Monitoring & Analytics
 
 ### Performance Monitoring
 - **Lighthouse CI**: Automated performance testing
-- **Web Vitals**: Core Web Vitals tracking
-- **Bundle Analysis**: Webpack bundle analyzer
-- **Error Tracking**: Error boundary implementation
+- **Core Web Vitals**: Performance metrics monitoring
+- **Bundle Analysis**: JavaScript bundle size tracking
+- **Load Time Monitoring**: Page load time tracking
 
-### User Analytics
-- **WebSocket Monitoring**: Connection status tracking
-- **Interaction Tracking**: User behavior analytics
-- **Error Logging**: Client-side error reporting
-- **Performance Metrics**: Real-time performance data
+### Error Monitoring
+- **Error Boundaries**: React error boundary implementation
+- **Console Logging**: Development error logging
+- **User Feedback**: Error reporting mechanisms
+- **Debugging Tools**: Development debugging utilities
 
-## 🤝 Contributing
-
-### Development Guidelines
-1. **TypeScript**: Strict type checking required
-2. **Testing**: Unit tests for new components
-3. **Linting**: ESLint rules must pass
-4. **Formatting**: Prettier auto-formatting
-5. **Accessibility**: WCAG 2.1 AA compliance
-
-### Code Review Process
-1. **Feature Branch**: Create from main
-2. **Tests**: Ensure all tests pass
-3. **Linting**: Fix any linting issues
-4. **Performance**: Check Lighthouse scores
-5. **Review**: Submit pull request
-
-## 📚 Documentation
-
-### API Documentation
-- **WebSocket Events**: Real-time data events
-- **REST Endpoints**: API integration points
-- **Type Definitions**: TypeScript interfaces
-- **Error Handling**: Error response formats
-
-### Component Documentation
-- **Props Interface**: Component prop definitions
-- **Usage Examples**: Code examples
-- **Styling Guide**: CSS class usage
-- **Accessibility**: ARIA attributes and roles
+### Analytics Integration
+- **User Interaction**: User behavior tracking
+- **Performance Metrics**: Real user monitoring
+- **Error Tracking**: Error rate monitoring
+- **Conversion Tracking**: User journey analysis
 
 ---
 
-**Built for Wraithwatch Cybersecurity - Advanced threat intelligence visualization**
+**Built for Wraithwatch Cybersecurity - Modern real-time cybersecurity dashboard**
