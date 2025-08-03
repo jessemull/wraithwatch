@@ -40,12 +40,14 @@ if (isTestEnvironment) {
 
 export class DynamoDBService {
   private readonly tableName = DYNAMODB_TABLE_NAME;
+  private docClient: DynamoDBDocumentClient;
   private dataCache: NodeCache;
   private positionsCache: NodeCache;
 
-  constructor() {
+  
+  constructor(docClientOverride?: DynamoDBDocumentClient) {
     // Cache with very long TTL for demo (30 days)...
-
+    this.docClient = docClientOverride || docClient;
     this.dataCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
     this.positionsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
   }
@@ -157,7 +159,7 @@ export class DynamoDBService {
           ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey }),
         };
 
-        const response = await docClient.send(new ScanCommand(scanParams));
+        const response = await this.docClient.send(new ScanCommand(scanParams));
         const items = response.Items || [];
         allItems.push(...items);
         lastEvaluatedKey = response.LastEvaluatedKey;
@@ -214,7 +216,7 @@ export class DynamoDBService {
 
   async createEntityChange(change: EntityChange): Promise<void> {
     try {
-      await docClient.send(
+      await this.docClient.send(
         new PutCommand({
           TableName: this.tableName,
           Item: change,
@@ -265,7 +267,7 @@ export class DynamoDBService {
       ExclusiveStartKey: lastEvaluatedKey,
     };
 
-    const response = await docClient.send(new ScanCommand(scanParams));
+    const response = await this.docClient.send(new ScanCommand(scanParams));
     return {
       items: (response.Items as EntityChange[]) || [],
       lastEvaluatedKey: response.LastEvaluatedKey,
@@ -306,7 +308,7 @@ export class DynamoDBService {
       Select: 'SPECIFIC_ATTRIBUTES',
     };
 
-    const scanResponse = await docClient.send(new ScanCommand(scanParams));
+    const scanResponse = await this.docClient.send(new ScanCommand(scanParams));
     const timeBuckets = new Set<string>();
 
     (scanResponse.Items || []).forEach(item => {
@@ -334,7 +336,7 @@ export class DynamoDBService {
       Limit: limit,
     };
 
-    const response = await docClient.send(new QueryCommand(queryParams));
+    const response = await this.docClient.send(new QueryCommand(queryParams));
     return (response.Items as EntityChange[]) || [];
   }
 
@@ -387,7 +389,7 @@ export class DynamoDBService {
       PutRequest: { Item: change },
     }));
 
-    await docClient.send(
+    await this.docClient.send(
       new BatchWriteCommand({
         RequestItems: { [this.tableName]: writeRequests },
       })

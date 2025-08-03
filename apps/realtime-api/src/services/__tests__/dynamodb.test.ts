@@ -1,170 +1,120 @@
-import NodeCache from 'node-cache';
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { EntityChange } from '../../types';
+// __tests__/dynamodb-service.test.ts
 
-jest.mock('node-cache');
-jest.mock('@aws-sdk/client-dynamodb');
+import { DynamoDBService } from '../dynamodb';
+import {
+  PutCommand,
+  BatchWriteCommand,
+} from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
 jest.mock('@aws-sdk/lib-dynamodb');
-jest.mock('../../utils/logger', () => ({
-  createComponentLogger: jest.fn().mockReturnValue({
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-  }),
-}));
 
-jest.mock('@aws-sdk/lib-dynamodb', () => ({
-  DynamoDBDocumentClient: {
-    from: jest.fn(),
-  },
-  ScanCommand: jest.fn().mockImplementation(params => ({ input: params })),
-  PutCommand: jest.fn().mockImplementation(params => ({ input: params })),
-  BatchWriteCommand: jest
-    .fn()
-    .mockImplementation(params => ({ input: params })),
-}));
+const mockDocClient = {
+  send: jest.fn(),
+};
 
-const sendMock = jest.fn();
-(DynamoDBDocumentClient.from as jest.Mock).mockReturnValue({
-  send: sendMock,
-});
-
-import { MockDynamoDBService } from '../../../mocks/mock-dynamodb';
-
-// Helper function to create mock EntityChange objects
-const createMockEntityChange = (id: string): EntityChange => ({
-  PK: `ENTITY#${id}`,
-  SK: `PROPERTY#test`,
-  GSI1PK: `ENTITY#${id}`,
-  GSI1SK: `PROPERTY#test`,
-  GSI2PK: `ENTITY#${id}`,
-  GSI2SK: `PROPERTY#test`,
-  entity_id: id,
-  entity_type: 'System',
-  property_name: 'test',
-  value: 'test',
-  change_type: 'change',
-  timestamp: '2023-01-01T00:00:00Z',
-  TTL: 1234567890,
+jest.mock('@aws-sdk/lib-dynamodb', () => {
+  const original = jest.requireActual('@aws-sdk/lib-dynamodb');
+  return {
+    ...original,
+    DynamoDBDocumentClient: {
+      from: () => mockDocClient,
+    },
+  };
 });
 
 describe('DynamoDBService', () => {
-  let mockService: MockDynamoDBService;
-  let mockDataCache: any;
-  let mockPositionsCache: any;
+  let service: DynamoDBService;
 
   beforeEach(() => {
-    mockDataCache = {
-      get: jest.fn(),
-      set: jest.fn(),
-      flushAll: jest.fn(),
-    };
-    mockPositionsCache = {
-      get: jest.fn(),
-      set: jest.fn(),
-      flushAll: jest.fn(),
-    };
-
-    (NodeCache as unknown as jest.Mock).mockImplementationOnce(
-      () => mockDataCache
-    );
-    (NodeCache as unknown as jest.Mock).mockImplementationOnce(
-      () => mockPositionsCache
-    );
-
-    // Reset the send mock for each test
-    sendMock.mockClear();
-
-    // Use mock service instead of real service
-    mockService = new MockDynamoDBService();
-
-    // Only create real service for tests that specifically need it
-    // service = new DynamoDBService();
+    jest.clearAllMocks();
+    service = new DynamoDBService(mockDocClient as unknown as DynamoDBClient);
   });
 
-  describe('getAllData', () => {
-    it('returns cached data if available', async () => {
-      const mockData = [
-        createMockEntityChange('1'),
-        createMockEntityChange('2'),
-      ];
-      mockService.setMockData(mockData);
-      const result = await mockService.getAllData(1);
-      expect(result).toEqual([mockData[0]]);
-    });
+  it('getAllData uses cache if available', async () => {
+    const cacheData = [{ entity_id: '1' }];
+    service['dataCache'].set('all_data', cacheData);
 
-    it('returns empty array when no data available', async () => {
-      const result = await mockService.getAllData(2);
-      expect(result).toEqual([]);
-    });
+    const result = await service.getAllData();
+    expect(result).toEqual(cacheData);
   });
 
-  describe('getRecentChanges', () => {
-    it('returns empty array when no data available', async () => {
-      const result = await mockService.getRecentChanges();
-      expect(result).toEqual([]);
-    });
+  it('getAllData fetches and caches data if not cached', async () => {
+    mockDocClient.send.mockResolvedValueOnce({ Items: [{ entity_id: '2' }] });
+
+    const result = await service.getAllData();
+    expect(result).toEqual([{ entity_id: '2' }]);
   });
 
-  describe('preloadCache', () => {
-    it('calls both getAllData and getAllEntityPositions', async () => {
-      const getAllDataSpy = jest
-        .spyOn(mockService, 'getAllData')
-        .mockResolvedValue([]);
-      const getAllEntityPositionsSpy = jest
-        .spyOn(mockService, 'getAllEntityPositions')
-        .mockResolvedValue([]);
-      await mockService.preloadCache();
-      expect(getAllDataSpy).toHaveBeenCalled();
-      expect(getAllEntityPositionsSpy).toHaveBeenCalled();
-    });
+  it('getAllEntityPositions uses cache if available', async () => {
+    const cached = [{ entity_id: 'x' }];
+    service['positionsCache'].set('all_positions', cached);
+    const result = await service.getAllEntityPositions();
+    expect(result).toEqual(cached);
   });
 
-  describe('clearCache', () => {
-    it('clears both caches', () => {
-      mockService.clearCache();
-      // Mock service doesn't actually clear caches, but we can verify the method exists
-      expect(mockService.clearCache).toBeDefined();
-    });
+  it('getAllEntityPositions fetches if not cached', async () => {
+    mockDocClient.send.mockResolvedValueOnce({ Items: [{ PK: 'ENTITY_POSITION#x' }] });
+    const result = await service.getAllEntityPositions();
+    expect(result).toEqual([{ PK: 'ENTITY_POSITION#x' }]);
   });
 
-  describe('createEntityChange', () => {
-    it('adds a single change to mock data', async () => {
-      const change = createMockEntityChange('1');
+  it('preloadCache sets both caches', async () => {
+    mockDocClient.send.mockResolvedValueOnce({ Items: [{ entity_id: '3' }] });
+    mockDocClient.send.mockResolvedValueOnce({ Items: [{ PK: 'ENTITY_POSITION#y' }] });
 
-      await mockService.createEntityChange(change);
-
-      const mockData = mockService.getMockData();
-      expect(mockData).toHaveLength(1);
-      expect(mockData[0]).toEqual(change);
-    });
+    await service.preloadCache();
+    expect(service['dataCache'].get('all_data')).toBeTruthy();
+    expect(service['positionsCache'].get('all_positions')).toBeTruthy();
   });
 
-  describe('batchCreateEntityChanges', () => {
-    it('adds multiple changes to mock data', async () => {
-      const changes = Array.from({ length: 3 }, (_, i) =>
-        createMockEntityChange(String(i))
-      );
+  it('clearCache flushes caches', () => {
+    const flushSpy1 = jest.spyOn(service['dataCache'], 'flushAll');
+    const flushSpy2 = jest.spyOn(service['positionsCache'], 'flushAll');
 
-      await mockService.batchCreateEntityChanges(changes);
-
-      const mockData = mockService.getMockData();
-      expect(mockData).toHaveLength(3);
-      expect(mockData).toEqual(changes);
-    });
+    service.clearCache();
+    expect(flushSpy1).toHaveBeenCalled();
+    expect(flushSpy2).toHaveBeenCalled();
   });
 
-  describe('getAllEntityPositions', () => {
-    it('returns cached positions', async () => {
-      const mockPositions = [{ a: 1 }];
-      mockService.setMockPositions(mockPositions);
-      const result = await mockService.getAllEntityPositions();
-      expect(result).toBe(mockPositions);
-    });
+  it('createEntityChange sends put command', async () => {
+    const change = { entity_id: '4', timestamp: new Date().toISOString() };
+    await service.createEntityChange(change as any);
+    expect(mockDocClient.send).toHaveBeenCalledWith(expect.any(PutCommand));
+  });
 
-    it('returns empty array when no positions available', async () => {
-      const result = await mockService.getAllEntityPositions();
-      expect(result).toEqual([]);
-    });
+  it('batchCreateEntityChanges writes in batches', async () => {
+    const changes = Array.from({ length: 3 }, (_, i) => ({ entity_id: String(i) }));
+    await service.batchCreateEntityChanges(changes as any);
+    expect(mockDocClient.send).toHaveBeenCalledWith(expect.any(BatchWriteCommand));
+  });
+
+  it('getRecentChanges handles no buckets', async () => {
+    mockDocClient.send.mockResolvedValueOnce({ Items: [] });
+    const result = await service.getRecentChanges();
+    expect(result).toEqual([]);
+  });
+
+  it('getRecentChanges filters correctly', async () => {
+    mockDocClient.send
+      .mockResolvedValueOnce({ Items: [{ GSI2PK: 'time#1' }] })
+      .mockResolvedValueOnce({ Items: [{ entity_id: '5', timestamp: new Date().toISOString(), entity_type: 'T' }] });
+
+    const result = await service.getRecentChanges({ entityType: 'T', hours: 1 });
+    expect(result.length).toBe(1);
+  });
+
+  it('performScan paginates', async () => {
+    mockDocClient.send
+      .mockResolvedValueOnce({ Items: [{ entity_id: 'x' }], LastEvaluatedKey: { key: 1 } })
+      .mockResolvedValueOnce({ Items: [{ entity_id: 'y' }] });
+
+    const result = await service.getAllData(10);
+    expect(result.length).toBe(2);
+  });
+
+  it('calculateCutoffTime returns date in past', () => {
+    const past = service['calculateCutoffTime'](2);
+    expect(past < new Date()).toBe(true);
   });
 });
