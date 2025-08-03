@@ -1,66 +1,88 @@
 # Wraithwatch Realtime API
 
-A high-performance WebSocket and REST API built with Fastify and TypeScript, designed to serve real-time cybersecurity threat data with intelligent caching and data streaming capabilities.
+A high-performance WebSocket server built with Fastify and TypeScript, designed to provide real-time entity updates and data streaming for the Wraithwatch cybersecurity dashboard. The server mocks data streams from services like AWS Kinesis and delivers real-time updates via WebSockets and REST APIs.
 
-## 🎯 Overview
+## Table of Contents
 
-The Wraithwatch Realtime API provides the backbone for the cybersecurity dashboard, delivering real-time entity updates, historical data, and aggregated metrics through WebSocket connections and REST endpoints. Built for scale and performance, it demonstrates effective patterns for handling high-frequency data streams.
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
+- [WebSocket Communication](#websocket-communication)
+- [Database Schema](#database-schema)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Performance Optimization](#performance-optimization)
+- [Monitoring & Logging](#monitoring--logging)
+- [Security](#security)
 
-## ✨ Features
+## Overview
 
-### 🔌 Real-time Communication
-- **WebSocket Server**: Real-time bidirectional communication
-- **Connection Management**: Automatic reconnection and heartbeat
-- **Event Broadcasting**: Efficient multi-client message distribution
-- **Connection Pooling**: Optimized for concurrent connections
+The Wraithwatch Realtime API provides real-time data streaming capabilities for the cybersecurity dashboard, simulating production data streams from services like AWS Kinesis. The server generates continuous entity updates and delivers them via WebSocket connections and REST APIs, enabling real-time threat monitoring and entity tracking.
 
-### 📊 Data Management
-- **Entity Management**: CRUD operations for cybersecurity entities
-- **Time-series Data**: Historical change tracking and analysis
-- **Property Evolution**: Dynamic property change monitoring
-- **Data Aggregation**: Real-time metrics calculation
-
-### 🗄️ Database Integration
-- **DynamoDB Integration**: NoSQL database for entity storage
-- **Time-based Partitioning**: Efficient data retrieval patterns
-- **Batch Operations**: Optimized bulk data processing
-- **Query Optimization**: GSI and LSI for performance
-
-### 🚀 Performance Features
-- **Intelligent Caching**: 3-hour TTL with memory optimization
-- **Connection Pooling**: Efficient resource management
-- **Data Compression**: Optimized payload sizes
-- **Rate Limiting**: Protection against abuse
-
-## 🛠️ Technology Stack
-
-### Core Framework
-- **Fastify**: High-performance web framework
-- **TypeScript**: Type-safe development
-- **Node.js 22**: Latest LTS runtime
-
-### Database & Storage
-- **DynamoDB**: NoSQL database for entity storage
-- **Node-cache**: In-memory caching layer
-- **Time-series Data**: Historical change tracking
+## Features
 
 ### Real-time Communication
+- **WebSocket Server**: Real-time bidirectional communication
+- **Entity Updates**: Continuous entity property changes
+- **Connection Management**: Client connection tracking
+- **Broadcast Messaging**: Efficient message broadcasting
+
+### Data Management
+- **Entity Management**: Entity lifecycle and property tracking
+- **Time-series Data**: Historical entity property changes
+- **Data Aggregation**: Real-time metrics calculation
+- **Cache Management**: In-memory caching with TTL
+
+### Database Integration
+- **DynamoDB Integration**: AWS DynamoDB for data persistence
+- **Entity Positions**: Spatial entity positioning data
+- **Property History**: Time-series property value tracking
+- **Data Transformation**: Database to entity mapping
+
+### Performance Features
+- **Fastify Framework**: High-performance HTTP server
+- **WebSocket Optimization**: Efficient WebSocket handling
+- **Caching Strategy**: Multi-layer caching system
+- **Memory Management**: Optimized memory usage
+
+## Technology Stack
+
+### Core Platform
+- **Node.js 22**: Latest LTS runtime
+- **TypeScript**: Type-safe development
+- **Fastify**: High-performance HTTP framework
+
+### WebSocket & Communication
 - **WebSocket**: Real-time bidirectional communication
-- **Socket.io**: Enhanced WebSocket features
-- **Connection Management**: Automatic reconnection
+- **ws Library**: WebSocket server implementation
+- **Connection Management**: Client tracking and broadcasting
+
+### Database & Storage
+- **AWS DynamoDB**: NoSQL database for entity data
+- **AWS SDK v3**: DynamoDB client and operations
+- **Node-cache**: In-memory caching layer
 
 ### Development Tools
 - **Jest**: Testing framework
 - **ESLint**: Code linting
+
+### CI/CD
+- **GitHub Actions**: Deployment workflows
+- **AWS ECR**: Container registry
+- **ECS Fargate**: Container orchestration
+- **CloudFormation**: Infrastructure management
 - **Webpack**: Bundle optimization
 - **Docker**: Containerization
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js 22+
 - AWS CLI configured
-- DynamoDB table created
+- DynamoDB table with entity data
 - Docker (for containerized deployment)
 
 ### Installation
@@ -72,8 +94,8 @@ The Wraithwatch Realtime API provides the backbone for the cybersecurity dashboa
 
 2. **Set environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env with your AWS and database configuration
+   # Edit .env with environment variables (see below)
+   touch .env
    ```
 
 3. **Start development server**
@@ -81,12 +103,19 @@ The Wraithwatch Realtime API provides the backbone for the cybersecurity dashboa
    yarn dev
    ```
 
-4. **Verify API endpoints**
+4. **Test the API**
    ```bash
-   curl http://localhost:3001/health
+   # Health check
+   curl http://localhost:8080/health
+   
+   # Test data endpoint
+   curl http://localhost:8080/api/test/data
+   
+   # Test WebSocket connection (requires wscat)
+   wscat -c ws://localhost:8080/ws
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 apps/realtime-api/
@@ -94,36 +123,36 @@ apps/realtime-api/
 │   ├── __tests__/           # Test files
 │   ├── constants/           # Application constants
 │   ├── plugins/             # Fastify plugins
-│   ├── routes/              # API route handlers
+│   ├── routes/              # REST API routes
 │   ├── services/            # Business logic services
 │   ├── types/               # TypeScript type definitions
 │   ├── utils/               # Utility functions
 │   ├── index.ts             # Application entry point
 │   └── server.ts            # Server configuration
-├── mocks/                   # Test mocks
 ├── Dockerfile               # Container configuration
 ├── webpack.config.js        # Bundle configuration
 └── package.json             # Dependencies and scripts
 ```
 
-## 🔧 API Endpoints
+## API Endpoints
 
-### REST Endpoints
-
-#### Health Check
+### Health Check
 ```http
-GET /health
+GET https://api.wraithwatch-demo.com/api/health
 ```
-Returns server health status and uptime information.
 
-#### Data Endpoints
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+### Test Data
 ```http
-GET /api/test/data?limit=100
+GET https://api.wraithwatch-demo.com/api/test/data?limit=5
 ```
-Retrieves entity data with optional pagination.
-
-**Query Parameters:**
-- `limit`: Number of entities to return (default: 5)
 
 **Response:**
 ```json
@@ -132,110 +161,165 @@ Retrieves entity data with optional pagination.
   "data": [...],
   "positions": [...],
   "metrics": {...},
-  "count": 100,
-  "positionCount": 50
+  "count": 5,
+  "positionCount": 10
 }
 ```
 
-### WebSocket Events
+## WebSocket Communication
 
-#### Connection Events
+### Connection
 ```javascript
-// Client connects
-socket.on('connect', () => {
-  console.log('Connected to Wraithwatch API');
-});
-
-// Server sends connection status
-socket.on('connection_status', (data) => {
-  console.log('Status:', data.status);
-});
+const ws = new WebSocket('ws://localhost:8080/ws');
 ```
 
-#### Data Events
-```javascript
-// Entity updates
-socket.on('entity_update', (data) => {
-  console.log('Entity updated:', data.entity);
-});
+### Message Types
 
-// Entity list
-socket.on('entity_list', (data) => {
-  console.log('Entities:', data.entities);
-});
-
-// Metrics updates
-socket.on('metrics_update', (data) => {
-  console.log('Metrics:', data.metrics);
-});
+#### Entity Updates
+```json
+{
+  "type": "entity_update",
+  "entityId": "entity-123",
+  "propertyName": "threat_level",
+  "oldValue": "medium",
+  "newValue": "high",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
 ```
 
-## 🗄️ Database Schema
+#### Entity List
+```json
+{
+  "type": "entity_list",
+  "entities": [
+    {
+      "id": "entity-123",
+      "type": "server",
+      "properties": {
+        "threat_level": "high",
+        "status": "active"
+      }
+    }
+  ]
+}
+```
 
-### Entity Changes Table
+#### Connection Status
+```json
+{
+  "type": "connection_status",
+  "clientCount": 5,
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+## Database Schema
+
+### Single Table Design
+
+For simplicity in this demo, we use a single DynamoDB table (`wraithwatch-entity-changes`) with different key schemas to store both entity changes and positions. This approach reduces complexity while demonstrating effective data modeling patterns.
+
+### Entity Changes (Time-Series Data)
+
+Each record represents a single event from a data stream, capturing property changes over time:
+
 ```typescript
 interface EntityChange {
-  PK: string;           // Entity ID
-  SK: string;           // Timestamp#version
+  PK: string;           // entity_id
+  SK: string;           // timestamp#version
+  GSI1PK: string;       // entity_type
+  GSI1SK: string;       // timestamp
+  GSI2PK: string;       // property_name
+  GSI2SK: string;       // timestamp
   entity_id: string;    // Entity identifier
-  entity_type: string;  // System, Threat, AI_Agent, Network_Node
+  entity_type: string;  // System, User, Sensor, Threat, AI_Agent, Network_Node
+  property_name: string; // Property that changed
+  value: string | number; // New property value
+  previous_value?: string | number; // Previous property value
+  change_type: 'increase' | 'decrease' | 'change'; // Type of change
   timestamp: string;    // ISO timestamp
-  properties: object;   // Entity properties
-  changes: object[];    // Property changes
   TTL: number;         // Expiration timestamp
 }
 ```
 
-### Entity Positions Table
+### Entity Positions (Spatial Data)
+
+Positions are stored separately from entity data to avoid re-rendering client 3D visualizations when entity properties change:
+
 ```typescript
 interface EntityPosition {
   PK: string;           // ENTITY_POSITION#entity_id
-  SK: string;           // Position type
+  SK: string;           // Position type (timeline/network/matrix)
   entity_id: string;    // Entity identifier
-  position: object;     // 3D coordinates
-  matrix_position: object; // Matrix-specific positioning
-  network_position: object; // Network-specific positioning
+  position: {           // 3D coordinates
+    x: number;
+    y: number;
+    z: number;
+  };
+  matrix_position?: {    // Matrix-specific positioning
+    x: number;
+    y: number;
+    z: number;
+  };
+  network_position?: {   // Network-specific positioning
+    x: number;
+    y: number;
+    z: number;
+  };
+  timeline_position?: {  // Timeline-specific positioning
+    x: number;
+    y: number;
+    z: number;
+  };
   TTL: number;         // Expiration timestamp
 }
 ```
 
-## 🔧 Development
+### Key Design Patterns
+
+- **Single Table**: Uses one table with different key schemas for simplicity
+- **Separate Positions**: Entity positions stored separately to optimize 3D rendering
+- **Time-Series Events**: Each record represents a single event from a data stream
+- **Runtime Aggregation**: Due to time constraints, data is aggregated at runtime rather than pre-computed
+- **GSI Optimization**: Multiple Global Secondary Indexes for efficient querying
+- **TTL Management**: Automatic expiration for demo data management
+
+## Development
 
 ### Available Scripts
 
 ```bash
 # Development
 yarn dev              # Start development server
-yarn build            # Build for production
+yarn build            # Build TypeScript
+yarn build:prod       # Build for production with Webpack
 yarn start            # Start production server
+yarn start:prod       # Start bundled production server
+yarn clean            # Clean build artifacts
 
 # Testing
 yarn test             # Run unit tests
 yarn test:watch       # Run tests in watch mode
 yarn test:coverage    # Generate coverage report
+yarn coverage:open    # Open coverage report
 
 # Code Quality
 yarn lint             # Run ESLint
-yarn lint:fix         # Fix linting issues
-yarn type-check       # TypeScript type checking
-
-# Database
-yarn db:clean         # Clean database (requires confirmation)
-yarn generate:data    # Generate demo data
 ```
 
 ### Environment Variables
 
 ```bash
 # Required
-DYNAMODB_TABLE_NAME=wraithwatch-entities
 AWS_REGION=us-east-1
-PORT=3001
+DYNAMODB_TABLE_NAME=wraithwatch-entities
 
 # Optional
-NODE_ENV=development
+PORT=8080
+HOST=0.0.0.0
+NODE_ENV=production
 LOG_LEVEL=info
-CACHE_TTL=10800  # 3 hours in seconds
+UPDATE_INTERVAL=2000
 ```
 
 ### Development Workflow
@@ -253,176 +337,131 @@ CACHE_TTL=10800  # 3 hours in seconds
 3. **Check code quality**
    ```bash
    yarn lint
-   yarn type-check
    ```
 
 4. **Build for production**
    ```bash
-   yarn build
+   yarn build:prod
    ```
 
-## 🧪 Testing Strategy
+## Deployment
 
-### Unit Testing
-- **Jest**: Test runner and assertion library
-- **Fastify Testing**: API endpoint testing
-- **Mocking**: DynamoDB and WebSocket mocking
-- **Coverage**: 70%+ threshold enforced
+### GitHub Actions Deployment
 
-### Integration Testing
-- **WebSocket Testing**: Real-time communication testing
-- **Database Testing**: DynamoDB integration testing
-- **Performance Testing**: Load and stress testing
-- **Error Handling**: Error scenario testing
+The Realtime API is deployed via GitHub Actions workflow and AWS ECS Fargate:
 
-### Test Structure
-```
-__tests__/
-├── server.test.ts           # Server configuration tests
-├── routes/                  # Route handler tests
-├── services/                # Service layer tests
-└── utils/                   # Utility function tests
-```
+1. **Manual Trigger**: Deploy via GitHub Actions workflow dispatch
+2. **Build Process**: 
+   - Install dependencies
+   - Lint code
+   - Run unit tests
+   - Check coverage threshold (70%)
+   - Build TypeScript
+   - Build Docker image
+   - Push to ECR
 
-## 🚀 Deployment
+3. **ECS Deployment**:
+   - Update ECS task definition
+   - Deploy to ECS Fargate
+   - Update load balancer
+   - Set environment variables
 
-### Docker Deployment
+### Deployment Steps
 
-1. **Build Docker image**
+1. **Trigger Deployment**
    ```bash
-   docker build -t wraithwatch-api .
+   # Go to GitHub Actions and trigger "Deploy WebSocket Server" workflow
    ```
 
-2. **Run container**
+2. **Monitor Deployment**
+   - Watch ECS service updates
+   - Check task definition changes
+   - Verify load balancer health
+   - Monitor CloudWatch logs
+
+3. **Verify Deployment**
    ```bash
-   docker run -p 3001:3001 \
-     -e DYNAMODB_TABLE_NAME=wraithwatch-entities \
-     -e AWS_REGION=us-east-1 \
-     wraithwatch-api
+   # Test health endpoint
+   curl https://api.wraithwatch-demo.com/health
+   
+   # Test WebSocket connection
+   wscat -c wss://api.wraithwatch-demo.com/ws
    ```
 
-### AWS ECS Deployment
+## Infrastructure Components
 
-1. **Build and push to ECR**
-   ```bash
-   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com
-   docker build -t wraithwatch-api .
-   docker tag wraithwatch-api:latest $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/wraithwatch-api:latest
-   docker push $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/wraithwatch-api:latest
-   ```
+- **ECS Fargate**: Container orchestration with auto-scaling
+- **Application Load Balancer**: HTTP/WebSocket load balancing
+- **DynamoDB**: Entity data storage and time-series data
+- **CloudWatch**: Logging and monitoring
+- **ECR**: Container image registry
+- **CloudFormation**: Infrastructure management
 
-2. **Deploy to ECS**
-   ```bash
-   aws ecs update-service --cluster wraithwatch-cluster --service wraithwatch-api --force-new-deployment
-   ```
+## Performance Optimization
 
-### Environment Configuration
-
-```bash
-# Production
-NODE_ENV=production
-PORT=3001
-DYNAMODB_TABLE_NAME=wraithwatch-entities-prod
-AWS_REGION=us-east-1
-CACHE_TTL=10800
-
-# Development
-NODE_ENV=development
-PORT=3001
-DYNAMODB_TABLE_NAME=wraithwatch-entities-dev
-AWS_REGION=us-east-1
-CACHE_TTL=3600
-```
-
-## 📊 Performance Optimization
+### Server Optimization
+- **Fastify Framework**: High-performance HTTP server
+- **WebSocket Optimization**: Efficient WebSocket handling
+- **Memory Management**: Optimized memory usage
+- **Connection Pooling**: Efficient connection management
 
 ### Caching Strategy
-- **Node-cache**: In-memory caching with TTL
-- **Cache Keys**: Optimized for entity data and positions
-- **Memory Management**: 3-hour TTL to prevent memory buildup
-- **Cache Invalidation**: Automatic expiration and manual clearing
+- **Multi-layer Caching**: In-memory and database caching
+- **TTL Management**: Configurable cache expiration
+- **Cache Invalidation**: Intelligent cache invalidation
+- **Memory Monitoring**: Cache size monitoring
 
 ### Database Optimization
-- **GSI Usage**: Efficient query patterns
-- **Batch Operations**: Bulk data processing
-- **Time-based Partitioning**: Optimized data retrieval
-- **Connection Pooling**: Efficient resource usage
+- **DynamoDB Optimization**: Efficient query patterns
+- **Connection Pooling**: Database connection management
+- **Query Optimization**: Optimized DynamoDB queries
+- **Batch Operations**: Efficient batch processing
 
 ### WebSocket Optimization
-- **Connection Pooling**: Efficient client management
-- **Event Broadcasting**: Optimized multi-client messaging
-- **Heartbeat Management**: Connection health monitoring
-- **Rate Limiting**: Protection against abuse
+- **Connection Management**: Efficient client tracking
+- **Message Broadcasting**: Optimized message delivery
+- **Memory Usage**: Minimal memory footprint
+- **Error Handling**: Graceful error recovery
 
-## 🔍 Monitoring & Logging
+## Monitoring & Logging
+
+### CloudWatch Monitoring
+- **ECS Metrics**: Container and service metrics
+- **Application Metrics**: Custom application metrics
+- **Performance Monitoring**: Response time tracking
+- **Error Tracking**: Error rate and type monitoring
 
 ### Application Logging
 - **Bunyan Logger**: Structured JSON logging
-- **Log Levels**: Error, warn, info, debug
-- **Performance Logging**: Request timing and metrics
-- **Error Tracking**: Comprehensive error reporting
-
-### Performance Monitoring
-- **Request Metrics**: Response times and throughput
-- **Memory Usage**: Cache and application memory
-- **Database Performance**: Query times and connection usage
-- **WebSocket Metrics**: Connection counts and message rates
+- **Component Logging**: Per-component loggers
+- **Request Logging**: Request/response logging
+- **Error Logging**: Comprehensive error tracking
 
 ### Health Checks
-- **Database Connectivity**: DynamoDB connection status
-- **Cache Health**: Memory usage and hit rates
-- **WebSocket Status**: Active connection monitoring
-- **System Resources**: CPU and memory utilization
+- **ECS Health**: Container health monitoring
+- **Application Health**: Application status monitoring
+- **Database Health**: DynamoDB connection monitoring
+- **WebSocket Health**: Connection status monitoring
 
-## 🔒 Security
+## Security
 
-### Authentication & Authorization
+### Network Security
+- **Security Groups**: Network access control
+- **Load Balancer Security**: HTTPS termination
+- **VPC Configuration**: Private network isolation
 - **CORS Configuration**: Cross-origin request handling
-- **Rate Limiting**: Protection against abuse
-- **Input Validation**: Request parameter sanitization
+
+### Application Security
+- **Input Validation**: Request parameter validation
 - **Error Handling**: Secure error responses
+- **Connection Security**: WebSocket connection validation
+- **Data Validation**: Entity data validation
 
-### Data Protection
-- **Data Encryption**: AWS KMS integration
-- **Secure Headers**: Security header implementation
-- **Input Sanitization**: XSS and injection protection
-- **Audit Logging**: Security event tracking
-
-## 🤝 Contributing
-
-### Development Guidelines
-1. **TypeScript**: Strict type checking required
-2. **Testing**: Unit tests for new features
-3. **Linting**: ESLint rules must pass
-4. **Documentation**: API documentation updates
-5. **Performance**: Performance impact assessment
-
-### Code Review Process
-1. **Feature Branch**: Create from main
-2. **Tests**: Ensure all tests pass
-3. **Linting**: Fix any linting issues
-4. **Performance**: Check performance impact
-5. **Review**: Submit pull request
-
-## 📚 API Documentation
-
-### WebSocket Events
-- **Connection Events**: Connection status and management
-- **Data Events**: Entity updates and metrics
-- **Error Events**: Error handling and recovery
-- **Custom Events**: Application-specific events
-
-### REST Endpoints
-- **Health Endpoints**: System health and status
-- **Data Endpoints**: Entity data retrieval
-- **Metrics Endpoints**: Aggregated metrics
-- **Utility Endpoints**: System utilities
-
-### Error Handling
-- **HTTP Status Codes**: Standard REST status codes
-- **Error Responses**: Structured error messages
-- **Validation Errors**: Input validation feedback
-- **System Errors**: Internal error handling
+### Container Security
+- **Non-root User**: Container runs as non-root user
+- **Image Scanning**: Container image security scanning
+- **Secrets Management**: Environment variable security
+- **Network Isolation**: Container network isolation
 
 ---
 
