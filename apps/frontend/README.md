@@ -242,29 +242,6 @@ The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
    - Sync with CloudFront distribution
    - Set environment variables
 
-### Deployment Steps
-
-1. **Trigger Deployment**
-   ```bash
-   # Push to main branch or trigger workflow manually
-   git push origin main
-   ```
-
-2. **Monitor Deployment**
-   - Watch GitHub Actions workflow
-   - Check S3 bucket upload
-   - Verify CloudFront distribution
-   - Monitor build artifacts
-
-3. **Verify Deployment**
-   ```bash
-   # Test production site
-   curl https://www.wraithwatch-demo.com
-   
-   # Check WebSocket connection
-   wscat -c wss://api.wraithwatch-demo.com/ws
-   ```
-
 ## Infrastructure Components
 
 - **S3 Bucket**: `wraithwatch-frontend` for static hosting
@@ -319,6 +296,25 @@ The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 - **Performance Metrics**: Real user monitoring
 - **Error Tracking**: Error rate monitoring
 - **Conversion Tracking**: User journey analysis
+
+## Future Improvements
+
+### Architecture & Security
+- **Micro-frontends**: Implement webpack's code splitting for modular architecture
+- **Server-side Rendering**: Run Next.js as a server with API routes and authentication
+- **Protected Endpoints**: Add role-based access control and rate limiting
+- **Internationalization**: Multi-language support with i18n framework
+
+### Performance & User Experience
+- **Progressive Web App**: Add offline capabilities, service workers, and mobile optimization
+- **Advanced Visualizations**: Machine learning integration and geographic threat mapping
+- **Customizable Dashboard**: Theme switching, configurable layouts, and data export
+- **Virtual Scrolling**: Optimize large entity lists and advanced filtering
+
+### DevOps & Data Management
+- **Containerization**: Docker deployment with blue-green strategy
+- **Monitoring Integration**: APM tools and visual regression testing
+- **Data Governance**: Real-time analytics, retention policies, and audit logging
 
 ---
 
