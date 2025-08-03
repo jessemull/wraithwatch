@@ -30,8 +30,14 @@ module.exports = {
           downloadThroughputKbps: 0,
           uploadThroughputKbps: 0,
         },
-        onlyCategories: ['performance', 'accessibility', 'seo', 'best-practices'],
-        chromeFlags: '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding',
+        onlyCategories: [
+          'performance',
+          'accessibility',
+          'seo',
+          'best-practices',
+        ],
+        chromeFlags:
+          '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding',
       },
       startServer: async () => {
         const execa = await import('execa');
@@ -42,7 +48,7 @@ module.exports = {
     upload: {
       target: 'lhci',
       serverBaseUrl: 'https://lhci-server.herokuapp.com/',
-      token: process.env.LHCI_GITHUB_APP_TOKEN, origin/main
+      token: process.env.LHCI_GITHUB_APP_TOKEN,
     },
   },
 };
