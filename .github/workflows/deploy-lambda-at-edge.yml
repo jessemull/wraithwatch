@@ -1,0 +1,134 @@
+name: Deploy Lambda at Edge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/lambda-at-edge/**'
+      - '.github/workflows/deploy-lambda-at-edge.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-lambda:
+    name: Deploy Lambda at Edge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: Lint Code
+        run: |
+          yarn workspace @wraithwatch/lambda-at-edge lint
+
+      - name: Run Unit Tests
+        run: |
+          yarn workspace @wraithwatch/lambda-at-edge test
+
+      - name: Set Up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Build Lambda Package
+        run: |
+          export NODE_ENV="production"
+          yarn workspace @wraithwatch/lambda-at-edge build
+          yarn workspace @wraithwatch/lambda-at-edge package
+
+      - name: Generate Artifact Name
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          VERSION=$(jq -r .version < apps/lambda-at-edge/package.json)
+          TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
+          ARTIFACT_NAME="wraithwatch-lambda-at-edge-${VERSION}-${COMMIT_HASH}-${TIMESTAMP}.zip"
+          echo "Artifact: $ARTIFACT_NAME"
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+
+      - name: Upload Lambda to S3
+        run: |
+          S3_BUCKET="wraithwatch-lambda-at-edge"
+          aws s3 cp "apps/lambda-at-edge/dist/wraithwatch-lambda-at-edge.zip" s3://${S3_BUCKET}/wraithwatch-lambda-at-edge/${ARTIFACT_NAME} --region us-east-1
+
+      - name: Check Change Set Update/Create
+        id: change_set_type
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          if aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region us-east-1 >/dev/null 2>&1; then
+            echo "Updating change set..."
+            echo "change_set_type=UPDATE" >> $GITHUB_ENV
+          else
+            echo "Creating change set..."
+            echo "change_set_type=CREATE" >> $GITHUB_ENV
+          fi
+
+      - name: Check Stack Status
+        id: stack_status
+        if: env.change_set_type == 'UPDATE'
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          STATUS=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].StackStatus" --output text 2>/dev/null || echo "NOT_FOUND")
+          echo "Status: $STATUS"
+          FAILED_STATES=("CREATE_FAILED" "ROLLBACK_FAILED" "UPDATE_FAILED" "DELETE_FAILED" "UPDATE_ROLLBACK_FAILED" "UPDATE_ROLLBACK_COMPLETE" "ROLLBACK_COMPLETE")
+          if [[ " ${FAILED_STATES[@]} " =~ " ${STATUS} " ]]; then
+            echo "Deleting stack due to status..."
+            aws cloudformation delete-stack --stack-name "$STACK_NAME" --region us-east-1
+            echo "Waiting for stack deletion to complete..."
+            aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME" --region us-east-1
+            echo "Stack deleted successfully!"
+            echo "change_set_type=CREATE" >> $GITHUB_ENV
+          fi
+
+      - name: Create CloudFormation Change Set
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          TEMPLATE_FILE="infrastructure/wraithwatch-lambda-at-edge.yaml"
+          CHANGE_SET_NAME="wraithwatch-lambda-at-edge-change-set"
+          CHANGE_SET_TYPE=${{ env.change_set_type }}
+          aws cloudformation create-change-set \
+            --stack-name $STACK_NAME \
+            --template-body file://$TEMPLATE_FILE \
+            --parameters \
+              "ParameterKey=S3Key,ParameterValue=wraithwatch-lambda-at-edge/${ARTIFACT_NAME}" \
+            --change-set-name $CHANGE_SET_NAME \
+            --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Wait for Change Set Creation
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          CHANGE_SET_NAME="wraithwatch-lambda-at-edge-change-set"
+          aws cloudformation wait change-set-create-complete \
+            --stack-name $STACK_NAME \
+            --change-set-name $CHANGE_SET_NAME
+
+      - name: Execute CloudFormation Change Set
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          CHANGE_SET_NAME="wraithwatch-lambda-at-edge-change-set"
+          aws cloudformation execute-change-set \
+            --stack-name $STACK_NAME \
+            --change-set-name $CHANGE_SET_NAME
+
+      - name: Wait for Stack Update
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+
+      - name: Get Stack Outputs
+        run: |
+          STACK_NAME="wraithwatch-lambda-at-edge-stack"
+          aws cloudformation describe-stacks \
+            --stack-name $STACK_NAME \
+            --query 'Stacks[0].Outputs' \
+            --output table

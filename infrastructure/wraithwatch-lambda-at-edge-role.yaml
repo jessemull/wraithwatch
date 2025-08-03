@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  WraithwatchLambdaAtEdgeExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 'wraithwatch-lambda-at-edge-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 's3:GetObject'
+                Resource:
+                  - Fn::Sub:
+                      - 'arn:aws:s3:::${BucketName}/*'
+                      - BucketName:
+                          Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+
+Outputs:
+  WraithwatchLambdaAtEdgeExecutionRoleArn:
+    Value: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
+    Description: 'Lambda execution role ARN'
+    Export:
+      Name: 'WraithwatchLambdaAtEdgeExecutionRoleArn'

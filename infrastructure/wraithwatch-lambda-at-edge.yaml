@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  S3Key:
+    Type: String
+    Description: 'S3 key for the lambda deployment package'
+  WraithwatchLambdaAtEdgeBucketName:
+    Type: String
+    Default: 'wraithwatch-lambda-at-edge'
+    Description: 'S3 bucket for storing wraithwatch-lambda-at-edge lambda deployment'
+
+Resources:
+  WraithwatchLambdaAtEdgeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref WraithwatchLambdaAtEdgeBucketName
+
+  WraithwatchLambdaAtEdgeExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 'wraithwatch-lambda-at-edge-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 's3:GetObject'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${WraithwatchLambdaAtEdgeBucket}/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+
+  WraithwatchLambdaAtEdgeFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: 'wraithwatch-lambda-at-edge'
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Role: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref WraithwatchLambdaAtEdgeBucket
+        S3Key: !Ref S3Key
+      Timeout: 30
+      MemorySize: 128
+
+Outputs:
+  WraithwatchLambdaAtEdgeFunctionArn:
+    Value: !GetAtt WraithwatchLambdaAtEdgeFunction.Arn
+    Description: 'Lambda function ARN'
+    Export:
+      Name: 'WraithwatchLambdaAtEdgeFunctionArn'
+  WraithwatchLambdaAtEdgeBucketName:
+    Value: !Ref WraithwatchLambdaAtEdgeBucket
+    Export:
+      Name: 'WraithwatchLambdaAtEdgeBucketName'

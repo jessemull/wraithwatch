@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  S3Key:
+    Type: String
+    Description: The S3 key for the lambda function zip file.
+
+Resources:
+  WraithwatchLambdaAtEdgeFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: 'wraithwatch-lambda-at-edge'
+      Runtime: nodejs20.x
+      Role:
+        Fn::ImportValue: 'WraithwatchLambdaAtEdgeExecutionRoleArn'
+      Handler: index.handler
+      Code:
+        S3Bucket:
+          Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
+        S3Key: !Ref S3Key
+      Timeout: 5
+      MemorySize: 128
+
+  MyLambdaVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref WraithwatchLambdaAtEdgeFunction
+
+Outputs:
+  WraithwatchLambdaAtEdgeFunctionArn:
+    Description: 'ARN of the Lambda@Edge function'
+    Value: !Ref MyLambdaVersion
+    Export:
+      Name: 'WraithwatchLambdaAtEdgeFunctionArn'

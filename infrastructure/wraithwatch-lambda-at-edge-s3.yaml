@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  WraithwatchLambdaAtEdgeBucketName:
+    Type: String
+    Default: 'wraithwatch-lambda-at-edge'
+    Description: 'S3 bucket for storing wraithwatch-lambda-at-edge lambda deployment'
+
+Resources:
+  WraithwatchLambdaAtEdgeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref WraithwatchLambdaAtEdgeBucketName
+
+Outputs:
+  WraithwatchLambdaAtEdgeBucketName:
+    Value: !Ref WraithwatchLambdaAtEdgeBucket
+    Export:
+      Name: 'WraithwatchLambdaAtEdgeBucketName'

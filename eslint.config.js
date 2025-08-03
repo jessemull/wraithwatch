@@ -26,7 +26,7 @@ export default [
   },
 
   // Config files (Node.js environment)
-  
+
   {
     files: [
       'apps/frontend/.lighthouserc.js',
