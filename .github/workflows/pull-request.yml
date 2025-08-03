@@ -153,6 +153,8 @@ jobs:
         run: |
           cd apps/frontend
           npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LH_TOKEN }}
 
   e2e_tests:
     name: Run E2E Tests
