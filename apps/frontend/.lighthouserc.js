@@ -30,8 +30,14 @@ module.exports = {
           downloadThroughputKbps: 0,
           uploadThroughputKbps: 0,
         },
-        onlyCategories: ['performance', 'accessibility', 'seo', 'best-practices'],
-        chromeFlags: '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage',
+        onlyCategories: [
+          'performance',
+          'accessibility',
+          'seo',
+          'best-practices',
+        ],
+        chromeFlags:
+          '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage',
       },
       startServer: async () => {
         const execa = await import('execa');
