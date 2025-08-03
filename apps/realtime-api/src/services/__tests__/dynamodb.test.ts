@@ -1,10 +1,7 @@
 // __tests__/dynamodb-service.test.ts
 
 import { DynamoDBService } from '../dynamodb';
-import {
-  PutCommand,
-  BatchWriteCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { PutCommand, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 jest.mock('@aws-sdk/lib-dynamodb');
@@ -54,14 +51,18 @@ describe('DynamoDBService', () => {
   });
 
   it('getAllEntityPositions fetches if not cached', async () => {
-    mockDocClient.send.mockResolvedValueOnce({ Items: [{ PK: 'ENTITY_POSITION#x' }] });
+    mockDocClient.send.mockResolvedValueOnce({
+      Items: [{ PK: 'ENTITY_POSITION#x' }],
+    });
     const result = await service.getAllEntityPositions();
     expect(result).toEqual([{ PK: 'ENTITY_POSITION#x' }]);
   });
 
   it('preloadCache sets both caches', async () => {
     mockDocClient.send.mockResolvedValueOnce({ Items: [{ entity_id: '3' }] });
-    mockDocClient.send.mockResolvedValueOnce({ Items: [{ PK: 'ENTITY_POSITION#y' }] });
+    mockDocClient.send.mockResolvedValueOnce({
+      Items: [{ PK: 'ENTITY_POSITION#y' }],
+    });
 
     await service.preloadCache();
     expect(service['dataCache'].get('all_data')).toBeTruthy();
@@ -84,9 +85,13 @@ describe('DynamoDBService', () => {
   });
 
   it('batchCreateEntityChanges writes in batches', async () => {
-    const changes = Array.from({ length: 3 }, (_, i) => ({ entity_id: String(i) }));
+    const changes = Array.from({ length: 3 }, (_, i) => ({
+      entity_id: String(i),
+    }));
     await service.batchCreateEntityChanges(changes as any);
-    expect(mockDocClient.send).toHaveBeenCalledWith(expect.any(BatchWriteCommand));
+    expect(mockDocClient.send).toHaveBeenCalledWith(
+      expect.any(BatchWriteCommand)
+    );
   });
 
   it('getRecentChanges handles no buckets', async () => {
@@ -98,15 +103,29 @@ describe('DynamoDBService', () => {
   it('getRecentChanges filters correctly', async () => {
     mockDocClient.send
       .mockResolvedValueOnce({ Items: [{ GSI2PK: 'time#1' }] })
-      .mockResolvedValueOnce({ Items: [{ entity_id: '5', timestamp: new Date().toISOString(), entity_type: 'T' }] });
+      .mockResolvedValueOnce({
+        Items: [
+          {
+            entity_id: '5',
+            timestamp: new Date().toISOString(),
+            entity_type: 'T',
+          },
+        ],
+      });
 
-    const result = await service.getRecentChanges({ entityType: 'T', hours: 1 });
+    const result = await service.getRecentChanges({
+      entityType: 'T',
+      hours: 1,
+    });
     expect(result.length).toBe(1);
   });
 
   it('performScan paginates', async () => {
     mockDocClient.send
-      .mockResolvedValueOnce({ Items: [{ entity_id: 'x' }], LastEvaluatedKey: { key: 1 } })
+      .mockResolvedValueOnce({
+        Items: [{ entity_id: 'x' }],
+        LastEvaluatedKey: { key: 1 },
+      })
       .mockResolvedValueOnce({ Items: [{ entity_id: 'y' }] });
 
     const result = await service.getAllData(10);

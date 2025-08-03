@@ -44,7 +44,6 @@ export class DynamoDBService {
   private dataCache: NodeCache;
   private positionsCache: NodeCache;
 
-  
   constructor(docClientOverride?: DynamoDBDocumentClient) {
     // Cache with very long TTL for demo (30 days)...
     this.docClient = docClientOverride || docClient;
