@@ -20,13 +20,13 @@ export class AggregatedMetricsService {
   private lastUpdate: Date | null = null;
 
   constructor() {
-    this.metricsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
+    this.metricsCache = new NodeCache({ stdTTL: 3 * 60 * 60 });
   }
 
   async calculateMetrics(changes: EntityChange[]): Promise<AggregatedMetrics> {
     // Create cache key based on data hash to ensure cache invalidation when data changes...
 
-    const dataHash = this.generateDataHash(changes);
+    const dataHash = this.generateDataHash();
     const cacheKey = `dashboard_metrics_${dataHash}`;
 
     const cachedMetrics = this.metricsCache.get<AggregatedMetrics>(cacheKey);
@@ -325,19 +325,9 @@ export class AggregatedMetricsService {
     logger.info('Metrics cache cleared');
   }
 
-  private generateDataHash(changes: EntityChange[]): string {
-    // Create a simple hash based on data length and last timestamp...
-
-    if (!changes || changes.length === 0) {
-      return 'empty';
-    }
-
-    const lastChange = changes[changes.length - 1];
-    const dataLength = changes.length;
-    const lastTimestamp = lastChange?.timestamp || '';
-
-    // Simple hash combining data length and last timestamp...
-
-    return `${dataLength}_${lastTimestamp}`;
+  private generateDataHash(): string {
+    // Use a single cache key for metrics to prevent cache explosion
+    // Since metrics are calculated from the same dataset, we can use a fixed key
+    return 'dashboard_metrics';
   }
 }
