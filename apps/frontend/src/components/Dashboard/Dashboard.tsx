@@ -51,6 +51,7 @@ import { Header } from './Header';
 import { DashboardMetrics } from './DashboardMetrics';
 import { EntityDetails } from './EntityDetails';
 import { VisualizationControls } from './VisualizationControls';
+import { WelcomeSection } from './WelcomeSection';
 import { useRealTimeData } from '../../hooks/useRealTimeData';
 import { useState, useMemo } from 'react';
 import { Entity } from '../../types/entity';
@@ -104,6 +105,7 @@ export const Dashboard: React.FC = () => {
         <div className="absolute bottom-40 left-1/3 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-500"></div>
       </div>
       <div className="relative px-4 py-8">
+        {!loading && <WelcomeSection />}
         <div className="mb-6">
           <h1 className="sr-only">Wraithwatch Cyber Defense Dashboard</h1>
           <h2 className="text-xl font-semibold text-white mb-4">

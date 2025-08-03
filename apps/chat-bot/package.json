@@ -23,6 +23,7 @@
     "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"
   },
+  "license": "Apache-2.0",
   "main": "dist/index.js",
   "name": "@wraithwatch/chat-bot",
   "scripts": {
