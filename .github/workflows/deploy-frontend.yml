@@ -136,6 +136,6 @@ jobs:
         id: lighthouse
         run: |
           cd apps/frontend
-          NODE_ENV=production npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
+          NODE_ENV=production npx lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
