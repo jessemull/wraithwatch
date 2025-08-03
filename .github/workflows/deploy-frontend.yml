@@ -92,8 +92,8 @@ jobs:
             --distribution-id E2BS8G6FZ8VAXH \
             --paths "/*"
 
-  lighthouse_tests:
-    name: Run Lighthouse Tests
+  live_tests:
+    name: Run Live Tests (E2E + Lighthouse)
     needs: deploy
     runs-on: ubuntu-latest
     steps:
@@ -115,7 +115,12 @@ jobs:
           echo "Waiting for deployment to propagate and CloudFront cache to invalidate..."
           sleep 60
 
-      - name: Run Lighthouse Tests
+      - name: Run E2E Tests Against Live Site
+        run: |
+          cd apps/frontend
+          npx cypress run --config baseUrl=https://www.wraithwatch-demo.com
+
+      - name: Run Lighthouse Tests Against Live Site
         id: lighthouse
         run: |
           cd apps/frontend
