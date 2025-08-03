@@ -4,17 +4,8 @@ Parameters:
   S3Key:
     Type: String
     Description: 'S3 key for the lambda deployment package'
-  WraithwatchLambdaAtEdgeBucketName:
-    Type: String
-    Default: 'wraithwatch-lambda-at-edge'
-    Description: 'S3 bucket for storing wraithwatch-lambda-at-edge lambda deployment'
 
 Resources:
-  WraithwatchLambdaAtEdgeBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Ref WraithwatchLambdaAtEdgeBucketName
-
   WraithwatchLambdaAtEdgeExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -37,7 +28,10 @@ Resources:
                 Action:
                   - 's3:GetObject'
                 Resource:
-                  - !Sub 'arn:aws:s3:::${WraithwatchLambdaAtEdgeBucket}/*'
+                  - Fn::Sub:
+                      - 'arn:aws:s3:::${BucketName}/*'
+                      - BucketName:
+                          Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -53,7 +47,8 @@ Resources:
       Handler: index.handler
       Role: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
       Code:
-        S3Bucket: !Ref WraithwatchLambdaAtEdgeBucket
+        S3Bucket:
+          Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
         S3Key: !Ref S3Key
       Timeout: 30
       MemorySize: 128
@@ -64,7 +59,3 @@ Outputs:
     Description: 'Lambda function ARN'
     Export:
       Name: 'WraithwatchLambdaAtEdgeFunctionArn'
-  WraithwatchLambdaAtEdgeBucketName:
-    Value: !Ref WraithwatchLambdaAtEdgeBucket
-    Export:
-      Name: 'WraithwatchLambdaAtEdgeBucketName'
