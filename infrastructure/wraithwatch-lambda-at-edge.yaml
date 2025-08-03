@@ -78,4 +78,4 @@ Outputs:
   WraithwatchLambdaAtEdgeBucketName:
     Value: !Ref WraithwatchLambdaAtEdgeBucket
     Export:
-      Name: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}' 
+      Name: !Sub 'WraithwatchLambdaAtEdgeBucketName-${Environment}'
