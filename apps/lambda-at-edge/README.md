@@ -1,38 +1,46 @@
 # Wraithwatch Lambda@Edge
 
-A CloudFront edge function built with AWS Lambda@Edge and TypeScript, designed to process requests at the edge for enhanced performance, security, and user experience in the Wraithwatch cybersecurity dashboard.
+A CloudFront edge function built with AWS Lambda@Edge and TypeScript, designed to handle domain redirects and URL normalization for the Wraithwatch cybersecurity dashboard.
 
-## 🎯 Overview
+## Table of Contents
 
-The Wraithwatch Lambda@Edge function provides edge computing capabilities for the cybersecurity dashboard, processing requests at CloudFront edge locations worldwide. This enables low-latency request handling, security enhancements, and performance optimizations at the edge of the AWS network.
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Performance Optimization](#performance-optimization)
+- [Monitoring & Logging](#monitoring--logging)
+- [Security](#security)
 
-## ✨ Features
+## Overview
 
-### 🌐 Edge Processing
-- **Global Distribution**: Processing at 400+ CloudFront edge locations
+The Wraithwatch Lambda@Edge function provides edge computing capabilities for the cybersecurity dashboard, processing requests at CloudFront edge locations worldwide. This enables low-latency request handling, domain redirects, and URL normalization at the edge of the AWS network.
+
+## Features
+
+### Domain Management
+- **Domain Redirect**: Redirects `wraithwatch-demo.com` to `www.wraithwatch-demo.com`
+- **URL Normalization**: Adds `.html` extension to URLs without file extensions
+- **Query String Preservation**: Maintains query parameters during redirects
+- **Protocol Preservation**: Respects the original protocol (HTTP/HTTPS)
+
+### Request Processing
+- **Edge Processing**: Processing at 400+ CloudFront edge locations
 - **Low Latency**: Sub-100ms response times worldwide
 - **Request Modification**: Dynamic request transformation
 - **Response Enhancement**: Real-time response optimization
 
-### 🔒 Security Enhancements
-- **Request Validation**: Input sanitization and validation
-- **Security Headers**: Automatic security header injection
-- **Rate Limiting**: Edge-level rate limiting
-- **Bot Protection**: Basic bot detection and mitigation
-
-### ⚡ Performance Optimization
-- **Caching Optimization**: Intelligent cache control
-- **Compression**: Automatic content compression
-- **Redirect Handling**: Smart redirect management
-- **Error Handling**: Graceful error responses
-
-### 🔧 Technical Features
+### Technical Features
 - **TypeScript**: Type-safe edge function development
 - **Webpack**: Optimized bundle compilation
 - **Testing**: Comprehensive edge function testing
 - **Monitoring**: CloudWatch edge metrics
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Core Platform
 - **AWS Lambda@Edge**: Edge computing platform
@@ -49,15 +57,14 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
 - **Jest**: Testing framework
 - **ESLint**: Code linting
 - **Webpack**: Bundle optimization
-- **AWS SAM**: Serverless deployment
+- **GitHub Actions**: Deployment workflows
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - AWS CLI configured
 - CloudFront distribution
 - Node.js 22+
-- AWS SAM CLI (optional)
 
 ### Installation
 
@@ -68,8 +75,8 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
 
 2. **Set environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env with your CloudFront configuration
+   # Edit .env with environment variables (see below)
+   touch .env
    ```
 
 3. **Build the function**
@@ -77,12 +84,14 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
    yarn build
    ```
 
-4. **Deploy to CloudFront**
+4. **Test the function**
    ```bash
-   yarn deploy
+   # Test domain redirect
+   curl -I https://wraithwatch-demo.com
+   # Should redirect to https://www.wraithwatch-demo.com
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 apps/lambda-at-edge/
@@ -98,56 +107,67 @@ apps/lambda-at-edge/
 └── package.json             # Dependencies and scripts
 ```
 
-## 🔧 CloudFront Events
+## API Endpoints
 
-### Viewer Request Event
+### CloudFront Events
+
+The Lambda@Edge function processes CloudFront viewer request events:
+
 ```typescript
-interface CloudFrontRequest {
-  uri: string;
-  method: string;
-  headers: Record<string, any>;
-  querystring: string;
-  clientIp: string;
-  userAgent: string;
+interface CloudFrontRequestEvent {
+  Records: [{
+    cf: {
+      request: {
+        uri: string;
+        method: string;
+        headers: Record<string, any>;
+        querystring: string;
+        clientIp: string;
+        userAgent: string;
+      };
+    };
+  }];
 }
 ```
 
-### Viewer Response Event
-```typescript
-interface CloudFrontResponse {
-  status: string;
-  statusDescription: string;
-  headers: Record<string, any>;
-  body?: string;
-}
-```
+### Request Processing
 
-## 🔧 Development
+The function handles two main scenarios:
+
+1. **Domain Redirect**: Redirects non-canonical domain to canonical domain
+2. **URL Normalization**: Adds `.html` extension to URLs without file extensions
+
+### Response Types
+
+- **Redirect Response**: 301 redirect for domain changes
+- **Modified Request**: Updated URI for URL normalization
+- **Pass-through**: Unmodified request for standard paths
+
+## Development
 
 ### Available Scripts
 
 ```bash
 # Development
-yarn dev              # Start local development
 yarn build            # Build for production
-yarn deploy           # Deploy to CloudFront
+yarn clean            # Clean build directory
+yarn package          # Package for deployment
 
 # Testing
 yarn test             # Run unit tests
 yarn test:watch       # Run tests in watch mode
-yarn test:coverage    # Generate coverage report
 
 # Code Quality
 yarn lint             # Run ESLint
 yarn lint:fix         # Fix linting issues
-yarn type-check       # TypeScript type checking
+yarn format           # Format code with Prettier
+yarn format:check     # Check code formatting
 ```
 
 ### Environment Variables
 
 ```bash
 # Required
-CLOUDFRONT_DISTRIBUTION_ID=your_distribution_id
 AWS_REGION=us-east-1
 
 # Optional
@@ -158,109 +178,75 @@ EDGE_FUNCTION_NAME=wraithwatch-edge
 
 ### Development Workflow
 
-1. **Set up local development**
-   ```bash
-   yarn dev
-   ```
-
-2. **Run tests**
+1. **Run tests**
    ```bash
    yarn test
    ```
 
-3. **Check code quality**
+2. **Check code quality**
    ```bash
-   yarn lint
-   yarn type-check
+   yarn lint:fix
    ```
 
-4. **Deploy to CloudFront**
-   ```bash
-   yarn deploy
-   ```
-
-## 🧪 Testing Strategy
-
-### Unit Testing
-- **Jest**: Test runner and assertion library
-- **Lambda Testing**: Edge function testing
-- **Mocking**: CloudFront event mocking
-- **Coverage**: 70%+ threshold enforced
-
-### Integration Testing
-- **CloudFront Testing**: Edge function integration testing
-- **Event Testing**: CloudFront event handling testing
-- **Performance Testing**: Response time testing
-- **Error Testing**: Error scenario testing
-
-### Test Structure
-```
-__tests__/
-├── handler.test.ts          # Lambda handler tests
-├── utils/                   # Utility function tests
-└── constants/               # Constant tests
-```
-
-## 🚀 Deployment
-
-### AWS SAM Deployment
-
-1. **Build the application**
+3. **Build for production**
    ```bash
    yarn build
    ```
 
-2. **Deploy with SAM**
+## Deployment
+
+### GitHub Actions Deployment
+
+The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFormation:
+
+1. **Manual Trigger**: Deploy via GitHub Actions workflow dispatch
+2. **Build Process**: 
+   - Install dependencies
+   - Lint code
+   - Run unit tests
+   - Build Lambda package
+   - Upload to S3
+
+3. **CloudFormation Deployment**:
+   - Create/update CloudFormation stack
+   - Deploy Lambda function with new version
+   - Associate with CloudFront distribution
+   - Set environment variables
+
+### Deployment Steps
+
+1. **Trigger Deployment**
    ```bash
-   sam build
-   sam deploy --guided
+   # Go to GitHub Actions and trigger "Deploy Lambda at Edge" workflow
    ```
 
-### Manual CloudFront Deployment
+2. **Monitor Deployment**
+   - Watch CloudFormation stack updates
+   - Check Lambda function version creation
+   - Verify CloudFront association
 
-1. **Create Lambda function**
+3. **Verify Deployment**
    ```bash
-   aws lambda create-function \
-     --function-name wraithwatch-edge \
-     --runtime nodejs22.x \
-     --handler index.handler \
-     --zip-file fileb://function.zip
+   # Test domain redirect
+   curl -I https://wraithwatch-demo.com
+   
+   # Test URL normalization
+   curl -I https://www.wraithwatch-demo.com/about
    ```
 
-2. **Publish function version**
-   ```bash
-   aws lambda publish-version \
-     --function-name wraithwatch-edge
-   ```
+## Infrastructure Components
 
-3. **Associate with CloudFront**
-   ```bash
-   aws cloudfront update-distribution \
-     --id your_distribution_id \
-     --default-cache-behavior LambdaFunctionAssociations
-   ```
+- **Lambda Function**: `wraithwatch-lambda-at-edge` with 5-second timeout
+- **CloudFront**: Global CDN with edge function association
+- **S3 Bucket**: `wraithwatch-lambda-at-edge` for deployment artifacts
+- **CloudFormation**: Stack management and versioning
+- **IAM Roles**: Execution permissions for Lambda@Edge
 
-### Environment Configuration
-
-```bash
-# Production
-NODE_ENV=production
-CLOUDFRONT_DISTRIBUTION_ID=your_production_distribution
-AWS_REGION=us-east-1
-EDGE_FUNCTION_NAME=wraithwatch-edge-prod
-
-# Development
-NODE_ENV=development
-CLOUDFRONT_DISTRIBUTION_ID=your_development_distribution
-AWS_REGION=us-east-1
-EDGE_FUNCTION_NAME=wraithwatch-edge-dev
-```
-
-## 📊 Performance Optimization
+## Performance Optimization
 
 ### Edge Function Optimization
 - **Bundle Size**: Minimized bundle size for fast loading
-- **Memory Configuration**: Optimal memory allocation
+- **Memory Configuration**: Optimal memory allocation (128MB)
 - **Timeout Settings**: 5-second timeout (CloudFront limit)
 - **Cold Start**: Optimized cold start performance
 
@@ -276,7 +262,7 @@ EDGE_FUNCTION_NAME=wraithwatch-edge-dev
 - **Memory Usage**: Efficient memory utilization
 - **Request Filtering**: Selective request processing
 
-## 🔍 Monitoring & Logging
+## Monitoring & Logging
 
 ### CloudWatch Monitoring
 - **Edge Metrics**: CloudFront edge function metrics
@@ -296,7 +282,7 @@ EDGE_FUNCTION_NAME=wraithwatch-edge-dev
 - **Performance Health**: Response time monitoring
 - **Error Health**: Error rate monitoring
 
-## 🔒 Security
+## Security
 
 ### Request Security
 - **Input Validation**: Request parameter validation
@@ -315,42 +301,6 @@ EDGE_FUNCTION_NAME=wraithwatch-edge-dev
 - **Origin Validation**: Origin request validation
 - **IP Filtering**: IP-based request filtering
 - **User Agent Validation**: User agent validation
-
-## 🤝 Contributing
-
-### Development Guidelines
-1. **TypeScript**: Strict type checking required
-2. **Testing**: Unit tests for new features
-3. **Linting**: ESLint rules must pass
-4. **Documentation**: Function documentation updates
-5. **Performance**: Performance impact assessment
-
-### Code Review Process
-1. **Feature Branch**: Create from main
-2. **Tests**: Ensure all tests pass
-3. **Linting**: Fix any linting issues
-4. **Performance**: Check performance impact
-5. **Review**: Submit pull request
-
-## 📚 Function Documentation
-
-### CloudFront Events
-- **Viewer Request**: Request processing at edge
-- **Viewer Response**: Response processing at edge
-- **Origin Request**: Origin request processing
-- **Origin Response**: Origin response processing
-
-### Request Processing
-- **Request Validation**: Input validation and sanitization
-- **Request Modification**: Dynamic request transformation
-- **Origin Selection**: Dynamic origin routing
-- **Error Handling**: Graceful error responses
-
-### Response Processing
-- **Response Enhancement**: Response optimization
-- **Header Injection**: Security and performance headers
-- **Content Modification**: Dynamic content modification
-- **Cache Control**: Intelligent cache control
 
 ---
 
