@@ -46,9 +46,7 @@ module.exports = {
       url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
     },
     upload: {
-      target: 'lhci',
-      serverBaseUrl: 'https://lhci-server.herokuapp.com/',
-      token: process.env.LHCI_GITHUB_APP_TOKEN,
+      target: 'temporary-public-storage',
     },
   },
 };
