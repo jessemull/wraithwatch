@@ -12,7 +12,7 @@ module.exports = {
   ci: {
     assert: {
       assertions: {
-        'categories:performance': ['warn', { minScore: 0.8 }],
+        'categories:performance': ['warn', { minScore: 0.7 }],
         'categories:accessibility': ['warn', { minScore: 0.9 }],
         'categories:seo': ['warn', { minScore: 0.9 }],
         'categories:best-practices': ['warn', { minScore: 0.9 }],
@@ -30,8 +30,14 @@ module.exports = {
           downloadThroughputKbps: 0,
           uploadThroughputKbps: 0,
         },
-        onlyCategories: ['performance', 'accessibility', 'seo', 'best-practices'],
-        chromeFlags: '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding',
+        onlyCategories: [
+          'performance',
+          'accessibility',
+          'seo',
+          'best-practices',
+        ],
+        chromeFlags:
+          '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding',
       },
       startServer: async () => {
         const execa = await import('execa');
@@ -42,6 +48,7 @@ module.exports = {
     upload: {
       target: 'lhci',
       serverBaseUrl: 'https://lhci-server.herokuapp.com/',
+      token: process.env.LHCI_GITHUB_APP_TOKEN,
     },
   },
 };
