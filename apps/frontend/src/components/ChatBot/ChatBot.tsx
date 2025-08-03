@@ -104,7 +104,7 @@ const ChatBot: React.FC = () => {
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open chat with Nazgul"
-          className="bg-gray-900 border-2 border-white rounded-full p-4 shadow-lg hover:bg-gray-800 transition-colors duration-200"
+          className="bg-gray-900 border-2 border-white rounded-full p-4 shadow-lg hover:bg-gray-800 hover:scale-105 hover:shadow-xl transition-all duration-200 cursor-pointer"
         >
           <div className="w-8 h-8 flex items-center justify-center">
             <svg

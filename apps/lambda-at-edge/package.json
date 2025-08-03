@@ -1,4 +1,5 @@
 {
+  "license": "Apache-2.0",
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
