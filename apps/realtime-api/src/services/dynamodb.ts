@@ -29,11 +29,13 @@ let client: DynamoDBClient;
 let docClient: DynamoDBDocumentClient;
 
 if (isTestEnvironment) {
-  // Create mock clients for testing
+  // Create mock clients for testing...
+
   client = {} as DynamoDBClient;
   docClient = {} as DynamoDBDocumentClient;
 } else {
-  // Create real clients for production/development
+  // Create real clients for production/development...
+
   client = new DynamoDBClient({ region: AWS_REGION });
   docClient = DynamoDBDocumentClient.from(client);
 }
@@ -46,6 +48,7 @@ export class DynamoDBService {
 
   constructor(docClientOverride?: DynamoDBDocumentClient) {
     // Cache with very long TTL for demo (30 days)...
+
     this.docClient = docClientOverride || docClient;
     this.dataCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
     this.positionsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
@@ -273,33 +276,6 @@ export class DynamoDBService {
     };
   }
 
-  private addPropertyTimeFilters(
-    queryBuilder: QueryBuilder,
-    propertyName: string,
-    startTime?: string,
-    endTime?: string
-  ): void {
-    if (startTime) {
-      queryBuilder.addSortKeyCondition('>=', `${startTime}#${propertyName}`);
-    }
-    if (endTime) {
-      queryBuilder.addSortKeyCondition('<=', `${endTime}#${propertyName}~`);
-    }
-  }
-
-  private addTimeFilters(
-    queryBuilder: QueryBuilder,
-    startTime?: string,
-    endTime?: string
-  ): void {
-    if (startTime) {
-      queryBuilder.addSortKeyCondition('>=', `${startTime}#`);
-    }
-    if (endTime) {
-      queryBuilder.addSortKeyCondition('<=', `${endTime}#~`);
-    }
-  }
-
   private async findMostRecentTimeBucket(): Promise<string | null> {
     const scanParams: ScanCommandInput = {
       TableName: this.tableName,
@@ -397,18 +373,10 @@ export class DynamoDBService {
 
   // Utility methods...
 
-  private buildEntityKey(entityId: string): string {
-    return `ENTITY#${entityId}`;
-  }
-
   private calculateCutoffTime(hours: number): Date {
     const cutoffTime = new Date();
     cutoffTime.setHours(cutoffTime.getHours() - hours);
     return cutoffTime;
-  }
-
-  private isMoreRecent(timestamp1: string, timestamp2: string): boolean {
-    return new Date(timestamp1) > new Date(timestamp2);
   }
 
   // Logging methods...
@@ -438,50 +406,5 @@ export class DynamoDBService {
 
   private logError(message: string, context: Record<string, unknown>): void {
     logger.error(context, message);
-  }
-}
-
-// Query Builder helper class...
-
-class QueryBuilder {
-  private keyConditionExpression: string;
-  private expressionAttributeValues: Record<string, unknown>;
-  private sortKeyConditions: string[];
-
-  constructor() {
-    this.keyConditionExpression = '';
-    this.expressionAttributeValues = {};
-    this.sortKeyConditions = [];
-  }
-
-  setPartitionKey(pk: string): void {
-    this.keyConditionExpression = 'PK = :pk';
-    this.expressionAttributeValues[':pk'] = pk;
-  }
-
-  addSortKeyCondition(operator: string, value: string): void {
-    const condition = `SK ${operator} :sk${this.sortKeyConditions.length}`;
-    this.sortKeyConditions.push(condition);
-    this.expressionAttributeValues[`:sk${this.sortKeyConditions.length - 1}`] =
-      value;
-  }
-
-  build(options: {
-    tableName: string;
-    limit: number;
-    scanIndexForward: boolean;
-  }): QueryCommandInput {
-    const keyConditionExpression = [
-      this.keyConditionExpression,
-      ...this.sortKeyConditions,
-    ].join(' AND ');
-
-    return {
-      TableName: options.tableName,
-      KeyConditionExpression: keyConditionExpression,
-      ExpressionAttributeValues: this.expressionAttributeValues,
-      ScanIndexForward: options.scanIndexForward,
-      Limit: options.limit,
-    };
   }
 }

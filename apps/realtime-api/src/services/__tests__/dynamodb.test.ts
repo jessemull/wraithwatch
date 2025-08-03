@@ -1,5 +1,3 @@
-// __tests__/dynamodb-service.test.ts
-
 import { DynamoDBService } from '../dynamodb';
 import { PutCommand, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
@@ -135,5 +133,56 @@ describe('DynamoDBService', () => {
   it('calculateCutoffTime returns date in past', () => {
     const past = service['calculateCutoffTime'](2);
     expect(past < new Date()).toBe(true);
+  });
+});
+
+describe('DynamoDBService error handling', () => {
+  let service: DynamoDBService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    service = new DynamoDBService(mockDocClient as any);
+  });
+
+  it('getAllData throws and logs on error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('scan failed'));
+
+    await expect(service.getAllData()).rejects.toThrow('scan failed');
+  });
+
+  it('getRecentChanges throws and logs on error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('bucket query failed'));
+
+    await expect(service.getRecentChanges()).rejects.toThrow('bucket query failed');
+  });
+
+  it('getAllEntityPositions throws and logs on error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('scan failed'));
+
+    await expect(service.getAllEntityPositions()).rejects.toThrow('scan failed');
+  });
+
+  it('preloadCache throws and logs on error from getAllData', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('scan failed'));
+
+    await expect(service.preloadCache()).rejects.toThrow('scan failed');
+  });
+
+  it('createEntityChange throws and logs on error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('put failed'));
+
+    await expect(
+      service.createEntityChange({ entity_id: 'bad', timestamp: new Date().toISOString() } as any)
+    ).rejects.toThrow('put failed');
+  });
+
+  it('batchCreateEntityChanges throws and logs on error', async () => {
+    const changes = Array.from({ length: 3 }, (_, i) => ({
+      entity_id: String(i),
+    }));
+
+    mockDocClient.send.mockRejectedValueOnce(new Error('batch failed'));
+
+    await expect(service.batchCreateEntityChanges(changes as any)).rejects.toThrow('batch failed');
   });
 });
