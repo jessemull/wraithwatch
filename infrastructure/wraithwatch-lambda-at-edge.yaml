@@ -6,38 +6,7 @@ Parameters:
     Description: 'S3 key for the lambda deployment package'
 
 Resources:
-  WraithwatchLambdaAtEdgeExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: 'wraithwatch-lambda-at-edge-role'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-                - edgelambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: LambdaBasicExecution
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: 'Allow'
-                Action:
-                  - 's3:GetObject'
-                Resource:
-                  - Fn::Sub:
-                      - 'arn:aws:s3:::${BucketName}/*'
-                      - BucketName:
-                          Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: 'arn:aws:logs:*:*:*'
+
 
   WraithwatchLambdaAtEdgeFunction:
     Type: AWS::Lambda::Function
@@ -45,7 +14,8 @@ Resources:
       FunctionName: 'wraithwatch-lambda-at-edge'
       Runtime: nodejs20.x
       Handler: index.handler
-      Role: !GetAtt WraithwatchLambdaAtEdgeExecutionRole.Arn
+      Role:
+        Fn::ImportValue: 'WraithwatchLambdaAtEdgeExecutionRoleArn'
       Code:
         S3Bucket:
           Fn::ImportValue: 'WraithwatchLambdaAtEdgeBucketName'
