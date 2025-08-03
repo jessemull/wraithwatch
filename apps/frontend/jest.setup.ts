@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import React from 'react';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -38,10 +39,10 @@ jest.mock('@react-three/drei', () => ({
 
 // Mock Chart.js
 jest.mock('react-chartjs-2', () => ({
-  Line: () => React.createElement('div', { 'data-testid': 'line-chart' }),
-  Bar: () => React.createElement('div', { 'data-testid': 'bar-chart' }),
-  Doughnut: () => React.createElement('div', { 'data-testid': 'doughnut-chart' }),
-  Pie: () => React.createElement('div', { 'data-testid': 'pie-chart' }),
+  Line: () => React.createElement('canvas', { 'data-testid': 'line-chart' }),
+  Bar: () => React.createElement('canvas', { 'data-testid': 'bar-chart' }),
+  Doughnut: () => React.createElement('canvas', { 'data-testid': 'doughnut-chart' }),
+  Pie: () => React.createElement('canvas', { 'data-testid': 'pie-chart' }),
 }));
 
 // Mock WebSocket
