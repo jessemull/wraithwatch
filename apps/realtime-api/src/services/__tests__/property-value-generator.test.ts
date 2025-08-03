@@ -59,26 +59,57 @@ describe('PropertyValueGenerator', () => {
 
   it('generates values for all known properties', () => {
     const allProps = [
-      'cpu_usage', 'memory_usage', 'network_connections', 'disk_usage', 'response_time',
-      'status', 'confidence_score', 'active_requests', 'model_version', 'accuracy',
-      'training_status', 'threat_score', 'severity', 'detection_count', 'source_ip',
-      'attack_type', 'mitigation_status', 'bandwidth_usage', 'connection_count',
-      'latency', 'packet_loss', 'error_rate', 'login_count', 'last_activity',
-      'session_duration', 'permission_level', 'failed_login_attempts',
-      'temperature', 'humidity', 'battery'
+      'cpu_usage',
+      'memory_usage',
+      'network_connections',
+      'disk_usage',
+      'response_time',
+      'status',
+      'confidence_score',
+      'active_requests',
+      'model_version',
+      'accuracy',
+      'training_status',
+      'threat_score',
+      'severity',
+      'detection_count',
+      'source_ip',
+      'attack_type',
+      'mitigation_status',
+      'bandwidth_usage',
+      'connection_count',
+      'latency',
+      'packet_loss',
+      'error_rate',
+      'login_count',
+      'last_activity',
+      'session_duration',
+      'permission_level',
+      'failed_login_attempts',
+      'temperature',
+      'humidity',
+      'battery',
     ];
 
     allProps.forEach(prop => testProperty(prop));
   });
 
   it('returns AI_AGENT status when entityType is AI_Agent', () => {
-    const value = generator.generatePropertyValue('status', 'fallback', 'AI_Agent');
+    const value = generator.generatePropertyValue(
+      'status',
+      'fallback',
+      'AI_Agent'
+    );
     expect(constants.STATUS_VALUES.AI_AGENT).toContain(value);
   });
 
   it('returns default value for unknown property', () => {
     const fallback = 'original';
-    const value = generator.generatePropertyValue('unknown_prop', fallback, 'Agent');
+    const value = generator.generatePropertyValue(
+      'unknown_prop',
+      fallback,
+      'Agent'
+    );
     expect(value).toBe(fallback);
   });
 
@@ -94,7 +125,10 @@ describe('PropertyValueGenerator', () => {
 
   describe('getAllowedPropertiesForEntityType', () => {
     it('returns properties for known entity type', () => {
-      expect(generator.getAllowedPropertiesForEntityType('Sensor')).toEqual(['temperature', 'humidity']);
+      expect(generator.getAllowedPropertiesForEntityType('Sensor')).toEqual([
+        'temperature',
+        'humidity',
+      ]);
     });
 
     it('returns empty array for unknown entity type', () => {

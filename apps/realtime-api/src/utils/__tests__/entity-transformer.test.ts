@@ -47,7 +47,9 @@ describe('transformDatabaseDataToEntities', () => {
     expect(result[0].id).toBe('e2');
     expect(result[0].type).toBe('Sensor');
     expect(result[0].properties.status.currentValue).toBe('offline');
-    expect(result[0].properties.status.lastChanged).toBe('2023-08-01T12:00:00Z');
+    expect(result[0].properties.status.lastChanged).toBe(
+      '2023-08-01T12:00:00Z'
+    );
     expect(result[0].lastSeen).toBe('2023-08-01T12:00:00Z');
   });
 
