@@ -16,6 +16,8 @@ const customJestConfig = {
     '!src/app/layout.tsx',
     '!src/app/page.tsx',
     '!src/app/globals.css',
+    '!src/constants/**/*',
+    '!src/config/**/*',
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
   coverageThreshold: {
@@ -37,4 +39,4 @@ const customJestConfig = {
   },
 };
 
-module.exports = createJestConfig(customJestConfig); 
+module.exports = createJestConfig(customJestConfig);

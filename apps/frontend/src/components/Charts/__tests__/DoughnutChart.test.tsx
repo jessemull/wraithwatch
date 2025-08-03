@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { DoughnutChart } from '../Charts/DoughnutChart';
+import { DoughnutChart } from '../DoughnutChart';
 
 // Mock the constants
-jest.mock('../../constants/charts', () => ({
+jest.mock('../../../constants/charts', () => ({
   DEFAULT_COLORS: [
     'rgba(59, 130, 246, 0.5)',
     'rgba(34, 197, 94, 0.5)',
@@ -32,33 +32,43 @@ describe('DoughnutChart', () => {
 
   it('renders doughnut chart with data', () => {
     render(<DoughnutChart data={mockData} />);
-    
+
     // The chart should render without errors
-    expect(document.querySelector('[data-testid="doughnut-chart"]')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-testid="doughnut-chart"]')
+    ).toBeInTheDocument();
   });
 
   it('renders with custom colors', () => {
     const customColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
     render(<DoughnutChart data={mockData} colors={customColors} />);
-    
-    expect(document.querySelector('[data-testid="doughnut-chart"]')).toBeInTheDocument();
+
+    expect(
+      document.querySelector('[data-testid="doughnut-chart"]')
+    ).toBeInTheDocument();
   });
 
   it('renders with custom border width', () => {
     render(<DoughnutChart data={mockData} borderWidth={3} />);
-    
-    expect(document.querySelector('[data-testid="doughnut-chart"]')).toBeInTheDocument();
+
+    expect(
+      document.querySelector('[data-testid="doughnut-chart"]')
+    ).toBeInTheDocument();
   });
 
   it('renders without legend', () => {
     render(<DoughnutChart data={mockData} showLegend={false} />);
-    
-    expect(document.querySelector('[data-testid="doughnut-chart"]')).toBeInTheDocument();
+
+    expect(
+      document.querySelector('[data-testid="doughnut-chart"]')
+    ).toBeInTheDocument();
   });
 
   it('renders with custom legend position', () => {
     render(<DoughnutChart data={mockData} legendPosition="right" />);
-    
-    expect(document.querySelector('[data-testid="doughnut-chart"]')).toBeInTheDocument();
+
+    expect(
+      document.querySelector('[data-testid="doughnut-chart"]')
+    ).toBeInTheDocument();
   });
-}); 
+});

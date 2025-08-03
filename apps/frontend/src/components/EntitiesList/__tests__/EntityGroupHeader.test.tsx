@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { EntityGroupHeader } from '../EntitiesList/EntityGroupHeader';
+import { EntityGroupHeader } from '../EntityGroupHeader';
 
 // Mock the utility functions
-jest.mock('../../util/entity', () => ({
+jest.mock('../../../util/entity', () => ({
   getEntityTypeColor: jest.fn(() => 'bg-blue-500'),
   formatTime: jest.fn(() => '2 hours ago'),
   formatEntityType: jest.fn(() => 'Server'),
@@ -21,7 +21,7 @@ describe('EntityGroupHeader', () => {
 
   it('renders entity group header', () => {
     render(<EntityGroupHeader {...mockProps} />);
-    
+
     expect(screen.getByText('Server')).toBeInTheDocument();
     expect(screen.getByText('1 entity')).toBeInTheDocument();
     expect(screen.getByText('5 changes today')).toBeInTheDocument();
@@ -31,11 +31,14 @@ describe('EntityGroupHeader', () => {
   it('renders with multiple entities', () => {
     const propsWithMultipleEntities = {
       ...mockProps,
-      entities: [{ id: '1', name: 'Server 1' }, { id: '2', name: 'Server 2' }],
+      entities: [
+        { id: '1', name: 'Server 1' },
+        { id: '2', name: 'Server 2' },
+      ],
     };
-    
+
     render(<EntityGroupHeader {...propsWithMultipleEntities} />);
-    
+
     expect(screen.getByText('2 entities')).toBeInTheDocument();
   });
-}); 
+});

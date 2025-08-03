@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ChartCard } from '../Dashboard/ChartCard';
+import { ChartCard } from '../ChartCard';
 
 describe('ChartCard', () => {
   it('renders chart card with title and children', () => {
@@ -9,7 +9,7 @@ describe('ChartCard', () => {
         <div data-testid="chart-content">Chart Content</div>
       </ChartCard>
     );
-    
+
     expect(screen.getByText('Test Chart')).toBeInTheDocument();
     expect(screen.getByTestId('chart-content')).toBeInTheDocument();
   });
@@ -20,8 +20,8 @@ describe('ChartCard', () => {
         <div>Chart Content</div>
       </ChartCard>
     );
-    
+
     const cardElement = screen.getByText('Test Chart').closest('div');
     expect(cardElement).toHaveClass('custom-class');
   });
-}); 
+});

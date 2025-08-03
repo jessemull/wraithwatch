@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { LineChart } from '../Charts/LineChart';
+import { LineChart } from '../LineChart';
 
 describe('LineChart', () => {
   const mockData = {
@@ -12,33 +12,35 @@ describe('LineChart', () => {
 
   it('renders line chart with data', () => {
     render(<LineChart data={mockData} title="Test Line Chart" />);
-    
+
     // The chart should render without errors
-    expect(document.querySelector('[data-testid="line-chart"]')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-testid="line-chart"]')
+    ).toBeInTheDocument();
   });
 
   it('renders with custom colors', () => {
     render(
-      <LineChart 
-        data={mockData} 
-        title="Test Line Chart" 
+      <LineChart
+        data={mockData}
+        title="Test Line Chart"
         backgroundColor="rgba(255, 0, 0, 0.2)"
         borderColor="rgba(255, 0, 0, 1)"
       />
     );
-    
-    expect(document.querySelector('[data-testid="line-chart"]')).toBeInTheDocument();
+
+    expect(
+      document.querySelector('[data-testid="line-chart"]')
+    ).toBeInTheDocument();
   });
 
   it('renders with custom point radius', () => {
     render(
-      <LineChart 
-        data={mockData} 
-        title="Test Line Chart" 
-        pointRadius={8}
-      />
+      <LineChart data={mockData} title="Test Line Chart" pointRadius={8} />
     );
-    
-    expect(document.querySelector('[data-testid="line-chart"]')).toBeInTheDocument();
+
+    expect(
+      document.querySelector('[data-testid="line-chart"]')
+    ).toBeInTheDocument();
   });
-}); 
+});
