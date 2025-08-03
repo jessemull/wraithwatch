@@ -148,6 +148,7 @@ jobs:
               echo "Stack update completed successfully!"
               echo "Status: $STATUS"
               break
+            # Check if the status is one of the 'failed' statuses
             elif [[ " ${FAILED_STATUSES[@]} " =~ " ${STATUS} " ]]; then
               echo "Stack failed to update!"
               echo "Status: $STATUS"
@@ -155,12 +156,12 @@ jobs:
               exit 1
             fi
             RETRY_COUNT=$((RETRY_COUNT + 1))
-            if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-              echo "Timeout waiting for stack to complete"
+            if [[ $RETRY_COUNT -ge $MAX_RETRIES ]]; then
+              echo "Max retries reached, exiting."
               exit 1
             fi
-            echo "Waiting for stack to complete... (attempt $RETRY_COUNT/$MAX_RETRIES)"
-            sleep 30
+            echo "Checking status..."
+            sleep 10
           done
 
       - name: Get Stack Outputs
