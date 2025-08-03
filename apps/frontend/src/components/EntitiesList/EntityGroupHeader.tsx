@@ -30,7 +30,6 @@ export const EntityGroupHeader: React.FC<EntityGroupHeaderProps> = ({
           </p>
         </div>
       </div>
-
       <div className="flex items-center space-x-4">
         <div className="text-right">
           <p className="text-sm text-white">{totalChanges} changes today</p>

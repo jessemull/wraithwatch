@@ -20,18 +20,36 @@ import NodeCache from 'node-cache';
 const logger = createComponentLogger('dynamodb-service');
 
 // Initialize DynamoDB client with enhanced features...
+// Use mock client in test environment to prevent real AWS connections
 
-const client = new DynamoDBClient({ region: AWS_REGION });
-const docClient = DynamoDBDocumentClient.from(client);
+const isTestEnvironment =
+  process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID;
+
+let client: DynamoDBClient;
+let docClient: DynamoDBDocumentClient;
+
+if (isTestEnvironment) {
+  // Create mock clients for testing...
+
+  client = {} as DynamoDBClient;
+  docClient = {} as DynamoDBDocumentClient;
+} else {
+  // Create real clients for production/development...
+
+  client = new DynamoDBClient({ region: AWS_REGION });
+  docClient = DynamoDBDocumentClient.from(client);
+}
 
 export class DynamoDBService {
   private readonly tableName = DYNAMODB_TABLE_NAME;
+  private docClient: DynamoDBDocumentClient;
   private dataCache: NodeCache;
   private positionsCache: NodeCache;
 
-  constructor() {
+  constructor(docClientOverride?: DynamoDBDocumentClient) {
     // Cache with very long TTL for demo (30 days)...
 
+    this.docClient = docClientOverride || docClient;
     this.dataCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
     this.positionsCache = new NodeCache({ stdTTL: 30 * 24 * 60 * 60 });
   }
@@ -143,7 +161,7 @@ export class DynamoDBService {
           ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey }),
         };
 
-        const response = await docClient.send(new ScanCommand(scanParams));
+        const response = await this.docClient.send(new ScanCommand(scanParams));
         const items = response.Items || [];
         allItems.push(...items);
         lastEvaluatedKey = response.LastEvaluatedKey;
@@ -200,7 +218,7 @@ export class DynamoDBService {
 
   async createEntityChange(change: EntityChange): Promise<void> {
     try {
-      await docClient.send(
+      await this.docClient.send(
         new PutCommand({
           TableName: this.tableName,
           Item: change,
@@ -251,38 +269,11 @@ export class DynamoDBService {
       ExclusiveStartKey: lastEvaluatedKey,
     };
 
-    const response = await docClient.send(new ScanCommand(scanParams));
+    const response = await this.docClient.send(new ScanCommand(scanParams));
     return {
       items: (response.Items as EntityChange[]) || [],
       lastEvaluatedKey: response.LastEvaluatedKey,
     };
-  }
-
-  private addPropertyTimeFilters(
-    queryBuilder: QueryBuilder,
-    propertyName: string,
-    startTime?: string,
-    endTime?: string
-  ): void {
-    if (startTime) {
-      queryBuilder.addSortKeyCondition('>=', `${startTime}#${propertyName}`);
-    }
-    if (endTime) {
-      queryBuilder.addSortKeyCondition('<=', `${endTime}#${propertyName}~`);
-    }
-  }
-
-  private addTimeFilters(
-    queryBuilder: QueryBuilder,
-    startTime?: string,
-    endTime?: string
-  ): void {
-    if (startTime) {
-      queryBuilder.addSortKeyCondition('>=', `${startTime}#`);
-    }
-    if (endTime) {
-      queryBuilder.addSortKeyCondition('<=', `${endTime}#~`);
-    }
   }
 
   private async findMostRecentTimeBucket(): Promise<string | null> {
@@ -292,7 +283,7 @@ export class DynamoDBService {
       Select: 'SPECIFIC_ATTRIBUTES',
     };
 
-    const scanResponse = await docClient.send(new ScanCommand(scanParams));
+    const scanResponse = await this.docClient.send(new ScanCommand(scanParams));
     const timeBuckets = new Set<string>();
 
     (scanResponse.Items || []).forEach(item => {
@@ -320,7 +311,7 @@ export class DynamoDBService {
       Limit: limit,
     };
 
-    const response = await docClient.send(new QueryCommand(queryParams));
+    const response = await this.docClient.send(new QueryCommand(queryParams));
     return (response.Items as EntityChange[]) || [];
   }
 
@@ -373,7 +364,7 @@ export class DynamoDBService {
       PutRequest: { Item: change },
     }));
 
-    await docClient.send(
+    await this.docClient.send(
       new BatchWriteCommand({
         RequestItems: { [this.tableName]: writeRequests },
       })
@@ -382,18 +373,10 @@ export class DynamoDBService {
 
   // Utility methods...
 
-  private buildEntityKey(entityId: string): string {
-    return `ENTITY#${entityId}`;
-  }
-
   private calculateCutoffTime(hours: number): Date {
     const cutoffTime = new Date();
     cutoffTime.setHours(cutoffTime.getHours() - hours);
     return cutoffTime;
-  }
-
-  private isMoreRecent(timestamp1: string, timestamp2: string): boolean {
-    return new Date(timestamp1) > new Date(timestamp2);
   }
 
   // Logging methods...
@@ -423,50 +406,5 @@ export class DynamoDBService {
 
   private logError(message: string, context: Record<string, unknown>): void {
     logger.error(context, message);
-  }
-}
-
-// Query Builder helper class...
-
-class QueryBuilder {
-  private keyConditionExpression: string;
-  private expressionAttributeValues: Record<string, unknown>;
-  private sortKeyConditions: string[];
-
-  constructor() {
-    this.keyConditionExpression = '';
-    this.expressionAttributeValues = {};
-    this.sortKeyConditions = [];
-  }
-
-  setPartitionKey(pk: string): void {
-    this.keyConditionExpression = 'PK = :pk';
-    this.expressionAttributeValues[':pk'] = pk;
-  }
-
-  addSortKeyCondition(operator: string, value: string): void {
-    const condition = `SK ${operator} :sk${this.sortKeyConditions.length}`;
-    this.sortKeyConditions.push(condition);
-    this.expressionAttributeValues[`:sk${this.sortKeyConditions.length - 1}`] =
-      value;
-  }
-
-  build(options: {
-    tableName: string;
-    limit: number;
-    scanIndexForward: boolean;
-  }): QueryCommandInput {
-    const keyConditionExpression = [
-      this.keyConditionExpression,
-      ...this.sortKeyConditions,
-    ].join(' AND ');
-
-    return {
-      TableName: options.tableName,
-      KeyConditionExpression: keyConditionExpression,
-      ExpressionAttributeValues: this.expressionAttributeValues,
-      ScanIndexForward: options.scanIndexForward,
-      Limit: options.limit,
-    };
   }
 }

@@ -30,6 +30,18 @@ jobs:
         run: |
           yarn lint
 
+      - name: Run Tests
+        run: |
+          yarn workspace @wraithwatch/realtime-api test
+
+      - name: Coverage Threshold Check
+        run: |
+          cd apps/realtime-api
+          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 70 ]]; then
+            echo "Code coverage is below threshold. Please update test coverage and try again."
+            exit 1
+          fi
+
       - name: Build TypeScript
         run: |
           yarn workspace @wraithwatch/realtime-api build
