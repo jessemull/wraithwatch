@@ -26,6 +26,7 @@ export default [
   },
 
   // Config files (Node.js environment)
+  
   {
     files: [
       'apps/frontend/.lighthouserc.js',
@@ -50,6 +51,7 @@ export default [
   },
 
   // Cypress test files
+
   {
     files: ['apps/frontend/cypress/**/*.{js,ts}'],
     languageOptions: {
