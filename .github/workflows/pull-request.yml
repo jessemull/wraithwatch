@@ -108,6 +108,77 @@ jobs:
         run: |
           yarn workspace @wraithwatch/frontend build
 
+      - name: Copy Sitemap and Robots Files
+        run: |
+          cp apps/frontend/public/sitemap.xml apps/frontend/out/
+          cp apps/frontend/public/robots.txt apps/frontend/out/
+          cp apps/frontend/public/sitemap-0.xml apps/frontend/out/
+
+      - name: Archive Frontend Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: apps/frontend/out
+          retention-days: 1
+
       - name: Build Backend
         run: |
           yarn workspace @wraithwatch/realtime-api build
+
+  lighthouse_tests:
+    name: Run Lighthouse Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: Start Next.js Server Locally
+        run: |
+          cd apps/frontend
+          nohup yarn dev &
+          npx wait-on http://localhost:3000
+
+      - name: Run Lighthouse Tests
+        run: |
+          cd apps/frontend
+          npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
+
+  e2e_tests:
+    name: Run E2E Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: Start Next.js Server Locally
+        run: |
+          cd apps/frontend
+          nohup yarn dev &
+          npx wait-on http://localhost:3000
+
+      - name: Run Cypress Tests
+        run: |
+          cd apps/frontend
+          npx cypress run --config baseUrl=http://localhost:3000
