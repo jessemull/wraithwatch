@@ -58,10 +58,21 @@ const HorizontalBarChart = dynamic(
   }
 );
 
+interface DashboardMetrics {
+  activeThreats: number;
+  threatScore: string;
+  aiConfidence: number;
+  totalConnections: number;
+  threatSeverityDistribution: Record<string, number>;
+  aiAgentActivity: Record<string, number>;
+  protocolUsage: Record<string, number>;
+  entityChangesByDay: Record<string, number>;
+}
+
 interface DashboardMetricsProps {
   changes?: EntityChange[];
   entities: unknown[];
-  metrics?: any;
+  metrics?: DashboardMetrics;
 }
 
 export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
