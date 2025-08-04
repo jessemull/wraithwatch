@@ -141,7 +141,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
               nodeStyle.size + 0.3, // radius
               0.1, // tube thickness
               16, // radial segments
-              32 // tubular segments
+              32, // tubular segments
             ]}
           />
           <meshStandardMaterial
