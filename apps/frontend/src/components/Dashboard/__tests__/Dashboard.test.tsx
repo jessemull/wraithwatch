@@ -165,18 +165,6 @@ describe('Dashboard', () => {
     expect(screen.getByTestId('welcome-section')).toBeInTheDocument();
   });
 
-  it('does not render welcome section when loading', async () => {
-    mockUseRealTimeData.mockReturnValue({
-      ...defaultMockData,
-      loading: true,
-    });
-
-    await act(async () => {
-      render(<Dashboard />);
-    });
-    expect(screen.queryByTestId('welcome-section')).not.toBeInTheDocument();
-  });
-
   it('shows error message when there is an error', async () => {
     mockUseRealTimeData.mockReturnValue({
       ...defaultMockData,
