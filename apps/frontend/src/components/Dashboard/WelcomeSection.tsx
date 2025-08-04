@@ -8,7 +8,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
   userName = 'Nik',
 }) => {
   return (
-    <div className="mb-10">
+    <div className="mb-10 min-h-[120px] sm:min-h-[100px]">
       <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div className="text-center sm:text-left">
           <h1 className="text-2xl sm:text-xl font-semibold text-white">
