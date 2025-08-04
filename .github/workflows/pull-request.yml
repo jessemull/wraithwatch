@@ -152,7 +152,7 @@ jobs:
       - name: Run Lighthouse Tests
         run: |
           cd apps/frontend
-          npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
+          NODE_ENV=test npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LH_TOKEN }}
 
