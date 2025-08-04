@@ -144,3 +144,7 @@ vite.config.ts.timestamp-*
 
 # Lighthouse CI reports
 .lighthouseci/
+
+# Cypress screenshots and videos
+apps/frontend/cypress/screenshots/
+apps/frontend/cypress/videos/
