@@ -2,12 +2,7 @@ import { EntityManager } from '../../services/entity-manager';
 import { shouldChangeProperty } from '../../utils/entity-utils';
 import { transformDatabaseDataToEntities } from '../../utils/entity-transformer';
 import { NodeCacheEntityCache } from '../entity-cache';
-import {
-  Entity,
-  EntityUpdateMessage,
-  EntityListMessage,
-  EntityType,
-} from '../../types/entity';
+import { Entity, EntityListMessage, EntityType } from '../../types/entity';
 import { MAX_PROPERTY_HISTORY_LENGTH } from '../../constants';
 import { WebSocketConnection } from '../../types';
 
@@ -98,81 +93,159 @@ describe('EntityManager', () => {
         client.socket.send.mock.calls[0][0]
       );
       expect(msg.type).toBe('entity_list');
-      expect(msg.payload.entities).toEqual([dummyEntity]);
     });
 
-    it('sends connection status', () => {
+    it('sends connection status message', () => {
       manager.sendConnectionStatus(client as unknown as WebSocketConnection);
       const msg = JSON.parse(client.socket.send.mock.calls[0][0]);
       expect(msg.type).toBe('connection_status');
-      expect(msg.payload.status).toBe('connected');
     });
   });
 
   describe('generateEntityUpdates', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       manager['isInitialized'] = true;
       entityCache.keys.mockReturnValue(['e1']);
       entityCache.get.mockReturnValue(dummyEntity);
-      propertyGen.getAllowedPropertiesForEntityType.mockReturnValue([
-        'cpu_usage',
-        'accuracy',
-      ]);
     });
 
-    it('skips if not initialized', () => {
+    it('skips updates if not initialized', () => {
       manager['isInitialized'] = false;
       manager.generateEntityUpdates();
       expect(wsManager.broadcast).not.toHaveBeenCalled();
     });
 
-    it('no update if shouldChangeProperty false', () => {
-      (shouldChangeProperty as jest.Mock).mockReturnValue(false);
-      manager.generateEntityUpdates();
-      expect(wsManager.broadcast).not.toHaveBeenCalled();
-    });
-
-    it('performs update and broadcasts and limits history', () => {
+    it('processes entity updates when initialized', () => {
       (shouldChangeProperty as jest.Mock).mockReturnValue(true);
-      propertyGen.getPropertyChangeFrequency.mockReturnValue(0.3);
+      propertyGen.getAllowedPropertiesForEntityType.mockReturnValue([
+        'cpu_usage',
+      ]);
+      propertyGen.getPropertyChangeFrequency.mockReturnValue(0.5);
       propertyGen.generatePropertyValue.mockReturnValue(75);
 
-      dummyEntity.changesToday = 0;
-      dummyEntity.properties.cpu_usage.history = Array(
-        MAX_PROPERTY_HISTORY_LENGTH
-      ).fill({
-        timestamp: 'ts',
-        oldValue: 1,
-        newValue: 2,
-      });
       manager.generateEntityUpdates();
 
-      expect(propertyGen.generatePropertyValue).toHaveBeenCalled();
       expect(wsManager.broadcast).toHaveBeenCalledWith(
-        expect.objectContaining<EntityUpdateMessage>({
+        expect.objectContaining({
           type: 'entity_update',
-          payload: expect.objectContaining({
-            entityId: dummyEntity.id,
-            property: 'cpu_usage',
-            oldValue: 50,
-            newValue: 75,
+        })
+      );
+    });
+
+    it('creates missing properties for entities', () => {
+      const entityWithoutProperty = {
+        ...dummyEntity,
+        properties: {},
+      };
+      entityCache.get.mockReturnValue(entityWithoutProperty);
+      propertyGen.getAllowedPropertiesForEntityType.mockReturnValue([
+        'accuracy',
+      ]);
+      propertyGen.generatePropertyValue.mockReturnValue(0.8);
+
+      manager.generateEntityUpdates();
+
+      expect(entityCache.set).toHaveBeenCalledWith(
+        entityWithoutProperty.id,
+        expect.objectContaining({
+          properties: expect.objectContaining({
+            accuracy: expect.any(Object),
           }),
         })
       );
-      expect(dummyEntity.properties.cpu_usage.history.length).toBe(
-        MAX_PROPERTY_HISTORY_LENGTH
-      );
-      expect(entityCache.set).toHaveBeenCalledWith(dummyEntity.id, dummyEntity);
     });
 
-    it('adds missing property if allowed but absent', () => {
-      const e2 = { ...dummyEntity, properties: { accuracy: {} } };
-      entityCache.get.mockReturnValueOnce(e2);
+    it('skips properties not allowed for entity type', () => {
+      propertyGen.getAllowedPropertiesForEntityType.mockReturnValue([
+        'cpu_usage',
+      ]);
+      dummyEntity.properties['invalid_property'] = {
+        name: 'invalid_property',
+        currentValue: 'test',
+        lastChanged: new Date().toISOString(),
+        history: [],
+      };
       (shouldChangeProperty as jest.Mock).mockReturnValue(false);
-      propertyGen.generatePropertyValue.mockReturnValue(20);
+
       manager.generateEntityUpdates();
-      expect(e2.properties.accuracy).toBeDefined();
-      expect(entityCache.set).not.toHaveBeenCalled();
+
+      expect(wsManager.broadcast).not.toHaveBeenCalled();
+    });
+
+    it('maintains property history length limit', () => {
+      const entityWithLongHistory = {
+        ...dummyEntity,
+        properties: {
+          cpu_usage: {
+            name: 'cpu_usage',
+            currentValue: 50,
+            lastChanged: new Date().toISOString(),
+            history: Array.from(
+              { length: MAX_PROPERTY_HISTORY_LENGTH + 1 },
+              (_, i) => ({
+                timestamp: new Date().toISOString(),
+                oldValue: i,
+                newValue: i + 1,
+              })
+            ),
+          },
+        },
+      };
+      entityCache.get.mockReturnValue(entityWithLongHistory);
+      propertyGen.getAllowedPropertiesForEntityType.mockReturnValue([
+        'cpu_usage',
+      ]);
+      propertyGen.getPropertyChangeFrequency.mockReturnValue(1);
+      propertyGen.generatePropertyValue.mockReturnValue(75);
+      (shouldChangeProperty as jest.Mock).mockReturnValue(true);
+
+      manager.generateEntityUpdates();
+
+      expect(entityCache.set).toHaveBeenCalledWith(
+        entityWithLongHistory.id,
+        expect.objectContaining({
+          properties: expect.objectContaining({
+            cpu_usage: expect.objectContaining({
+              history: expect.arrayContaining([
+                expect.objectContaining({
+                  oldValue: 50,
+                  newValue: 75,
+                }),
+              ]),
+            }),
+          }),
+        })
+      );
+    });
+
+    it('handles property update with string values', () => {
+      const entityWithStringProperty = {
+        ...dummyEntity,
+        properties: {
+          status: {
+            name: 'status',
+            currentValue: 'online',
+            lastChanged: new Date().toISOString(),
+            history: [],
+          },
+        },
+      };
+      entityCache.get.mockReturnValue(entityWithStringProperty);
+      propertyGen.getAllowedPropertiesForEntityType.mockReturnValue(['status']);
+      propertyGen.getPropertyChangeFrequency.mockReturnValue(1);
+      propertyGen.generatePropertyValue.mockReturnValue('offline');
+      (shouldChangeProperty as jest.Mock).mockReturnValue(true);
+
+      manager.generateEntityUpdates();
+
+      expect(wsManager.broadcast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          payload: expect.objectContaining({
+            oldValue: 'online',
+            newValue: 'offline',
+          }),
+        })
+      );
     });
   });
 

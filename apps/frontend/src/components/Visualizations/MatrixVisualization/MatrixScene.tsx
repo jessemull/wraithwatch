@@ -79,7 +79,11 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
-          rotation={(label as any).rotation || [0, 0, 0]}
+          rotation={
+            (label as { rotation?: [number, number, number] }).rotation || [
+              0, 0, 0,
+            ]
+          }
         >
           {label.text}
         </Text>
