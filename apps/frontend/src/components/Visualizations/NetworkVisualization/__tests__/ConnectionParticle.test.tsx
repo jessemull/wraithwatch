@@ -6,18 +6,7 @@ let originalError: typeof console.error;
 
 beforeAll(() => {
   originalError = console.error;
-  console.error = (...args: any[]) => {
-    if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Received `true` for a non-boolean attribute `transparent`') ||
-       args[0].includes('Received `false` for a non-boolean attribute `visible`') ||
-       args[0].includes('Received `true` for a non-boolean attribute') ||
-       args[0].includes('Received `false` for a non-boolean attribute'))
-    ) {
-      return;
-    }
-    originalError(...args);
-  };
+  console.error = jest.fn();
 });
 
 afterAll(() => {
