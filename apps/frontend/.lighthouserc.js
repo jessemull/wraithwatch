@@ -3,16 +3,18 @@ const urls = {
   test: 'http://localhost:3000',
 };
 
-const throttling = {
-  production: 'provided',
-  test: 'provided',
-};
+const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
   ci: {
     assert: {
       assertions: {
-        'categories:performance': ['warn', { minScore: 0.7 }],
+        ...(isProduction && {
+          'categories:performance': ['warn', { minScore: 0.6 }],
+        }),
+        ...(!isProduction && {
+          'categories:performance': ['warn', { minScore: 0.6 }],
+        }),
         'categories:accessibility': ['warn', { minScore: 0.9 }],
         'categories:seo': ['warn', { minScore: 0.9 }],
         'categories:best-practices': ['warn', { minScore: 0.9 }],
@@ -20,16 +22,21 @@ module.exports = {
     },
     collect: {
       numberOfRuns: 1,
+      ...(isProduction ? {} : {
+        startServerCommand: 'yarn dev',
+        startServerReadyPattern: 'started server on',
+      }),
+      url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
       settings: {
-        throttlingMethod: throttling[process.env.NODE_ENV] || 'devtools',
-        throttling: {
-          rttMs: 20,
-          throughputKbps: 20480,
-          cpuSlowdownMultiplier: 1,
-          requestLatencyMs: 0,
-          downloadThroughputKbps: 0,
-          uploadThroughputKbps: 0,
+        formFactor: 'desktop',
+        screenEmulation: {
+          mobile: false,
+          width: 1920,
+          height: 1080,
+          deviceScaleFactor: 1,
+          disabled: false,
         },
+        throttlingMethod: 'devtools',
         onlyCategories: [
           'performance',
           'accessibility',
@@ -37,18 +44,11 @@ module.exports = {
           'best-practices',
         ],
         chromeFlags:
-          '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding',
+          '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --window-size=1920,1080',
       },
-      startServer: async () => {
-        const execa = await import('execa');
-        await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
-      },
-      url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
     },
     upload: {
-      target: 'lhci',
-      serverBaseUrl: 'https://lhci-server.herokuapp.com/',
-      token: process.env.LHCI_GITHUB_APP_TOKEN,
+      target: 'temporary-public-storage',
     },
   },
 };

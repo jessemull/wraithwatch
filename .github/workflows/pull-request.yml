@@ -143,16 +143,10 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Start Next.js Server Locally
-        run: |
-          cd apps/frontend
-          nohup yarn dev &
-          npx wait-on http://localhost:3000
-
       - name: Run Lighthouse Tests
         run: |
           cd apps/frontend
-          npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
+          NODE_ENV=test npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LH_TOKEN }}
 
