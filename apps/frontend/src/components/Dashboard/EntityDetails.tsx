@@ -144,11 +144,11 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             {selectedEntity.changesToday}
           </p>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-3 border-2 border-blue-500/50">
-          <p className="text-xs text-blue-400 uppercase tracking-wide mb-1 font-semibold">
+        <div className="bg-gray-800/50 rounded-lg p-3">
+          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
             Last Seen
           </p>
-          <p className="text-sm text-blue-200 font-medium">
+          <p className="text-sm text-gray-300">
             {new Date(selectedEntity.lastSeen).toLocaleString()}
           </p>
         </div>
