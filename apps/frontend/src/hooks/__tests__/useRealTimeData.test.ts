@@ -17,11 +17,11 @@ global.WebSocket = jest.fn(() => ({
   onclose: null,
   onerror: null,
   onmessage: null,
-})) as any;
-(global.WebSocket as any).CONNECTING = 0;
-(global.WebSocket as any).OPEN = 1;
-(global.WebSocket as any).CLOSING = 2;
-(global.WebSocket as any).CLOSED = 3;
+})) as jest.Mock;
+(global.WebSocket as jest.Mock).CONNECTING = 0;
+(global.WebSocket as jest.Mock).OPEN = 1;
+(global.WebSocket as jest.Mock).CLOSING = 2;
+(global.WebSocket as jest.Mock).CLOSED = 3;
 jest.mock('../../config', () => ({
   config: {
     api: {
@@ -207,8 +207,8 @@ describe('useRealTimeData', () => {
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
-    (global.WebSocket as any).mock.results[0].value.onopen?.();
-    (global.WebSocket as any).mock.results[0].value.onclose?.();
+    (global.WebSocket as jest.Mock).mock.results[0].value.onopen?.();
+    (global.WebSocket as jest.Mock).mock.results[0].value.onclose?.();
     expect(result.current.isConnected).toBe(false);
   });
 
@@ -222,7 +222,7 @@ describe('useRealTimeData', () => {
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
-    (global.WebSocket as any).mock.results[0].value.onerror?.(
+    (global.WebSocket as jest.Mock).mock.results[0].value.onerror?.(
       new Event('error')
     );
     expect(result.current.isConnected).toBe(false);
@@ -238,7 +238,7 @@ describe('useRealTimeData', () => {
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
-    (global.WebSocket as any).mock.results[0].value.onmessage?.({
+    (global.WebSocket as jest.Mock).mock.results[0].value.onmessage?.({
       data: 'invalid json',
     } as MessageEvent);
     expect(console.error).toHaveBeenCalledWith(
@@ -270,7 +270,7 @@ describe('useRealTimeData', () => {
         },
       ],
     };
-    (global.WebSocket as any).mock.results[0].value.onmessage?.({
+    (global.WebSocket as jest.Mock).mock.results[0].value.onmessage?.({
       data: JSON.stringify(entityListMessage),
     } as MessageEvent);
     // Skip this test for now as the mock setup is complex
@@ -298,7 +298,7 @@ describe('useRealTimeData', () => {
         properties: {},
       },
     };
-    (global.WebSocket as any).mock.results[0].value.onmessage?.({
+    (global.WebSocket as jest.Mock).mock.results[0].value.onmessage?.({
       data: JSON.stringify(entityUpdateMessage),
     } as MessageEvent);
     // Skip this test for now as the mock setup is complex
@@ -319,7 +319,7 @@ describe('useRealTimeData', () => {
       type: 'connection_status',
       status: 'connected',
     };
-    (global.WebSocket as any).mock.results[0].value.onmessage?.({
+    (global.WebSocket as jest.Mock).mock.results[0].value.onmessage?.({
       data: JSON.stringify(connectionStatusMessage),
     } as MessageEvent);
     // Skip this test for now as the mock setup is complex
@@ -338,7 +338,7 @@ describe('useRealTimeData', () => {
     });
     unmount();
     expect(
-      (global.WebSocket as any).mock.results[0].value.close
+      (global.WebSocket as jest.Mock).mock.results[0].value.close
     ).toHaveBeenCalled();
   });
 
@@ -454,28 +454,28 @@ describe('useRealTimeData', () => {
     });
 
     // Trigger onopen event
-    (global.WebSocket as any).mock.results[0].value.onopen?.();
+    (global.WebSocket as jest.Mock).mock.results[0].value.onopen?.();
 
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
     });
 
     // First connect
-    (global.WebSocket as any).mock.results[0].value.onopen?.();
+    (global.WebSocket as jest.Mock).mock.results[0].value.onopen?.();
 
     await waitFor(() => {
       expect(result.current.isConnected).toBe(true);
     });
 
     // Then disconnect
-    (global.WebSocket as any).mock.results[0].value.onclose?.();
+    (global.WebSocket as jest.Mock).mock.results[0].value.onclose?.();
 
     await waitFor(() => {
       expect(result.current.isConnected).toBe(false);
     });
 
     // Trigger onerror event
-    (global.WebSocket as any).mock.results[0].value.onerror?.(
+    (global.WebSocket as jest.Mock).mock.results[0].value.onerror?.(
       new Event('error')
     );
 

@@ -195,3 +195,108 @@ describe('DynamoDBService error handling', () => {
     ).rejects.toThrow('batch failed');
   });
 });
+
+describe('DynamoDBService additional error handling', () => {
+  let service: DynamoDBService;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    service = new DynamoDBService(mockDocClient as any);
+  });
+
+  it('getRecentChanges handles no buckets', async () => {
+    mockDocClient.send.mockResolvedValueOnce({ Items: [] });
+    const result = await service.getRecentChanges();
+    expect(result).toEqual([]);
+  });
+
+  it('getRecentChanges handles error during query', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('Database error'));
+
+    await expect(service.getRecentChanges()).rejects.toThrow('Database error');
+  });
+
+  it('getAllData handles scan error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('Scan error'));
+
+    await expect(service.getAllData()).rejects.toThrow('Scan error');
+  });
+
+  it('getAllEntityPositions handles scan error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('Position scan error'));
+
+    await expect(service.getAllEntityPositions()).rejects.toThrow(
+      'Position scan error'
+    );
+  });
+
+  it('preloadCache handles error during data fetch', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('Preload error'));
+
+    await expect(service.preloadCache()).rejects.toThrow('Preload error');
+  });
+
+  it('createEntityChange handles put error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('Put error'));
+    const change = { entity_id: 'test', timestamp: new Date().toISOString() };
+
+    await expect(service.createEntityChange(change as any)).rejects.toThrow(
+      'Put error'
+    );
+  });
+
+  it('batchCreateEntityChanges handles batch write error', async () => {
+    mockDocClient.send.mockRejectedValueOnce(new Error('Batch write error'));
+    const changes = [{ entity_id: 'test' }];
+
+    await expect(
+      service.batchCreateEntityChanges(changes as any)
+    ).rejects.toThrow('Batch write error');
+  });
+
+  it('getRecentChanges with entity type filter', async () => {
+    mockDocClient.send.mockResolvedValueOnce({
+      Items: [{ entity_type: 'Threat' }],
+    });
+    mockDocClient.send.mockResolvedValueOnce({
+      Items: [{ entity_type: 'Threat' }],
+    });
+
+    const result = await service.getRecentChanges({ entityType: 'Threat' });
+    expect(result).toBeDefined();
+  });
+
+  it('getRecentChanges with hours filter', async () => {
+    mockDocClient.send.mockResolvedValueOnce({
+      Items: [{ entity_type: 'Threat' }],
+    });
+    mockDocClient.send.mockResolvedValueOnce({
+      Items: [{ entity_type: 'Threat' }],
+    });
+
+    const result = await service.getRecentChanges({ hours: 24 });
+    expect(result).toBeDefined();
+  });
+
+  it('getAllData respects limit parameter', async () => {
+    const mockItems = Array.from({ length: 10 }, (_, i) => ({
+      entity_id: String(i),
+    }));
+    mockDocClient.send.mockResolvedValueOnce({ Items: mockItems });
+
+    const result = await service.getAllData(5);
+    expect(result.length).toBeLessThanOrEqual(5);
+  });
+
+  it('handles scan with lastEvaluatedKey', async () => {
+    mockDocClient.send
+      .mockResolvedValueOnce({
+        Items: [{ entity_id: '1' }],
+        LastEvaluatedKey: { PK: 'test' },
+      })
+      .mockResolvedValueOnce({ Items: [{ entity_id: '2' }] });
+
+    const result = await service.getAllData();
+    expect(result.length).toBeGreaterThan(0);
+  });
+});

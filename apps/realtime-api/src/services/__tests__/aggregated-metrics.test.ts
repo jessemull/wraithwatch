@@ -426,4 +426,147 @@ describe('AggregatedMetricsService', () => {
 
     await expect(service.preloadCache(changes)).resolves.not.toThrow();
   });
+
+  it('should handle invalid timestamps in entity changes', async () => {
+    const changes: EntityChange[] = [
+      createEntityChange(
+        'threat-1',
+        'Threat',
+        'threat_score',
+        '8.5',
+        'invalid-timestamp'
+      ),
+      createEntityChange(
+        'threat-2',
+        'Threat',
+        'threat_score',
+        '5.0',
+        '2023-01-01T00:00:00Z'
+      ),
+    ];
+
+    const result = await service.calculateMetrics(changes);
+    expect(result.threatScore).toBe('5.00');
+  });
+
+  it('should handle changes with invalid property values', async () => {
+    const changes: EntityChange[] = [
+      createEntityChange(
+        'threat-1',
+        'Threat',
+        'threat_score',
+        'invalid-number',
+        '2023-01-01T00:00:00Z'
+      ),
+      createEntityChange(
+        'threat-2',
+        'Threat',
+        'threat_score',
+        '5.0',
+        '2023-01-01T00:00:00Z'
+      ),
+    ];
+
+    const result = await service.calculateMetrics(changes);
+    expect(result.threatScore).toBe('5.00');
+  });
+
+  it('should handle AI agent status distribution with missing status', async () => {
+    const changes: EntityChange[] = [
+      createEntityChange(
+        'ai-1',
+        'AI_Agent',
+        'status',
+        'online',
+        '2023-01-01T00:00:00Z'
+      ),
+      createEntityChange(
+        'ai-2',
+        'AI_Agent',
+        'confidence_score',
+        '0.8',
+        '2023-01-01T00:00:00Z'
+      ),
+    ];
+
+    const result = await service.calculateMetrics(changes);
+    expect(result.aiAgentActivity).toBeDefined();
+  });
+
+  it('should handle protocol usage with various protocols', async () => {
+    const changes: EntityChange[] = [
+      createEntityChange(
+        'entity-1',
+        'System',
+        'protocol',
+        'HTTPS',
+        '2023-01-01T00:00:00Z'
+      ),
+      createEntityChange(
+        'entity-2',
+        'System',
+        'protocol',
+        'HTTP',
+        '2023-01-01T00:00:00Z'
+      ),
+      createEntityChange(
+        'entity-3',
+        'System',
+        'protocol',
+        'FTP',
+        '2023-01-01T00:00:00Z'
+      ),
+    ];
+
+    const result = await service.calculateMetrics(changes);
+    expect(result.protocolUsage).toBeDefined();
+    // The service only counts protocol usage for entities that have the protocol property
+    // and are of a type that allows protocol tracking
+    expect(typeof result.protocolUsage).toBe('object');
+  });
+
+  it('should handle entity changes with future dates', async () => {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 10);
+
+    const changes: EntityChange[] = [
+      createEntityChange(
+        'threat-1',
+        'Threat',
+        'threat_score',
+        '8.5',
+        futureDate.toISOString()
+      ),
+    ];
+
+    const result = await service.calculateMetrics(changes);
+    expect(result.entityChangesByDay).toBeDefined();
+  });
+
+  it('should handle entity changes with past dates outside range', async () => {
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 20);
+
+    const changes: EntityChange[] = [
+      createEntityChange(
+        'threat-1',
+        'Threat',
+        'threat_score',
+        '8.5',
+        pastDate.toISOString()
+      ),
+    ];
+
+    const result = await service.calculateMetrics(changes);
+    expect(result.entityChangesByDay).toBeDefined();
+  });
+
+  it('should handle preload cache error', async () => {
+    const mockService = new AggregatedMetricsService();
+    jest
+      .spyOn(mockService, 'calculateMetrics')
+      .mockRejectedValue(new Error('Test error'));
+
+    await expect(mockService.preloadCache([])).rejects.toThrow('Test error');
+  });
 });
