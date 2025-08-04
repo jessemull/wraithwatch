@@ -143,12 +143,6 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Start Next.js Server Locally
-        run: |
-          cd apps/frontend
-          nohup yarn dev &
-          npx wait-on http://localhost:3000
-
       - name: Run Lighthouse Tests
         run: |
           cd apps/frontend
