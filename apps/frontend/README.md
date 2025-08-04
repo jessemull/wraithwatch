@@ -1,36 +1,321 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wraithwatch Frontend
 
-## Getting Started
+A modern React-based cybersecurity dashboard built with Next.js 15 and TypeScript, designed to provide real-time threat monitoring and entity visualization through interactive 3D renderings and dynamic charts.
 
-First, run the development server:
+## Table of Contents
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Component Architecture](#component-architecture)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Performance Optimization](#performance-optimization)
+- [Monitoring & Analytics](#monitoring--analytics)
+
+## Overview
+
+The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that displays real-time entity updates, threat monitoring, and interactive 3D visualizations. Built with modern web technologies, it demonstrates effective patterns for real-time data visualization and user experience design in security operations.
+
+## Features
+
+### Dashboard Components
+- **Real-time Entity List**: Live entity updates with property changes
+- **Interactive Charts**: Dynamic metrics visualization with Chart.js
+- **Entity Details Panel**: Detailed entity information and history
+- **Connection Status**: WebSocket connection monitoring
+- **Welcome Section**: User onboarding and system status
+
+### 3D Visualizations
+- **Timeline Visualization**: Time-based entity progression
+- **Network Visualization**: Entity relationships and connections
+- **Matrix Visualization**: Spatial entity positioning
+- **Dynamic Loading**: Lazy-loaded 3D components for performance
+- **Entity Selection**: Interactive entity selection and highlighting
+
+### Real-time Data Integration
+- **WebSocket Communication**: Real-time data streaming
+- **REST API Integration**: Historical data and metrics
+- **Data Transformation**: Entity change to visualization mapping
+- **Error Handling**: Graceful connection and data error management
+- **Connection Recovery**: Automatic WebSocket reconnection
+
+### User Experience
+- **Responsive Design**: Mobile and desktop optimization
+- **Loading States**: Smooth loading transitions
+- **Error Boundaries**: Graceful error handling
+- **Performance Monitoring**: Lighthouse CI integration
+- **Accessibility**: WCAG compliance features
+
+## Technology Stack
+
+### Core Framework
+- **Next.js 15**: React framework with App Router
+- **React 19**: Latest React with concurrent features
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first styling
+
+### 3D Visualization
+- **Three.js**: 3D graphics library
+- **React Three Fiber**: React renderer for Three.js
+- **Drei**: Three.js helpers and utilities
+- **Framer Motion**: Animation library
+
+### Data Visualization
+- **Chart.js**: Interactive charts and graphs
+- **React Chart.js 2**: React wrapper for Chart.js
+- **Lucide React**: Icon library
+
+### Development Tools
+- **Jest**: Testing framework
+- **ESLint**: Code linting
+- **Cypress**: End-to-end testing
+- **Lighthouse CI**: Performance monitoring
+
+### CI/CD
+- **GitHub Actions**: Deployment workflows
+- **AWS S3**: Static website hosting
+- **CloudFront**: Global CDN
+- **CloudFormation**: Infrastructure management
+
+## Quick Start
+
+### Prerequisites
+- Node.js 22+
+- Yarn package manager
+- API and WebSocket endpoints configured
+
+### Installation
+
+1. **Install dependencies**
+   ```bash
+   yarn install
+   ```
+
+2. **Set environment variables**
+   ```bash
+   # Edit .env.local with environment variables (see below)
+   touch .env.local
+   ```
+
+3. **Start development server**
+   ```bash
+   yarn dev
+   ```
+
+4. **Open the application**
+   ```bash
+   # Navigate to http://localhost:3000
+   ```
+
+## Project Structure
+
+```
+apps/frontend/
+├── src/
+│   ├── app/                   # Next.js App Router
+│   ├── components/            # React components
+│   │   ├── Charts/            # Chart.js components
+│   │   ├── Dashboard/         # Dashboard components
+│   │   ├── EntitiesList/      # Entity list components
+│   │   └── Visualizations/    # 3D visualization components
+│   ├── config/                # Application configuration
+│   ├── constants/             # Application constants
+│   ├── hooks/                 # Custom React hooks
+│   ├── types/                 # TypeScript type definitions
+│   └── util/                  # Utility functions
+├── public/                    # Static assets
+├── cypress/                   # End-to-end tests
+└── package.json               # Dependencies and scripts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Component Architecture
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Dashboard Components
+- **Dashboard**: Main dashboard container and layout
+- **Header**: Navigation and connection status
+- **DashboardMetrics**: Real-time metrics display
+- **EntityDetails**: Entity information panel
+- **VisualizationControls**: 3D visualization controls
+- **WelcomeSection**: User onboarding section
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Visualization Components
+- **TimelineVisualization**: Time-based entity progression
+- **NetworkGraph3D**: Entity relationship visualization
+- **Matrix3D**: Spatial entity positioning
+- **EntityNode**: Individual entity representation
+- **ControlPanel**: Visualization controls
 
-## Learn More
+### Chart Components
+- **BarChart**: Vertical bar chart component
+- **LineChart**: Time-series line chart
+- **PieChart**: Pie chart component
+- **DoughnutChart**: Doughnut chart component
+- **HorizontalBarChart**: Horizontal bar chart
 
-To learn more about Next.js, take a look at the following resources:
+### Entity Components
+- **EntitiesList**: Entity list container
+- **EntityItem**: Individual entity item
+- **EntityGroupHeader**: Entity group headers
+- **ConnectionStatus**: WebSocket connection status
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Available Scripts
 
-## Deploy on Vercel
+```bash
+# Development
+yarn dev              # Start development server
+yarn build            # Build for production
+yarn start            # Start production server
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Testing
+yarn test             # Run unit tests
+yarn test:watch       # Run tests in watch mode
+yarn test:coverage    # Generate coverage report
+yarn coverage:open    # Open coverage report
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# E2E Testing
+yarn e2e              # Run Cypress tests
+yarn e2e:open         # Open Cypress UI
+
+# Code Quality
+yarn lint             # Run ESLint
+
+# Performance
+yarn lighthouse       # Run Lighthouse CI
+```
+
+### Environment Variables
+
+```bash
+# Required
+NEXT_PUBLIC_API_URL=https://api.wraithwatch-demo.com
+NEXT_PUBLIC_WEBSOCKET_URL=wss://api.wraithwatch-demo.com/ws
+
+# Optional
+NODE_ENV=development
+NEXT_PUBLIC_APP_ENV=development
+```
+
+### Development Workflow
+
+1. **Start development server**
+   ```bash
+   yarn dev
+   ```
+
+2. **Run tests**
+   ```bash
+   yarn test
+   ```
+
+3. **Check code quality**
+   ```bash
+   yarn lint
+   ```
+
+4. **Build for production**
+   ```bash
+   yarn build
+   ```
+
+## Deployment
+
+### GitHub Actions Deployment
+
+The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
+
+1. **Automatic Trigger**: Deploy on push to main branch
+2. **Build Process**: 
+   - Install dependencies
+   - Lint code
+   - Run unit tests
+   - Check coverage threshold (70%)
+   - Build Next.js application
+   - Copy sitemap and robots files
+
+3. **S3 Deployment**:
+   - Upload build artifacts to S3 bucket
+   - Sync with CloudFront distribution
+   - Set environment variables
+
+## Infrastructure Components
+
+- **S3 Bucket**: `wraithwatch-frontend` for static hosting
+- **CloudFront Distribution**: Global CDN with custom domain
+- **Route 53**: DNS management for custom domain
+- **ACM Certificate**: SSL certificate for HTTPS
+- **CloudFormation**: Infrastructure management
+
+## Performance Optimization
+
+### Next.js Optimization
+- **App Router**: Latest Next.js routing system
+- **Static Generation**: Pre-rendered pages for performance
+- **Image Optimization**: Automatic image optimization
+- **Code Splitting**: Automatic code splitting
+- **Bundle Analysis**: Webpack bundle analysis
+
+### 3D Visualization Optimization
+- **Lazy Loading**: Dynamic imports for 3D components
+- **Three.js Optimization**: Efficient 3D rendering
+- **Memory Management**: Proper cleanup and disposal
+- **Frame Rate Optimization**: 60fps rendering targets
+
+### Data Optimization
+- **WebSocket Efficiency**: Optimized real-time communication
+- **Caching Strategy**: Client-side data caching
+- **Error Recovery**: Graceful error handling
+- **Connection Management**: Efficient WebSocket management
+
+### Build Optimization
+- **Tree Shaking**: Unused code elimination
+- **Minification**: Code and asset minification
+- **Compression**: Gzip and Brotli compression
+- **CDN Integration**: Global content delivery
+
+## Monitoring & Analytics
+
+### Performance Monitoring
+- **Lighthouse CI**: Automated performance testing
+- **Core Web Vitals**: Performance metrics monitoring
+- **Bundle Analysis**: JavaScript bundle size tracking
+- **Load Time Monitoring**: Page load time tracking
+
+### Error Monitoring
+- **Error Boundaries**: React error boundary implementation
+- **Console Logging**: Development error logging
+- **User Feedback**: Error reporting mechanisms
+- **Debugging Tools**: Development debugging utilities
+
+### Analytics Integration
+- **User Interaction**: User behavior tracking
+- **Performance Metrics**: Real user monitoring
+- **Error Tracking**: Error rate monitoring
+- **Conversion Tracking**: User journey analysis
+
+## Future Improvements
+
+### Architecture & Security
+- **Micro-frontends**: Implement webpack's code splitting for modular architecture
+- **Server-side Rendering**: Run Next.js as a server with API routes and authentication
+- **Protected Endpoints**: Add role-based access control and rate limiting
+- **Internationalization**: Multi-language support with i18n framework
+
+### Performance & User Experience
+- **Progressive Web App**: Add offline capabilities, service workers, and mobile optimization
+- **Advanced Visualizations**: Machine learning integration and geographic threat mapping
+- **Customizable Dashboard**: Theme switching, configurable layouts, and data export
+- **Virtual Scrolling**: Optimize large entity lists and advanced filtering
+
+### DevOps & Data Management
+- **Containerization**: Docker deployment with blue-green strategy
+- **Monitoring Integration**: APM tools and visual regression testing
+- **Data Governance**: Real-time analytics, retention policies, and audit logging
+
+---
+
+**Built for Wraithwatch Cybersecurity - Modern real-time cybersecurity dashboard**

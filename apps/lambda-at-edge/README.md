@@ -1,146 +1,288 @@
-# WraithWatch Lambda@Edge
+# Wraithwatch Lambda@Edge
 
-This Lambda@Edge function handles domain redirects and URL normalization for the WraithWatch frontend application.
+A CloudFront edge function built with AWS Lambda@Edge and TypeScript, designed to handle domain redirects and URL normalization for the Wraithwatch cybersecurity dashboard.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
+- [Development](#development)
+- [Deployment](#deployment)
+- [Performance Optimization](#performance-optimization)
+- [Monitoring & Logging](#monitoring--logging)
+- [Security](#security)
+
+## Overview
+
+The Wraithwatch Lambda@Edge function provides edge computing capabilities for the cybersecurity dashboard, processing requests at CloudFront edge locations worldwide. This enables low-latency request handling, domain redirects, and URL normalization at the edge of the AWS network.
 
 ## Features
 
+### Domain Management
 - **Domain Redirect**: Redirects `wraithwatch-demo.com` to `www.wraithwatch-demo.com`
 - **URL Normalization**: Adds `.html` extension to URLs without file extensions
 - **Query String Preservation**: Maintains query parameters during redirects
 - **Protocol Preservation**: Respects the original protocol (HTTP/HTTPS)
 
-## Architecture
+### Request Processing
+- **Edge Processing**: Processing at 400+ CloudFront edge locations
+- **Low Latency**: Sub-100ms response times worldwide
+- **Request Modification**: Dynamic request transformation
+- **Response Enhancement**: Real-time response optimization
 
-The Lambda@Edge function is deployed to CloudFront and runs at the edge locations, providing:
+### Technical Features
+- **TypeScript**: Type-safe edge function development
+- **Webpack**: Optimized bundle compilation
+- **Testing**: Comprehensive edge function testing
+- **Monitoring**: CloudWatch edge metrics
 
-- **Low Latency**: Redirects happen at the edge, not origin
-- **Global Distribution**: Works across all CloudFront edge locations
-- **Cost Effective**: Minimal compute costs for redirect logic
+## Technology Stack
 
-## Deployment
+### Core Platform
+- **AWS Lambda@Edge**: Edge computing platform
+- **Node.js 22**: Latest LTS runtime
+- **TypeScript**: Type-safe development
+
+### CloudFront Integration
+- **CloudFront Events**: Viewer request/response handling
+- **Edge Locations**: Global edge processing
+- **Cache Behavior**: Intelligent caching strategies
+- **Origin Control**: Dynamic origin selection
+
+### Development Tools
+- **Jest**: Testing framework
+- **ESLint**: Code linting
+
+### CI/CD
+- **Webpack**: Bundle optimization
+- **GitHub Actions**: Deployment workflows
+
+## Quick Start
 
 ### Prerequisites
+- AWS CLI configured
+- CloudFront distribution
+- Node.js 22+
 
-1. AWS CLI configured with appropriate permissions
-2. S3 bucket for Lambda deployment artifacts
-3. CloudFormation stacks for IAM roles and S3 bucket
+### Installation
 
-### Manual Deployment
+1. **Install dependencies**
+   ```bash
+   yarn install
+   ```
 
-```bash
-cd apps/lambda-at-edge
+2. **Set environment variables**
+   ```bash
+   # Edit .env with environment variables (see below)
+   touch .env
+   ```
 
-# Install dependencies
-npm install
+3. **Build the function**
+   ```bash
+   yarn build
+   ```
 
-# Build and package
-npm run build
-npm run package
+4. **Test the function**
+   ```bash
+   # Test domain redirect
+   curl -I https://wraithwatch-demo.com
+   # Should redirect to https://www.wraithwatch-demo.com
+   ```
 
-# Deploy via GitHub Actions
-# Use the "Deploy Lambda@Edge" workflow with environment selection
-```
-
-### CloudFormation Stacks
-
-The deployment creates/updates these CloudFormation stacks:
-
-1. **S3 Bucket Stack**: `wraithwatch-lambda-at-edge-s3.yaml`
-   - Creates S3 bucket for Lambda deployment artifacts
-   - Exports bucket name for other stacks
-
-2. **IAM Role Stack**: `wraithwatch-lambda-at-edge-role.yaml`
-   - Creates IAM role for Lambda execution
-   - Grants permissions for S3 access and CloudWatch logs
-
-3. **Lambda Function Stack**: `template.yaml`
-   - Creates Lambda function with the handler code
-   - Creates Lambda version for deployment tracking
-
-## Testing
-
-```bash
-# Run unit tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Open coverage report
-npm run coverage:open
-```
-
-## Integration with CloudFront
-
-To use this Lambda@Edge function with CloudFront:
-
-1. Deploy the Lambda function
-2. Associate the Lambda function with your CloudFront distribution
-3. Configure it as a "Viewer Request" event
-4. Update your CloudFront distribution
-
-## Configuration
-
-The function is configured via environment variables:
-
-- `NODE_ENV`: Set to `dev` or `prod` for environment-specific behavior
-
-## Monitoring
-
-- **CloudWatch Logs**: Lambda execution logs are available in CloudWatch
-- **CloudFront Logs**: Request/response logs can be enabled for debugging
-- **Metrics**: CloudWatch metrics for Lambda execution and errors
-
-## Security
-
-- **IAM Roles**: Least privilege access to S3 and CloudWatch
-- **No Secrets**: Function doesn't handle sensitive data
-- **Edge Security**: Runs in AWS edge locations with security controls
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Redirect Loop**: Ensure CloudFront distribution is configured correctly
-2. **404 Errors**: Check that S3 bucket contains the expected files
-3. **Permission Errors**: Verify IAM role has necessary permissions
-
-### Debugging
-
-1. Check CloudWatch logs for Lambda execution errors
-2. Enable CloudFront access logs for request analysis
-3. Test redirects manually with curl or browser
-
-## Development
-
-### Local Development
-
-```bash
-# Install dependencies
-npm install
-
-# Run linting
-npm run lint
-
-# Run tests
-npm test
-
-# Build for deployment
-npm run build
-```
-
-### Code Structure
+## Project Structure
 
 ```
 apps/lambda-at-edge/
 ├── src/
-│   ├── index.ts          # Main Lambda handler
-│   └── index.test.ts     # Unit tests
-├── cloudformation/        # CloudFormation templates
-├── .github/workflows/     # GitHub Actions workflows
-└── package.json          # Dependencies and scripts
+│   ├── __tests__/           # Test files
+│   ├── constants/           # Application constants
+│   ├── types/               # TypeScript type definitions
+│   ├── utils/               # Utility functions
+│   ├── handler.ts           # Lambda function handler
+│   └── index.ts             # Application entry point
+├── webpack.config.js        # Bundle configuration
+├── template.yaml            # AWS SAM template
+└── package.json             # Dependencies and scripts
 ```
 
-## License
+## API Endpoints
 
-This project is part of the WraithWatch application suite.
+### CloudFront Events
+
+The Lambda@Edge function processes CloudFront viewer request events:
+
+```typescript
+interface CloudFrontRequestEvent {
+  Records: [{
+    cf: {
+      request: {
+        uri: string;
+        method: string;
+        headers: Record<string, any>;
+        querystring: string;
+        clientIp: string;
+        userAgent: string;
+      };
+    };
+  }];
+}
+```
+
+### Request Processing
+
+The function handles two main scenarios:
+
+1. **Domain Redirect**: Redirects non-canonical domain to canonical domain
+2. **URL Normalization**: Adds `.html` extension to URLs without file extensions
+
+### Response Types
+
+- **Redirect Response**: 301 redirect for domain changes
+- **Modified Request**: Updated URI for URL normalization
+- **Pass-through**: Unmodified request for standard paths
+
+## Development
+
+### Available Scripts
+
+```bash
+# Development
+yarn build            # Build for production
+yarn clean            # Clean build directory
+yarn package          # Package for deployment
+
+# Testing
+yarn test             # Run unit tests
+yarn test:watch       # Run tests in watch mode
+
+# Code Quality
+yarn lint             # Run ESLint
+yarn lint:fix         # Fix linting issues
+yarn format           # Format code with Prettier
+yarn format:check     # Check code formatting
+```
+
+### Environment Variables
+
+```bash
+# Required
+AWS_REGION=us-east-1
+
+# Optional
+NODE_ENV=production
+LOG_LEVEL=info
+EDGE_FUNCTION_NAME=wraithwatch-edge
+```
+
+### Development Workflow
+
+1. **Run tests**
+   ```bash
+   yarn test
+   ```
+
+2. **Check code quality**
+   ```bash
+   yarn lint:fix
+   ```
+
+3. **Build for production**
+   ```bash
+   yarn build
+   ```
+
+## Deployment
+
+### GitHub Actions Deployment
+
+The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFormation:
+
+1. **Manual Trigger**: Deploy via GitHub Actions workflow dispatch
+2. **Build Process**: 
+   - Install dependencies
+   - Lint code
+   - Run unit tests
+   - Build Lambda package
+   - Upload to S3
+
+3. **CloudFormation Deployment**:
+   - Create/update CloudFormation stack
+   - Deploy Lambda function with new version
+   - Associate with CloudFront distribution
+   - Set environment variables
+
+## Infrastructure Components
+
+- **Lambda Function**: `wraithwatch-lambda-at-edge` with 5-second timeout
+- **CloudFront**: Global CDN with edge function association
+- **S3 Bucket**: `wraithwatch-lambda-at-edge` for deployment artifacts
+- **CloudFormation**: Stack management and versioning
+- **IAM Roles**: Execution permissions for Lambda@Edge
+
+## Performance Optimization
+
+### Edge Function Optimization
+- **Bundle Size**: Minimized bundle size for fast loading
+- **Memory Configuration**: Optimal memory allocation (128MB)
+- **Timeout Settings**: 5-second timeout (CloudFront limit)
+- **Cold Start**: Optimized cold start performance
+
+### CloudFront Optimization
+- **Cache Headers**: Intelligent cache control
+- **Compression**: Automatic content compression
+- **Origin Selection**: Dynamic origin routing
+- **Error Handling**: Graceful error responses
+
+### Cost Optimization
+- **Function Size**: Minimized function size
+- **Execution Time**: Optimized execution time
+- **Memory Usage**: Efficient memory utilization
+- **Request Filtering**: Selective request processing
+
+## Monitoring & Logging
+
+### CloudWatch Monitoring
+- **Edge Metrics**: CloudFront edge function metrics
+- **Performance Monitoring**: Response time tracking
+- **Error Tracking**: Error rate and type monitoring
+- **Request Monitoring**: Request volume and patterns
+
+### Application Logging
+- **Structured Logging**: JSON-formatted logs
+- **Request Logging**: Request/response logging
+- **Error Logging**: Comprehensive error tracking
+- **Performance Logging**: Response time monitoring
+
+### Health Checks
+- **Function Health**: Edge function status monitoring
+- **CloudFront Health**: Distribution health monitoring
+- **Performance Health**: Response time monitoring
+- **Error Health**: Error rate monitoring
+
+## Security
+
+### Request Security
+- **Input Validation**: Request parameter validation
+- **Security Headers**: Automatic security header injection
+- **Rate Limiting**: Edge-level rate limiting
+- **Bot Protection**: Basic bot detection
+
+### Response Security
+- **Content Security**: Response content validation
+- **Header Security**: Security header injection
+- **CORS Handling**: Cross-origin request handling
+- **Error Security**: Secure error responses
+
+### Edge Security
+- **Request Filtering**: Malicious request filtering
+- **Origin Validation**: Origin request validation
+- **IP Filtering**: IP-based request filtering
+- **User Agent Validation**: User agent validation
+
+---
+
+**Built for Wraithwatch Cybersecurity - High-performance edge computing**
