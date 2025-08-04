@@ -32,11 +32,9 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       <div key={key} className="bg-gray-800/50 rounded-lg p-2 relative">
         {property.lastChanged && (
           <>
-            {/* Desktop timestamp - upper right */}
             <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium hidden sm:block">
               {new Date(property.lastChanged).toLocaleTimeString()}
             </div>
-            {/* Mobile timestamp - underneath title */}
             <div className="text-gray-400 text-xs mb-1 sm:hidden">
               {new Date(property.lastChanged).toLocaleTimeString()}
             </div>
