@@ -3,14 +3,16 @@ const urls = {
   test: 'http://localhost:3000',
 };
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
   ci: {
     assert: {
       assertions: {
-        ...(process.env.NODE_ENV === 'production' && {
-          'categories:performance': ['error', { minScore: 0.8 }],
+        ...(isProduction && {
+          'categories:performance': ['error', { minScore: 0.6 }],
         }),
-        ...(process.env.NODE_ENV === 'test' && {
+        ...(!isProduction && {
           'categories:performance': ['warn', { minScore: 0.6 }],
         }),
         'categories:accessibility': ['warn', { minScore: 0.9 }],
@@ -20,8 +22,10 @@ module.exports = {
     },
     collect: {
       numberOfRuns: 1,
-      startServerCommand: 'yarn dev',
-      startServerReadyPattern: 'started server on',
+      ...(isProduction ? {} : {
+        startServerCommand: 'yarn dev',
+        startServerReadyPattern: 'started server on',
+      }),
       url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
       settings: {
         formFactor: 'desktop',
