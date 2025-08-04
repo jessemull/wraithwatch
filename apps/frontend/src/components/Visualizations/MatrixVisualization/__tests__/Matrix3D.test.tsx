@@ -18,12 +18,12 @@ jest.mock('@react-three/drei', () => ({
       reset: jest.fn(),
       update: jest.fn(),
     };
-    
+
     // Assign the mock controls to the ref
     if (ref) {
       ref.current = mockControls;
     }
-    
+
     return <div data-testid="orbit-controls" {...props} />;
   }),
 }));
@@ -112,9 +112,9 @@ describe('Matrix3D', () => {
       />
     );
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 1 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 1 positions)'
+    );
   });
 
   it('renders control panel with zoom and reset buttons', () => {
@@ -189,25 +189,25 @@ describe('Matrix3D', () => {
   it('renders with undefined positions', () => {
     render(<Matrix3D entities={mockEntities} positions={undefined as any} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 0 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 0 positions)'
+    );
   });
 
   it('renders with null positions', () => {
     render(<Matrix3D entities={mockEntities} positions={null as any} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 0 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 0 positions)'
+    );
   });
 
   it('renders with empty positions array', () => {
     render(<Matrix3D entities={mockEntities} positions={[]} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 0 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 0 positions)'
+    );
   });
 
   it('renders with multiple entities', () => {
@@ -232,9 +232,9 @@ describe('Matrix3D', () => {
 
     render(<Matrix3D entities={multipleEntities} positions={mockPositions} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (2 entities, 1 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (2 entities, 1 positions)'
+    );
   });
 
   it('renders with complex positions', () => {
@@ -259,9 +259,9 @@ describe('Matrix3D', () => {
 
     render(<Matrix3D entities={mockEntities} positions={complexPositions} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 2 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 2 positions)'
+    );
   });
 
   it('renders with mobile camera configuration', () => {
@@ -272,9 +272,9 @@ describe('Matrix3D', () => {
 
     render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 1 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 1 positions)'
+    );
   });
 
   it('renders with desktop camera configuration', () => {
@@ -285,9 +285,9 @@ describe('Matrix3D', () => {
 
     render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
-    expect(
-      screen.getByTestId('matrix-scene')
-    ).toHaveTextContent('Matrix Scene (1 entities, 1 positions)');
+    expect(screen.getByTestId('matrix-scene')).toHaveTextContent(
+      'Matrix Scene (1 entities, 1 positions)'
+    );
   });
 
   it('handles zoom in button click', () => {

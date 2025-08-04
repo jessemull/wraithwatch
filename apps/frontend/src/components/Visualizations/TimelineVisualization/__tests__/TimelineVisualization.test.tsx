@@ -18,12 +18,12 @@ jest.mock('@react-three/drei', () => ({
       reset: jest.fn(),
       update: jest.fn(),
     };
-    
+
     // Assign the mock controls to the ref
     if (ref) {
       ref.current = mockControls;
     }
-    
+
     return <div data-testid="orbit-controls" {...props} />;
   }),
 }));

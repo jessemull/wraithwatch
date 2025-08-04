@@ -238,7 +238,9 @@ describe('useRealTimeData', () => {
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
-    (global.WebSocket as any).mock.results[0].value.onmessage?.({ data: 'invalid json' } as MessageEvent);
+    (global.WebSocket as any).mock.results[0].value.onmessage?.({
+      data: 'invalid json',
+    } as MessageEvent);
     expect(console.error).toHaveBeenCalledWith(
       'Error parsing WebSocket message:',
       expect.any(Error)
