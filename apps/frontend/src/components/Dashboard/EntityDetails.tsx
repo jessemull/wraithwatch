@@ -18,7 +18,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
 }) => {
   const renderProperty = (
     key: string,
-    property: { currentValue: string | number }
+    property: { currentValue: string | number; lastChanged?: string }
   ) => {
     const value = property.currentValue;
     const isNumber = typeof value === 'number';
@@ -29,7 +29,13 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
     if (key === 'source_ip') return null;
 
     return (
-      <div key={key} className="bg-gray-800/50 rounded-lg p-2">
+      <div key={key} className="bg-gray-800/50 rounded-lg p-2 relative">
+        {/* Last Modified Indicator */}
+        {property.lastChanged && (
+          <div className="absolute top-2 right-2 bg-gray-900/90 border border-gray-600 text-white text-xs px-2 py-1 rounded font-medium">
+            {new Date(property.lastChanged).toLocaleTimeString()}
+          </div>
+        )}
         <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
           {formatPropertyName(key)}
         </p>
@@ -154,7 +160,13 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
           .map(([key, property]) => renderProperty(key, property))}
       </div>
       {selectedEntity.properties?.source_ip?.currentValue && (
-        <div className="bg-gray-800/50 rounded-lg p-3">
+        <div className="bg-gray-800/50 rounded-lg p-3 relative">
+          {/* Last Modified Indicator */}
+          {selectedEntity.properties.source_ip.lastChanged && (
+            <div className="absolute top-2 right-2 bg-gray-900/90 border border-gray-600 text-white text-xs px-2 py-1 rounded font-medium">
+              {new Date(selectedEntity.properties.source_ip.lastChanged).toLocaleTimeString()}
+            </div>
+          )}
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
             Source IP
           </p>
