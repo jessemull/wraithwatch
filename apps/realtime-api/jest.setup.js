@@ -17,10 +17,15 @@ const originalConsoleWarn = console.warn;
 const originalConsoleError = console.error;
 
 beforeAll(() => {
+  // Completely silence all console output
   console.log = jest.fn();
   console.info = jest.fn();
   console.warn = jest.fn();
   console.error = jest.fn();
+
+  // Also silence process.stdout and process.stderr
+  jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+  jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
 });
 
 afterAll(() => {
@@ -28,4 +33,7 @@ afterAll(() => {
   console.info = originalConsoleInfo;
   console.warn = originalConsoleWarn;
   console.error = originalConsoleError;
+
+  // Restore stdout and stderr
+  jest.restoreAllMocks();
 });
