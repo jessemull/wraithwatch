@@ -14,7 +14,7 @@ export const ENTITY_STYLES = {
     default: { emissiveIntensity: 0.8, size: 0.4 },
   },
   AIAgent: {
-    base: { color: '#4ecdc4', textColor: '#ffffff', pulse: false },
+    base: { color: '#4ecdc4', textColor: '#ffffff', pulse: false, rotate: true },
     selected: { emissiveIntensity: 0.8, size: 0.4 },
     default: { emissiveIntensity: 0.4, size: 0.3 },
   },

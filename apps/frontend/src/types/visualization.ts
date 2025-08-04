@@ -22,6 +22,7 @@ export interface EntityStyleBase {
   color: string;
   textColor: string;
   pulse: boolean;
+  rotate?: boolean;
 }
 
 export interface EntityStyleConfig {

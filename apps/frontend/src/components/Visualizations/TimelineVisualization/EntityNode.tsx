@@ -39,6 +39,7 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
   }, [entity.type, isSelected]);
 
   const [pulseScale, setPulseScale] = useState(1);
+  const [rotationAngle, setRotationAngle] = useState(0);
 
   useEffect(() => {
     if (!style.pulse) return;
@@ -66,6 +67,30 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
     };
   }, [style.pulse]);
 
+  useEffect(() => {
+    if (entity.type !== 'AI_Agent') return;
+
+    let animationId: number;
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const rotationSpeed = 0.003; // Speed of the rotation - faster for continuous motion
+      const angle = elapsed * rotationSpeed;
+      setRotationAngle(angle);
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [entity.type]);
+
   const pulseMesh = useMemo(() => {
     if (!style.pulse) return null;
 
@@ -85,6 +110,32 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
     );
   }, [style.pulse, style.size, style.color, style.emissive, pulseScale]);
 
+  const aiHalo = useMemo(() => {
+    if (entity.type !== 'AI_Agent') return null;
+
+    return (
+      <group rotation={[0, rotationAngle, 0]}>
+        <mesh>
+          <torusGeometry
+            args={[
+              style.size + 0.3, // radius
+              0.1, // tube thickness
+              16, // radial segments
+              32 // tubular segments
+            ]}
+          />
+          <meshStandardMaterial
+            color={style.color}
+            transparent={true}
+            opacity={0.6}
+            emissive={style.emissive}
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+      </group>
+    );
+  }, [entity.type, style.size, style.color, style.emissive, rotationAngle]);
+
   const textPosition = useMemo(
     () => [0, style.size + 0.6, 0] as [number, number, number],
     [style.size]
@@ -92,6 +143,7 @@ export const EntityNode: React.FC<EntityNodeProps> = ({
 
   return (
     <group position={position}>
+      {aiHalo}
       <mesh
         onClick={onClick}
         scale={style.pulse ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}

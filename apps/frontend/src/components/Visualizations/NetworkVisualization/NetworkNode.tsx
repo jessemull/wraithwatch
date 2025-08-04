@@ -37,6 +37,7 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
 
   const isThreat = entity.type === 'Threat';
   const [pulseScale, setPulseScale] = useState(1);
+  const [rotationAngle, setRotationAngle] = useState(0);
 
   useEffect(() => {
     if (!isThreat) return;
@@ -63,6 +64,30 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
       }
     };
   }, [isThreat]);
+
+  useEffect(() => {
+    if (entity.type !== 'AI_Agent') return;
+
+    let animationId: number;
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const rotationSpeed = 0.003; // Speed of the rotation - faster for continuous motion
+      const angle = elapsed * rotationSpeed;
+      setRotationAngle(angle);
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [entity.type]);
 
   const threatHalo = useMemo(() => {
     if (!isThreat) return null;
@@ -105,9 +130,36 @@ export const NetworkNode: React.FC<NetworkNodeProps> = ({
     );
   }, [isThreat, nodeStyle.size, pulseScale]);
 
+  const aiHalo = useMemo(() => {
+    if (entity.type !== 'AI_Agent') return null;
+
+    return (
+      <group rotation={[0, rotationAngle, 0]}>
+        <mesh>
+          <torusGeometry
+            args={[
+              nodeStyle.size + 0.3, // radius
+              0.1, // tube thickness
+              16, // radial segments
+              32 // tubular segments
+            ]}
+          />
+          <meshStandardMaterial
+            color={NETWORK_NODE_CONFIG.entityColors.AI_Agent}
+            transparent={true}
+            opacity={0.6}
+            emissive={NETWORK_NODE_CONFIG.entityColors.AI_Agent}
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+      </group>
+    );
+  }, [entity.type, nodeStyle.size, rotationAngle]);
+
   return (
     <group position={position}>
       {threatHalo}
+      {aiHalo}
       <mesh
         onClick={onClick}
         scale={isThreat ? [pulseScale, pulseScale, pulseScale] : [1, 1, 1]}
