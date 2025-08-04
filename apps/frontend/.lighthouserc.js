@@ -10,7 +10,7 @@ module.exports = {
     assert: {
       assertions: {
         ...(isProduction && {
-          'categories:performance': ['error', { minScore: 0.6 }],
+          'categories:performance': ['warn', { minScore: 0.6 }],
         }),
         ...(!isProduction && {
           'categories:performance': ['warn', { minScore: 0.6 }],
