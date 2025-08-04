@@ -14,8 +14,8 @@ interface NetworkSceneProps {
 }
 
 export const NetworkScene: React.FC<NetworkSceneProps> = ({
-  entities,
-  positions,
+  entities = [],
+  positions = [],
   selectedEntity,
   onEntitySelect,
 }) => {
