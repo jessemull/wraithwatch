@@ -84,9 +84,10 @@ export const formatEntityType = (entityType: string): string => {
 };
 
 export const getUnit = (name: string): string => {
-  if (name.includes('rate') || name.includes('loss')) return '%';
-  if (name.includes('latency')) return 'ms';
   if (name.includes('bandwidth')) return 'Mbps';
+  if (name.includes('rate') || name.includes('loss') || name.includes('usage'))
+    return '%';
+  if (name.includes('latency') || name.includes('response_time')) return 'ms';
   if (name.includes('count')) return '';
   if (name.includes('duration')) return 'min';
   return '';
