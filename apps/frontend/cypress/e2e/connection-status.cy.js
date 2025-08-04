@@ -23,7 +23,9 @@ describe('Connection Status', () => {
 
   describe('Real-time Features', () => {
     it('should show real-time mode indicator', () => {
-      cy.contains('Real-Time Mode - Entities Updating Dynamically').should('be.visible');
+      cy.contains('Real-Time Mode - Entities Updating Dynamically').should(
+        'be.visible'
+      );
     });
   });
 
@@ -66,4 +68,4 @@ describe('Connection Status', () => {
       cy.get('[class*="animate-pulse"]').should('exist');
     });
   });
-}); 
+});

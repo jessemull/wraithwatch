@@ -38,7 +38,9 @@ describe('Wraithwatch Dashboard', () => {
 
     it('should show loading skeleton or content', () => {
       // Either loading skeleton or actual content should be visible
-      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should('exist');
+      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should(
+        'exist'
+      );
     });
   });
 
@@ -49,7 +51,9 @@ describe('Wraithwatch Dashboard', () => {
 
     it('should show loading state or controls', () => {
       // Either loading skeleton or actual controls should be visible
-      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should('exist');
+      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should(
+        'exist'
+      );
     });
   });
 
@@ -60,7 +64,9 @@ describe('Wraithwatch Dashboard', () => {
 
     it('should show loading state or content', () => {
       // Either loading skeleton or actual content should be visible
-      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should('exist');
+      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should(
+        'exist'
+      );
     });
   });
 
@@ -71,13 +77,17 @@ describe('Wraithwatch Dashboard', () => {
 
     it('should show loading state or content', () => {
       // Either loading skeleton or actual content should be visible
-      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should('exist');
+      cy.get('[class*="animate-pulse"], [class*="bg-gray-900"]').should(
+        'exist'
+      );
     });
   });
 
   describe('Real-time Features', () => {
     it('should show real-time mode indicator', () => {
-      cy.contains('Real-Time Mode - Entities Updating Dynamically').should('be.visible');
+      cy.contains('Real-Time Mode - Entities Updating Dynamically').should(
+        'be.visible'
+      );
     });
   });
 
@@ -129,4 +139,4 @@ describe('Wraithwatch Dashboard', () => {
       cy.get('[class*="animate-pulse"]').should('exist');
     });
   });
-}); 
+});
