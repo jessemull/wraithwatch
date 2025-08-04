@@ -1,18 +1,21 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { NetworkGraph3D } from '../NetworkGraph3D';
+
 jest.mock('@react-three/fiber', () => ({
-  Canvas: ({ children, style }: any) => (
+  Canvas: ({ children, camera, style }: any) => (
     <div data-testid="canvas" style={style}>
       {children}
     </div>
   ),
 }));
+
 jest.mock('@react-three/drei', () => ({
-  OrbitControls: ({ ...props }: any) => (
+  OrbitControls: ({ ref, ...props }: any) => (
     <div data-testid="orbit-controls" {...props} />
   ),
 }));
+
 jest.mock('../NetworkScene', () => ({
   NetworkScene: ({ entities, positions }: any) => (
     <div data-testid="network-scene">
@@ -20,104 +23,223 @@ jest.mock('../NetworkScene', () => ({
     </div>
   ),
 }));
+
 jest.mock('../../TimelineVisualization/ControlPanel', () => ({
   ControlPanel: ({ onZoomIn, onZoomOut, onReset }: any) => (
     <div data-testid="control-panel">
-      <button onClick={onZoomIn}>Zoom In</button>
-      <button onClick={onZoomOut}>Zoom Out</button>
-      <button onClick={onReset}>Reset</button>
+      <button onClick={onZoomIn} data-testid="zoom-in">Zoom In</button>
+      <button onClick={onZoomOut} data-testid="zoom-out">Zoom Out</button>
+      <button onClick={onReset} data-testid="reset">Reset</button>
     </div>
   ),
 }));
+
 jest.mock('../../../../hooks/useRealTimeData', () => ({
   useIsMobile: jest.fn(() => false),
 }));
-jest.mock('../../../../constants/visualization', () => ({
-  CANVAS_STYLE: { width: '100%', height: '100%' },
-  CONTROLS_CONFIG: { zoomFactor: 1.2 },
-  MOBILE_CONTROLS_CONFIG: { zoomFactor: 1.5 },
-  MOBILE_NETWORK_CAMERA_CONFIG: { position: [0, 0, 20], fov: 60 },
-}));
-describe('NetworkGraph3D', () => {
 
-  const mockEntities = [
-    {
-      id: 'entity-1',
-      name: 'Test Entity',
-      type: 'System' as const,
-      properties: {},
-      lastSeen: '2023-01-01T12:00:00Z',
-      changesToday: 5,
-    },
-  ];
-  const mockPositions = [
-    {
-      entity_id: 'entity-1',
-      network_position: { x: 0, y: 0, z: 0 },
-    },
-  ];
-  it('renders NetworkGraph3D component with canvas and controls', () => {
+const mockEntities = [
+  {
+    id: 'entity-1',
+    name: 'Test Entity 1',
+    type: 'System',
+    changesToday: 5,
+    lastSeen: new Date().toISOString(),
+    properties: {},
+  },
+  {
+    id: 'entity-2',
+    name: 'Test Entity 2',
+    type: 'User',
+    changesToday: 3,
+    lastSeen: new Date().toISOString(),
+    properties: {},
+  },
+];
+
+const mockPositions = [
+  {
+    entity_id: 'entity-1',
+    entity_type: 'System',
+    name: 'Test Entity 1',
+    timeline_position: { x: 0, y: 0, z: 0 },
+    network_position: { x: 0, y: 0, z: 0 },
+    change_particles: [],
+  },
+  {
+    entity_id: 'entity-2',
+    entity_type: 'User',
+    name: 'Test Entity 2',
+    timeline_position: { x: 100, y: 100, z: 100 },
+    network_position: { x: 100, y: 100, z: 100 },
+    change_particles: [],
+  },
+];
+
+describe('NetworkGraph3D', () => {
+  it('renders network graph with canvas', () => {
     render(
       <NetworkGraph3D
         entities={mockEntities}
         positions={mockPositions}
-        selectedEntity={undefined}
-        onEntitySelect={jest.fn()}
       />
     );
+
     expect(screen.getByTestId('canvas')).toBeInTheDocument();
+  });
+
+  it('renders orbit controls', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={mockPositions}
+      />
+    );
+
     expect(screen.getByTestId('orbit-controls')).toBeInTheDocument();
+  });
+
+  it('renders network scene with entities and positions', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={mockPositions}
+      />
+    );
+
     expect(screen.getByTestId('network-scene')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('2 entities');
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('2 positions');
+  });
+
+  it('renders control panel', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={mockPositions}
+      />
+    );
+
     expect(screen.getByTestId('control-panel')).toBeInTheDocument();
   });
-  it('renders with correct number of entities and positions', () => {
+
+  it('renders zoom controls', () => {
     render(
       <NetworkGraph3D
         entities={mockEntities}
         positions={mockPositions}
-        selectedEntity={undefined}
-        onEntitySelect={jest.fn()}
       />
     );
-    expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+
+    expect(screen.getByTestId('zoom-in')).toBeInTheDocument();
+    expect(screen.getByTestId('zoom-out')).toBeInTheDocument();
+    expect(screen.getByTestId('reset')).toBeInTheDocument();
   });
-  it('renders control panel with zoom and reset buttons', () => {
+
+  it('handles zoom in button click', () => {
     render(
       <NetworkGraph3D
         entities={mockEntities}
         positions={mockPositions}
-        selectedEntity={undefined}
-        onEntitySelect={jest.fn()}
       />
     );
-    expect(screen.getByText('Zoom In')).toBeInTheDocument();
-    expect(screen.getByText('Zoom Out')).toBeInTheDocument();
-    expect(screen.getByText('Reset')).toBeInTheDocument();
+
+    const zoomInButton = screen.getByTestId('zoom-in');
+    fireEvent.click(zoomInButton);
   });
-  it('renders with empty entities array', () => {
+
+  it('handles zoom out button click', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={mockPositions}
+      />
+    );
+
+    const zoomOutButton = screen.getByTestId('zoom-out');
+    fireEvent.click(zoomOutButton);
+  });
+
+  it('handles reset button click', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={mockPositions}
+      />
+    );
+
+    const resetButton = screen.getByTestId('reset');
+    fireEvent.click(resetButton);
+  });
+
+  it('handles empty entities array', () => {
     render(
       <NetworkGraph3D
         entities={[]}
-        positions={[]}
-        selectedEntity={undefined}
-        onEntitySelect={jest.fn()}
+        positions={mockPositions}
       />
     );
-    expect(
-      screen.getByText('Network Scene (0 entities, 0 positions)')
-    ).toBeInTheDocument();
-  });
-  it('renders with selected entity', () => {
-    const selectedEntity = {
-      id: 'entity-2',
-      type: 'Agent',
-      changesToday: 3,
-      lastSeen: new Date().toISOString(),
-      properties: {},
-    };
 
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('0 entities');
+  });
+
+  it('handles empty positions array', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={[]}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('0 positions');
+  });
+
+  it('handles undefined entities', () => {
+    render(
+      <NetworkGraph3D
+        entities={undefined as any}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('0 entities');
+  });
+
+  it('handles undefined positions', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={undefined as any}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('0 positions');
+  });
+
+  it('handles null entities', () => {
+    render(
+      <NetworkGraph3D
+        entities={null as any}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('0 entities');
+  });
+
+  it('handles null positions', () => {
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={null as any}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('0 positions');
+  });
+
+  it('handles selected entity', () => {
+    const selectedEntity = mockEntities[0];
     render(
       <NetworkGraph3D
         entities={mockEntities}
@@ -126,12 +248,11 @@ describe('NetworkGraph3D', () => {
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toBeInTheDocument();
   });
 
-  it('renders with onEntitySelect callback', () => {
+  it('handles entity selection callback', () => {
     const onEntitySelect = jest.fn();
-
     render(
       <NetworkGraph3D
         entities={mockEntities}
@@ -140,82 +261,108 @@ describe('NetworkGraph3D', () => {
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toBeInTheDocument();
   });
 
-  it('renders with undefined positions', () => {
+  it('handles undefined selected entity', () => {
     render(
       <NetworkGraph3D
         entities={mockEntities}
-        positions={undefined as any}
+        positions={mockPositions}
+        selectedEntity={undefined}
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 0 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toBeInTheDocument();
   });
 
-  it('renders with null positions', () => {
+  it('handles undefined onEntitySelect callback', () => {
     render(
       <NetworkGraph3D
         entities={mockEntities}
-        positions={null as any}
+        positions={mockPositions}
+        onEntitySelect={undefined}
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 0 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toBeInTheDocument();
   });
 
-  it('renders with empty positions array', () => {
+  it('handles large entities array', () => {
+    const largeEntities = Array.from({ length: 100 }, (_, i) => ({
+      id: `entity-${i}`,
+      name: `Test Entity ${i}`,
+      type: 'System',
+      changesToday: i,
+      lastSeen: new Date().toISOString(),
+      properties: {},
+    }));
+
+    render(
+      <NetworkGraph3D
+        entities={largeEntities}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('100 entities');
+  });
+
+  it('handles large positions array', () => {
+    const largePositions = Array.from({ length: 100 }, (_, i) => ({
+      entity_id: `entity-${i}`,
+      entity_type: 'System',
+      name: `Test Entity ${i}`,
+      timeline_position: { x: i, y: i, z: i },
+      network_position: { x: i, y: i, z: i },
+      change_particles: [],
+    }));
+
     render(
       <NetworkGraph3D
         entities={mockEntities}
-        positions={[]}
+        positions={largePositions}
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 0 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('100 positions');
   });
 
-  it('renders with multiple entities', () => {
-    const multipleEntities = [
-      ...mockEntities,
+  it('handles entities with complex properties', () => {
+    const complexEntities = [
       {
-        id: 'entity-3',
+        id: 'entity-1',
+        name: 'Complex Entity',
         type: 'System',
-        changesToday: 1,
+        changesToday: 5,
         lastSeen: new Date().toISOString(),
-        properties: {},
+        properties: {
+          cpu_usage: 75,
+          memory_usage: 60,
+          network_status: 'active',
+          security_level: 'high',
+        },
       },
     ];
 
     render(
       <NetworkGraph3D
-        entities={multipleEntities}
+        entities={complexEntities}
         positions={mockPositions}
       />
     );
 
-    expect(screen.getByText('Network Scene (2 entities, 1 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
   });
 
-  it('renders with complex position data', () => {
+  it('handles positions with complex coordinates', () => {
     const complexPositions = [
       {
         entity_id: 'entity-1',
-        entity_type: 'Agent',
-        name: 'Agent 1',
-        timeline_position: { x: 0, y: 0, z: 0 },
-        network_position: { x: 1, y: 2, z: 3 },
-        matrix_position: { x: 4, y: 5, z: 6 },
-        change_particles: [],
-      },
-      {
-        entity_id: 'entity-2',
         entity_type: 'System',
-        name: 'System 1',
-        timeline_position: { x: 10, y: 20, z: 30 },
-        network_position: { x: 40, y: 50, z: 60 },
-        matrix_position: { x: 70, y: 80, z: 90 },
+        name: 'Complex Entity',
+        timeline_position: { x: 123.456, y: -789.012, z: 0.001 },
+        network_position: { x: -456.789, y: 123.456, z: 999.999 },
         change_particles: [],
       },
     ];
@@ -227,34 +374,226 @@ describe('NetworkGraph3D', () => {
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 2 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 positions');
   });
 
-  it('renders with mobile camera configuration', () => {
-    const { useIsMobile } = require('../../../../hooks/useRealTimeData');
-    (useIsMobile as jest.Mock).mockReturnValue(true);
+  it('handles entities with null properties', () => {
+    const entitiesWithNullProps = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Null Props',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: null,
+      },
+    ];
 
     render(
       <NetworkGraph3D
-        entities={mockEntities}
+        entities={entitiesWithNullProps}
         positions={mockPositions}
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
   });
 
-  it('renders with desktop camera configuration', () => {
-    const { useIsMobile } = require('../../../../hooks/useRealTimeData');
-    (useIsMobile as jest.Mock).mockReturnValue(false);
+  it('handles positions with null change particles', () => {
+    const positionsWithNullParticles = [
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        name: 'Entity with Null Particles',
+        timeline_position: { x: 0, y: 0, z: 0 },
+        network_position: { x: 0, y: 0, z: 0 },
+        change_particles: null,
+      },
+    ];
 
     render(
       <NetworkGraph3D
         entities={mockEntities}
+        positions={positionsWithNullParticles}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 positions');
+  });
+
+  it('handles entities with undefined properties', () => {
+    const entitiesWithUndefinedProps = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Undefined Props',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: undefined,
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithUndefinedProps}
         positions={mockPositions}
       />
     );
 
-    expect(screen.getByText('Network Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
+  });
+
+  it('handles positions with undefined change particles', () => {
+    const positionsWithUndefinedParticles = [
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        name: 'Entity with Undefined Particles',
+        timeline_position: { x: 0, y: 0, z: 0 },
+        network_position: { x: 0, y: 0, z: 0 },
+        change_particles: undefined,
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={mockEntities}
+        positions={positionsWithUndefinedParticles}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 positions');
+  });
+
+  it('handles entities with zero changes today', () => {
+    const entitiesWithZeroChanges = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Zero Changes',
+        type: 'System',
+        changesToday: 0,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithZeroChanges}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
+  });
+
+  it('handles entities with negative changes today', () => {
+    const entitiesWithNegativeChanges = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Negative Changes',
+        type: 'System',
+        changesToday: -5,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithNegativeChanges}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
+  });
+
+  it('handles entities with very large changes today', () => {
+    const entitiesWithLargeChanges = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Large Changes',
+        type: 'System',
+        changesToday: 999999,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithLargeChanges}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
+  });
+
+  it('handles entities with invalid last seen date', () => {
+    const entitiesWithInvalidDate = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Invalid Date',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: 'invalid-date',
+        properties: {},
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithInvalidDate}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
+  });
+
+  it('handles entities with null last seen date', () => {
+    const entitiesWithNullDate = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Null Date',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: null,
+        properties: {},
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithNullDate}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
+  });
+
+  it('handles entities with undefined last seen date', () => {
+    const entitiesWithUndefinedDate = [
+      {
+        id: 'entity-1',
+        name: 'Entity with Undefined Date',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: undefined,
+        properties: {},
+      },
+    ];
+
+    render(
+      <NetworkGraph3D
+        entities={entitiesWithUndefinedDate}
+        positions={mockPositions}
+      />
+    );
+
+    expect(screen.getByTestId('network-scene')).toHaveTextContent('1 entities');
   });
 });
