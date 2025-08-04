@@ -44,7 +44,7 @@ module.exports = {
       },
     },
     upload: {
-      target: 'none',
+      target: 'temporary-public-storage',
     },
   },
 };
