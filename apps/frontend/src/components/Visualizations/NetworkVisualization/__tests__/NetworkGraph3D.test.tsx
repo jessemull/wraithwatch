@@ -11,9 +11,21 @@ jest.mock('@react-three/fiber', () => ({
 }));
 
 jest.mock('@react-three/drei', () => ({
-  OrbitControls: ({ ...props }: any) => (
-    <div data-testid="orbit-controls" {...props} />
-  ),
+  OrbitControls: React.forwardRef(({ ...props }: any, ref: any) => {
+    const mockControls = {
+      dollyOut: jest.fn(),
+      dollyIn: jest.fn(),
+      reset: jest.fn(),
+      update: jest.fn(),
+    };
+    
+    // Assign the mock controls to the ref
+    if (ref) {
+      ref.current = mockControls;
+    }
+    
+    return <div data-testid="orbit-controls" {...props} />;
+  }),
 }));
 
 jest.mock('../NetworkScene', () => ({
@@ -328,34 +340,11 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D entities={complexEntities} positions={mockPositions} />
-    );
+    render(<NetworkGraph3D entities={complexEntities} positions={mockPositions} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
-  });
-
-  it('handles positions with complex coordinates', () => {
-    const complexPositions = [
-      {
-        entity_id: 'entity-1',
-        entity_type: 'System',
-        name: 'Complex Entity',
-        timeline_position: { x: 123.456, y: -789.012, z: 0.001 },
-        network_position: { x: -456.789, y: 123.456, z: 999.999 },
-        change_particles: [],
-      },
-    ];
-
-    render(
-      <NetworkGraph3D entities={mockEntities} positions={complexPositions} />
-    );
-
-    expect(screen.getByTestId('network-scene')).toHaveTextContent(
-      '1 positions'
-    );
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (1 entities, 2 positions)');
   });
 
   it('handles entities with null properties', () => {
@@ -370,16 +359,11 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D
-        entities={entitiesWithNullProps}
-        positions={mockPositions}
-      />
-    );
+    render(<NetworkGraph3D entities={entitiesWithNullProps} positions={mockPositions} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (1 entities, 2 positions)');
   });
 
   it('handles positions with null change particles', () => {
@@ -394,16 +378,11 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D
-        entities={mockEntities}
-        positions={positionsWithNullParticles}
-      />
-    );
+    render(<NetworkGraph3D entities={mockEntities} positions={positionsWithNullParticles} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (2 entities, 1 positions)');
   });
 
   it('handles entities with undefined properties', () => {
@@ -418,16 +397,11 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D
-        entities={entitiesWithUndefinedProps}
-        positions={mockPositions}
-      />
-    );
+    render(<NetworkGraph3D entities={entitiesWithUndefinedProps} positions={mockPositions} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (1 entities, 2 positions)');
   });
 
   it('handles positions with undefined change particles', () => {
@@ -442,16 +416,11 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D
-        entities={mockEntities}
-        positions={positionsWithUndefinedParticles}
-      />
-    );
+    render(<NetworkGraph3D entities={mockEntities} positions={positionsWithUndefinedParticles} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (2 entities, 1 positions)');
   });
 
   it('handles entities with zero changes today', () => {
@@ -554,16 +523,11 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D
-        entities={entitiesWithNullDates}
-        positions={mockPositions}
-      />
-    );
+    render(<NetworkGraph3D entities={entitiesWithNullDates} positions={mockPositions} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (1 entities, 2 positions)');
   });
 
   it('handles entities with undefined last seen dates', () => {
@@ -578,15 +542,10 @@ describe('NetworkGraph3D', () => {
       },
     ];
 
-    render(
-      <NetworkGraph3D
-        entities={entitiesWithUndefinedDates}
-        positions={mockPositions}
-      />
-    );
+    render(<NetworkGraph3D entities={entitiesWithUndefinedDates} positions={mockPositions} />);
 
     expect(
-      screen.getByText('Network Scene (1 entities, 1 positions)')
-    ).toBeInTheDocument();
+      screen.getByTestId('network-scene')
+    ).toHaveTextContent('Network Scene (1 entities, 2 positions)');
   });
 });

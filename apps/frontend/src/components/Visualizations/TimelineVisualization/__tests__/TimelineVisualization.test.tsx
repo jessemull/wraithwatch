@@ -11,9 +11,21 @@ jest.mock('@react-three/fiber', () => ({
 }));
 
 jest.mock('@react-three/drei', () => ({
-  OrbitControls: ({ ...props }: any) => (
-    <div data-testid="orbit-controls" {...props} />
-  ),
+  OrbitControls: React.forwardRef(({ ...props }: any, ref: any) => {
+    const mockControls = {
+      dollyOut: jest.fn(),
+      dollyIn: jest.fn(),
+      reset: jest.fn(),
+      update: jest.fn(),
+    };
+    
+    // Assign the mock controls to the ref
+    if (ref) {
+      ref.current = mockControls;
+    }
+    
+    return <div data-testid="orbit-controls" {...props} />;
+  }),
 }));
 
 jest.mock('../TimelineScene', () => ({
