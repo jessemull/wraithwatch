@@ -32,6 +32,14 @@ module.exports = {
           deviceScaleFactor: 1,
           disabled: false,
         },
+        throttling: {
+          rttMs: 0,
+          throughputKbps: 0,
+          cpuSlowdownMultiplier: 1,
+          requestLatencyMs: 0,
+          downloadThroughputKbps: 0,
+          uploadThroughputKbps: 0,
+        },
         chromeFlags:
           '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --window-size=1920,1080',
       },
