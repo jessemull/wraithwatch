@@ -15,8 +15,12 @@ describe('Wraithwatch ChatBot', () => {
 
     it('should display welcome message when chat is opened', () => {
       cy.get('button[aria-label="Open chat with Nazgul"]').click();
-      cy.contains("Hello! I'm Nazgul, your security assistant.").should('be.visible');
-      cy.contains('Ask me about the dashboard or cybersecurity.').should('be.visible');
+      cy.contains("Hello! I'm Nazgul, your security assistant.").should(
+        'be.visible'
+      );
+      cy.contains('Ask me about the dashboard or cybersecurity.').should(
+        'be.visible'
+      );
     });
 
     it('should show input field and send button', () => {
@@ -34,14 +38,17 @@ describe('Wraithwatch ChatBot', () => {
     it('should allow typing in the input field', () => {
       const testMessage = 'Hello, can you help me with security?';
       cy.get('input[placeholder="Type your message..."]').type(testMessage);
-      cy.get('input[placeholder="Type your message..."]').should('have.value', testMessage);
+      cy.get('input[placeholder="Type your message..."]').should(
+        'have.value',
+        testMessage
+      );
     });
 
     it('should send message when send button is clicked', () => {
       const testMessage = 'Test message';
       cy.get('input[placeholder="Type your message..."]').type(testMessage);
       cy.get('button').contains('Send').click();
-      
+
       // Check that the message appears in the chat
       cy.contains(testMessage).should('be.visible');
     });
@@ -50,7 +57,7 @@ describe('Wraithwatch ChatBot', () => {
       const testMessage = 'Enter key test';
       cy.get('input[placeholder="Type your message..."]').type(testMessage);
       cy.get('input[placeholder="Type your message..."]').type('{enter}');
-      
+
       // Check that the message appears in the chat
       cy.contains(testMessage).should('be.visible');
     });
@@ -65,7 +72,7 @@ describe('Wraithwatch ChatBot', () => {
       const testMessage = 'Loading test message';
       cy.get('input[placeholder="Type your message..."]').type(testMessage);
       cy.get('button').contains('Send').click();
-      
+
       // Check for loading indicator
       cy.contains('Nazgul is analyzing...').should('be.visible');
     });
@@ -74,7 +81,7 @@ describe('Wraithwatch ChatBot', () => {
       const testMessage = 'Loading test';
       cy.get('input[placeholder="Type your message..."]').type(testMessage);
       cy.get('button').contains('Send').click();
-      
+
       // Input should be disabled during loading
       cy.get('input[placeholder="Type your message..."]').should('be.disabled');
     });
@@ -89,7 +96,7 @@ describe('Wraithwatch ChatBot', () => {
       const userMessage = 'User test message';
       cy.get('input[placeholder="Type your message..."]').type(userMessage);
       cy.get('button').contains('Send').click();
-      
+
       // User message should be visible and styled correctly
       cy.contains(userMessage).should('be.visible');
     });
@@ -98,7 +105,7 @@ describe('Wraithwatch ChatBot', () => {
       const testMessage = 'Timestamp test';
       cy.get('input[placeholder="Type your message..."]').type(testMessage);
       cy.get('button').contains('Send').click();
-      
+
       // Check for timestamp (format: HH:MM)
       cy.get('[class*="text-xs opacity-60"]').should('be.visible');
     });
@@ -150,4 +157,4 @@ describe('Wraithwatch ChatBot', () => {
       cy.contains('Chat with Nazgul').should('be.visible');
     });
   });
-}); 
+});

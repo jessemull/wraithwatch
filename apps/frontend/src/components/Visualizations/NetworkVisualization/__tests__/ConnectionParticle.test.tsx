@@ -4,7 +4,7 @@ import { ConnectionParticle } from '../ConnectionParticle';
 
 // Mock Three.js and React Three Fiber
 jest.mock('@react-three/fiber', () => ({
-  useFrame: jest.fn((callback) => {
+  useFrame: jest.fn(callback => {
     // Simulate frame updates
     callback({ clock: { elapsedTime: 1.0 } });
   }),
@@ -78,7 +78,9 @@ describe('ConnectionParticle', () => {
   });
 
   it('renders with default props', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -97,13 +99,15 @@ describe('ConnectionParticle', () => {
   });
 
   it('renders with custom speed', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} speed={2.0} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} speed={2.0} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('renders with different types', () => {
     const types = ['location', 'agent', 'network', 'type'] as const;
-    
+
     types.forEach(type => {
       const { container, unmount } = render(
         <ConnectionParticle start={mockStart} end={mockEnd} type={type} />
@@ -117,13 +121,17 @@ describe('ConnectionParticle', () => {
     const customStart: [number, number, number] = [1, 2, 3];
     const customEnd: [number, number, number] = [4, 5, 6];
 
-    const { container } = render(<ConnectionParticle start={customStart} end={customEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={customStart} end={customEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('renders with zero coordinates', () => {
     const zeroPosition: [number, number, number] = [0, 0, 0];
-    const { container } = render(<ConnectionParticle start={zeroPosition} end={zeroPosition} />);
+    const { container } = render(
+      <ConnectionParticle start={zeroPosition} end={zeroPosition} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -131,7 +139,9 @@ describe('ConnectionParticle', () => {
     const negativeStart: [number, number, number] = [-1, -2, -3];
     const negativeEnd: [number, number, number] = [-4, -5, -6];
 
-    const { container } = render(<ConnectionParticle start={negativeStart} end={negativeEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={negativeStart} end={negativeEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -139,7 +149,9 @@ describe('ConnectionParticle', () => {
     const largeStart: [number, number, number] = [1000, 2000, 3000];
     const largeEnd: [number, number, number] = [4000, 5000, 6000];
 
-    const { container } = render(<ConnectionParticle start={largeStart} end={largeEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={largeStart} end={largeEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -172,12 +184,16 @@ describe('ConnectionParticle', () => {
   });
 
   it('renders with minimum speed', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} speed={0.1} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} speed={0.1} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('renders with maximum speed', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} speed={10.0} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} speed={10.0} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -218,12 +234,16 @@ describe('ConnectionParticle', () => {
   });
 
   it('handles zero speed', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} speed={0} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} speed={0} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles negative speed', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} speed={-1.0} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} speed={-1.0} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -284,28 +304,36 @@ describe('ConnectionParticle', () => {
   it('handles very large coordinates', () => {
     const largeStart: [number, number, number] = [1000000, 1000000, 1000000];
     const largeEnd: [number, number, number] = [2000000, 2000000, 2000000];
-    const { container } = render(<ConnectionParticle start={largeStart} end={largeEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={largeStart} end={largeEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles negative coordinates', () => {
     const negativeStart: [number, number, number] = [-100, -100, -100];
     const negativeEnd: [number, number, number] = [-200, -200, -200];
-    const { container } = render(<ConnectionParticle start={negativeStart} end={negativeEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={negativeStart} end={negativeEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles decimal coordinates', () => {
     const decimalStart: [number, number, number] = [0.1, 0.2, 0.3];
     const decimalEnd: [number, number, number] = [1.1, 1.2, 1.3];
-    const { container } = render(<ConnectionParticle start={decimalStart} end={decimalEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={decimalStart} end={decimalEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles mixed coordinate types', () => {
     const mixedStart: [number, number, number] = [0, -100, 1000];
     const mixedEnd: [number, number, number] = [100, 0, -1000];
-    const { container } = render(<ConnectionParticle start={mixedStart} end={mixedEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mixedStart} end={mixedEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -419,7 +447,9 @@ describe('ConnectionParticle', () => {
       Math.LN10,
       Math.LOG2E,
     ];
-    const { container } = render(<ConnectionParticle start={complexStart} end={complexEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={complexStart} end={complexEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -434,12 +464,16 @@ describe('ConnectionParticle', () => {
       Number.MAX_VALUE,
       Number.MAX_VALUE,
     ];
-    const { container } = render(<ConnectionParticle start={extremeStart} end={extremeEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={extremeStart} end={extremeEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles ref properly', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
@@ -465,139 +499,191 @@ describe('ConnectionParticle', () => {
   });
 
   it('handles group structure', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
-
-
   it('handles useCallback for createParticle', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles useEffect for particle initialization', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles useFrame animation logic', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles particle activation logic', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles particle progress updates', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles particle position calculations', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles particle reset logic', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles mesh visibility updates', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles null particlesRef gracefully', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles missing mesh gracefully', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles particle array operations', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} particleCount={10} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} particleCount={10} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles speed variation calculations', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} speed={2.0} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} speed={2.0} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles delay calculations', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles progress increment calculations', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles max progress checks', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles reset delay calculations', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles sphere geometry creation', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} particleSize={0.3} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} particleSize={0.3} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles mesh standard material creation', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} type="network" />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} type="network" />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles material properties', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles transparent material', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles opacity settings', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles emissive intensity', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles geometry segments', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles array generation for particles', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} particleCount={7} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} particleCount={7} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles key generation for meshes', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} particleCount={3} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} particleCount={3} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 
   it('handles initial mesh visibility', () => {
-    const { container } = render(<ConnectionParticle start={mockStart} end={mockEnd} />);
+    const { container } = render(
+      <ConnectionParticle start={mockStart} end={mockEnd} />
+    );
     expect(container.querySelector('group')).toBeInTheDocument();
   });
 });
