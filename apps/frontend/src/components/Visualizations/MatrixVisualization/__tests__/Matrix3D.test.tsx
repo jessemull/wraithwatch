@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Matrix3D } from '../Matrix3D';
 
 jest.mock('@react-three/fiber', () => ({
-  Canvas: ({ children, camera, style }: any) => (
+  Canvas: ({ children, style }: any) => (
     <div data-testid="canvas" style={style}>
       {children}
     </div>
@@ -11,7 +11,7 @@ jest.mock('@react-three/fiber', () => ({
 }));
 
 jest.mock('@react-three/drei', () => ({
-  OrbitControls: ({ ref, ...props }: any) => (
+  OrbitControls: ({ ...props }: any) => (
     <div data-testid="orbit-controls" {...props} />
   ),
 }));
@@ -19,7 +19,8 @@ jest.mock('@react-three/drei', () => ({
 jest.mock('../MatrixScene', () => ({
   MatrixScene: ({ entities, positions }: any) => (
     <div data-testid="matrix-scene">
-      Matrix Scene ({entities?.length || 0} entities, {positions?.length || 0} positions)
+      Matrix Scene ({entities?.length || 0} entities, {positions?.length || 0}{' '}
+      positions)
     </div>
   ),
 }));
@@ -152,7 +153,9 @@ describe('Matrix3D', () => {
       />
     );
 
-    expect(screen.getByText('Matrix Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 1 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with onEntitySelect callback', () => {
@@ -166,40 +169,33 @@ describe('Matrix3D', () => {
       />
     );
 
-    expect(screen.getByText('Matrix Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 1 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with undefined positions', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={undefined as any}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={undefined as any} />);
 
-    expect(screen.getByText('Matrix Scene (1 entities, 0 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 0 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with null positions', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={null as any}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={null as any} />);
 
-    expect(screen.getByText('Matrix Scene (1 entities, 0 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 0 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with empty positions array', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={[]}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={[]} />);
 
-    expect(screen.getByText('Matrix Scene (1 entities, 0 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 0 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with multiple entities', () => {
@@ -215,14 +211,11 @@ describe('Matrix3D', () => {
       },
     ];
 
-    render(
-      <Matrix3D
-        entities={multipleEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={multipleEntities} positions={mockPositions} />);
 
-    expect(screen.getByText('Matrix Scene (2 entities, 1 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (2 entities, 1 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with complex position data', () => {
@@ -247,51 +240,41 @@ describe('Matrix3D', () => {
       },
     ];
 
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={complexPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={complexPositions} />);
 
-    expect(screen.getByText('Matrix Scene (1 entities, 2 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 2 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with mobile camera configuration', () => {
-    const { useIsMobile } = require('../../../../hooks/useRealTimeData');
+    const { useIsMobile } = jest.requireMock(
+      '../../../../hooks/useRealTimeData'
+    );
     (useIsMobile as jest.Mock).mockReturnValue(true);
 
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
-    expect(screen.getByText('Matrix Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 1 positions)')
+    ).toBeInTheDocument();
   });
 
   it('renders with desktop camera configuration', () => {
-    const { useIsMobile } = require('../../../../hooks/useRealTimeData');
+    const { useIsMobile } = jest.requireMock(
+      '../../../../hooks/useRealTimeData'
+    );
     (useIsMobile as jest.Mock).mockReturnValue(false);
 
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
-    expect(screen.getByText('Matrix Scene (1 entities, 1 positions)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Matrix Scene (1 entities, 1 positions)')
+    ).toBeInTheDocument();
   });
 
   it('handles zoom in button click', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
     const zoomInButton = screen.getByText('Zoom In');
     fireEvent.click(zoomInButton);
@@ -300,12 +283,7 @@ describe('Matrix3D', () => {
   });
 
   it('handles zoom out button click', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
     const zoomOutButton = screen.getByText('Zoom Out');
     fireEvent.click(zoomOutButton);
@@ -314,12 +292,7 @@ describe('Matrix3D', () => {
   });
 
   it('handles reset button click', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
     const resetButton = screen.getByText('Reset');
     fireEvent.click(resetButton);
@@ -328,26 +301,20 @@ describe('Matrix3D', () => {
   });
 
   it('renders with custom camera target', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
     const orbitControls = screen.getByTestId('orbit-controls');
     expect(orbitControls).toBeInTheDocument();
   });
 
   it('renders with proper container styling', () => {
-    render(
-      <Matrix3D
-        entities={mockEntities}
-        positions={mockPositions}
-      />
-    );
+    render(<Matrix3D entities={mockEntities} positions={mockPositions} />);
 
     const container = screen.getByTestId('canvas').parentElement;
-    expect(container).toHaveStyle({ width: '100%', height: '100%', position: 'relative' });
+    expect(container).toHaveStyle({
+      width: '100%',
+      height: '100%',
+      position: 'relative',
+    });
   });
 });

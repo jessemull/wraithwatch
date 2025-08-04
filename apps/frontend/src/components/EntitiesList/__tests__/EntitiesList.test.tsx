@@ -540,7 +540,9 @@ describe('EntitiesList', () => {
     render(<EntitiesList entities={mockEntities} />);
 
     // Check that container has correct classes
-    const container = screen.getByText('1 Total Entities').closest('.bg-gray-900\\/50');
+    const container = screen
+      .getByText('1 Total Entities')
+      .closest('.bg-gray-900\\/50');
     expect(container).toBeInTheDocument();
   });
 

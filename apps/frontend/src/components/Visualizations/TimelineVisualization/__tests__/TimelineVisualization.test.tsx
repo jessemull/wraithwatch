@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { TimelineVisualization } from '../TimelineVisualization';
 
 jest.mock('@react-three/fiber', () => ({
-  Canvas: ({ children, camera, style }: any) => (
+  Canvas: ({ children, style }: any) => (
     <div data-testid="canvas" style={style}>
       {children}
     </div>
@@ -11,7 +11,7 @@ jest.mock('@react-three/fiber', () => ({
 }));
 
 jest.mock('@react-three/drei', () => ({
-  OrbitControls: ({ ref, ...props }: any) => (
+  OrbitControls: ({ ...props }: any) => (
     <div data-testid="orbit-controls" {...props} />
   ),
 }));
@@ -19,7 +19,8 @@ jest.mock('@react-three/drei', () => ({
 jest.mock('../TimelineScene', () => ({
   TimelineScene: ({ entities, positions }: any) => (
     <div data-testid="timeline-scene">
-      Timeline Scene ({entities?.length || 0} entities, {positions?.length || 0} positions)
+      Timeline Scene ({entities?.length || 0} entities, {positions?.length || 0}{' '}
+      positions)
     </div>
   ),
 }));
@@ -27,9 +28,15 @@ jest.mock('../TimelineScene', () => ({
 jest.mock('../ControlPanel', () => ({
   ControlPanel: ({ onZoomIn, onZoomOut, onReset }: any) => (
     <div data-testid="control-panel">
-      <button onClick={onZoomIn} data-testid="zoom-in">Zoom In</button>
-      <button onClick={onZoomOut} data-testid="zoom-out">Zoom Out</button>
-      <button onClick={onReset} data-testid="reset">Reset</button>
+      <button onClick={onZoomIn} data-testid="zoom-in">
+        Zoom In
+      </button>
+      <button onClick={onZoomOut} data-testid="zoom-out">
+        Zoom Out
+      </button>
+      <button onClick={onReset} data-testid="reset">
+        Reset
+      </button>
     </div>
   ),
 }));
@@ -108,8 +115,12 @@ describe('TimelineVisualization', () => {
     );
 
     expect(screen.getByTestId('timeline-scene')).toBeInTheDocument();
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('2 entities');
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('2 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '2 entities'
+    );
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '2 positions'
+    );
   });
 
   it('renders control panel', () => {
@@ -173,25 +184,19 @@ describe('TimelineVisualization', () => {
   });
 
   it('handles empty entities array', () => {
-    render(
-      <TimelineVisualization
-        entities={[]}
-        positions={mockPositions}
-      />
-    );
+    render(<TimelineVisualization entities={[]} positions={mockPositions} />);
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('0 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '0 entities'
+    );
   });
 
   it('handles empty positions array', () => {
-    render(
-      <TimelineVisualization
-        entities={mockEntities}
-        positions={[]}
-      />
-    );
+    render(<TimelineVisualization entities={mockEntities} positions={[]} />);
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('0 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '0 positions'
+    );
   });
 
   it('handles undefined entities', () => {
@@ -202,7 +207,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('0 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '0 entities'
+    );
   });
 
   it('handles undefined positions', () => {
@@ -213,29 +220,29 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('0 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '0 positions'
+    );
   });
 
   it('handles null entities', () => {
     render(
-      <TimelineVisualization
-        entities={null as any}
-        positions={mockPositions}
-      />
+      <TimelineVisualization entities={null as any} positions={mockPositions} />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('0 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '0 entities'
+    );
   });
 
   it('handles null positions', () => {
     render(
-      <TimelineVisualization
-        entities={mockEntities}
-        positions={null as any}
-      />
+      <TimelineVisualization entities={mockEntities} positions={null as any} />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('0 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '0 positions'
+    );
   });
 
   it('handles selected entity', () => {
@@ -305,7 +312,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('100 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '100 entities'
+    );
   });
 
   it('handles large positions array', () => {
@@ -325,7 +334,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('100 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '100 positions'
+    );
   });
 
   it('handles entities with complex properties', () => {
@@ -372,7 +383,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles positions with complex coordinates', () => {
@@ -394,7 +407,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 positions'
+    );
   });
 
   it('handles entities with null properties', () => {
@@ -416,7 +431,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles positions with null change particles', () => {
@@ -438,7 +455,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 positions'
+    );
   });
 
   it('handles entities with undefined properties', () => {
@@ -460,7 +479,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles positions with undefined change particles', () => {
@@ -482,7 +503,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 positions');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 positions'
+    );
   });
 
   it('handles entities with zero changes today', () => {
@@ -504,7 +527,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles entities with negative changes today', () => {
@@ -526,7 +551,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles entities with very large changes today', () => {
@@ -548,7 +575,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles entities with invalid last seen date', () => {
@@ -570,7 +599,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles entities with null last seen date', () => {
@@ -592,7 +623,9 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 
   it('handles entities with undefined last seen date', () => {
@@ -614,6 +647,8 @@ describe('TimelineVisualization', () => {
       />
     );
 
-    expect(screen.getByTestId('timeline-scene')).toHaveTextContent('1 entities');
+    expect(screen.getByTestId('timeline-scene')).toHaveTextContent(
+      '1 entities'
+    );
   });
 });

@@ -243,14 +243,16 @@ describe('Dashboard', () => {
   });
 
   it('passes correct props to DashboardMetrics', async () => {
-    const mockEntities = [{ 
-      id: 'entity-1', 
-      name: 'Test Entity',
-      type: 'System',
-      changesToday: 5,
-      lastSeen: new Date().toISOString(),
-      properties: {}
-    }];
+    const mockEntities = [
+      {
+        id: 'entity-1',
+        name: 'Test Entity',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
     const mockMetrics = { activeThreats: 5 };
 
     mockUseRealTimeData.mockReturnValue({
@@ -272,14 +274,16 @@ describe('Dashboard', () => {
   });
 
   it('passes correct props to EntitiesList', async () => {
-    const mockEntities = [{ 
-      id: 'entity-1', 
-      name: 'Test Entity',
-      type: 'System',
-      changesToday: 5,
-      lastSeen: new Date().toISOString(),
-      properties: {}
-    }];
+    const mockEntities = [
+      {
+        id: 'entity-1',
+        name: 'Test Entity',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
 
     mockUseRealTimeData.mockReturnValue({
       ...defaultMockData,
@@ -297,21 +301,25 @@ describe('Dashboard', () => {
   });
 
   it('passes correct props to VisualizationControls', async () => {
-    const mockEntities = [{ 
-      id: 'entity-1', 
-      name: 'Test Entity',
-      type: 'System',
-      changesToday: 5,
-      lastSeen: new Date().toISOString(),
-      properties: {}
-    }];
-    const mockChanges = [{ 
-      entity_id: 'entity-1',
-      entity_type: 'System',
-      property_name: 'status',
-      value: 'active',
-      timestamp: new Date().toISOString()
-    }];
+    const mockEntities = [
+      {
+        id: 'entity-1',
+        name: 'Test Entity',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
+    const mockChanges = [
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        property_name: 'status',
+        value: 'active',
+        timestamp: new Date().toISOString(),
+      },
+    ];
 
     mockUseRealTimeData.mockReturnValue({
       ...defaultMockData,
@@ -347,21 +355,21 @@ describe('Dashboard', () => {
 
   it('renders with entities data', async () => {
     const mockEntities = [
-      { 
-        id: 'entity-1', 
-        name: 'Test Entity 1', 
+      {
+        id: 'entity-1',
+        name: 'Test Entity 1',
         type: 'System',
         changesToday: 5,
         lastSeen: new Date().toISOString(),
-        properties: {}
+        properties: {},
       },
-      { 
-        id: 'entity-2', 
-        name: 'Test Entity 2', 
+      {
+        id: 'entity-2',
+        name: 'Test Entity 2',
         type: 'User',
         changesToday: 3,
         lastSeen: new Date().toISOString(),
-        properties: {}
+        properties: {},
       },
     ];
 
@@ -387,14 +395,14 @@ describe('Dashboard', () => {
         entity_type: 'System',
         property_name: 'status',
         value: 'active',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       {
         entity_id: 'entity-2',
         entity_type: 'User',
         property_name: 'cpu_usage',
         value: 75,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
     ];
 
@@ -414,21 +422,21 @@ describe('Dashboard', () => {
 
   it('renders with positions data', async () => {
     const mockPositions = [
-      { 
+      {
         entity_id: 'entity-1',
         entity_type: 'System',
         name: 'Test Entity 1',
         timeline_position: { x: 0, y: 0, z: 0 },
         network_position: { x: 0, y: 0, z: 0 },
-        change_particles: []
+        change_particles: [],
       },
-      { 
+      {
         entity_id: 'entity-2',
         entity_type: 'User',
         name: 'Test Entity 2',
         timeline_position: { x: 100, y: 100, z: 100 },
         network_position: { x: 100, y: 100, z: 100 },
-        change_particles: []
+        change_particles: [],
       },
     ];
 
@@ -650,7 +658,8 @@ describe('Dashboard', () => {
   });
 
   it('handles complex error messages', async () => {
-    const complexError = 'Network timeout after 30 seconds. Please check your connection.';
+    const complexError =
+      'Network timeout after 30 seconds. Please check your connection.';
     mockUseRealTimeData.mockReturnValue({
       ...defaultMockData,
       error: complexError,
@@ -693,29 +702,35 @@ describe('Dashboard', () => {
 
   it('handles loading state with all data present', async () => {
     mockUseRealTimeData.mockReturnValue({
-      entities: [{ 
-        id: 'entity-1', 
-        name: 'Test Entity',
-        type: 'System',
-        changesToday: 5,
-        lastSeen: new Date().toISOString(),
-        properties: {}
-      }],
-      changes: [{ 
-        entity_id: 'entity-1',
-        entity_type: 'System',
-        property_name: 'status',
-        value: 'active',
-        timestamp: new Date().toISOString()
-      }],
-      positions: [{ 
-        entity_id: 'entity-1',
-        entity_type: 'System',
-        name: 'Test Entity',
-        timeline_position: { x: 0, y: 0, z: 0 },
-        network_position: { x: 0, y: 0, z: 0 },
-        change_particles: []
-      }],
+      entities: [
+        {
+          id: 'entity-1',
+          name: 'Test Entity',
+          type: 'System',
+          changesToday: 5,
+          lastSeen: new Date().toISOString(),
+          properties: {},
+        },
+      ],
+      changes: [
+        {
+          entity_id: 'entity-1',
+          entity_type: 'System',
+          property_name: 'status',
+          value: 'active',
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      positions: [
+        {
+          entity_id: 'entity-1',
+          entity_type: 'System',
+          name: 'Test Entity',
+          timeline_position: { x: 0, y: 0, z: 0 },
+          network_position: { x: 0, y: 0, z: 0 },
+          change_particles: [],
+        },
+      ],
       metrics: { activeThreats: 5 },
       loading: true,
       error: null,
@@ -740,29 +755,35 @@ describe('Dashboard', () => {
 
   it('handles error state with all data present', async () => {
     mockUseRealTimeData.mockReturnValue({
-      entities: [{ 
-        id: 'entity-1', 
-        name: 'Test Entity',
-        type: 'System',
-        changesToday: 5,
-        lastSeen: new Date().toISOString(),
-        properties: {}
-      }],
-      changes: [{ 
-        entity_id: 'entity-1',
-        entity_type: 'System',
-        property_name: 'status',
-        value: 'active',
-        timestamp: new Date().toISOString()
-      }],
-      positions: [{ 
-        entity_id: 'entity-1',
-        entity_type: 'System',
-        name: 'Test Entity',
-        timeline_position: { x: 0, y: 0, z: 0 },
-        network_position: { x: 0, y: 0, z: 0 },
-        change_particles: []
-      }],
+      entities: [
+        {
+          id: 'entity-1',
+          name: 'Test Entity',
+          type: 'System',
+          changesToday: 5,
+          lastSeen: new Date().toISOString(),
+          properties: {},
+        },
+      ],
+      changes: [
+        {
+          entity_id: 'entity-1',
+          entity_type: 'System',
+          property_name: 'status',
+          value: 'active',
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      positions: [
+        {
+          entity_id: 'entity-1',
+          entity_type: 'System',
+          name: 'Test Entity',
+          timeline_position: { x: 0, y: 0, z: 0 },
+          network_position: { x: 0, y: 0, z: 0 },
+          change_particles: [],
+        },
+      ],
       metrics: { activeThreats: 5 },
       loading: false,
       error: 'Test error message',
@@ -780,26 +801,32 @@ describe('Dashboard', () => {
     // Should show error message and not other components
     expect(screen.getByText('Error: Test error message')).toBeInTheDocument();
     expect(screen.queryByTestId('dashboard-metrics')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('visualization-controls')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('visualization-controls')
+    ).not.toBeInTheDocument();
   });
 
   it('handles visualization props memoization', async () => {
-    const mockEntities = [{ 
-      id: 'entity-1', 
-      name: 'Test Entity',
-      type: 'System',
-      changesToday: 5,
-      lastSeen: new Date().toISOString(),
-      properties: {}
-    }];
-    const mockPositions = [{ 
-      entity_id: 'entity-1',
-      entity_type: 'System',
-      name: 'Test Entity',
-      timeline_position: { x: 0, y: 0, z: 0 },
-      network_position: { x: 0, y: 0, z: 0 },
-      change_particles: []
-    }];
+    const mockEntities = [
+      {
+        id: 'entity-1',
+        name: 'Test Entity',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
+    const mockPositions = [
+      {
+        entity_id: 'entity-1',
+        entity_type: 'System',
+        name: 'Test Entity',
+        timeline_position: { x: 0, y: 0, z: 0 },
+        network_position: { x: 0, y: 0, z: 0 },
+        change_particles: [],
+      },
+    ];
 
     mockUseRealTimeData.mockReturnValue({
       ...defaultMockData,
@@ -852,7 +879,9 @@ describe('Dashboard', () => {
     });
 
     // Check that screen reader only elements are present
-    const srOnlyElement = screen.getByText('Wraithwatch Cyber Defense Dashboard');
+    const srOnlyElement = screen.getByText(
+      'Wraithwatch Cyber Defense Dashboard'
+    );
     expect(srOnlyElement).toHaveClass('sr-only');
   });
 
@@ -862,7 +891,9 @@ describe('Dashboard', () => {
     });
 
     // Check that responsive grid classes are applied
-    const gridContainer = document.querySelector('.grid.grid-cols-1.xl\\:grid-cols-2');
+    const gridContainer = document.querySelector(
+      '.grid.grid-cols-1.xl\\:grid-cols-2'
+    );
     expect(gridContainer).toBeInTheDocument();
   });
 
@@ -902,7 +933,9 @@ describe('Dashboard', () => {
     });
 
     // Check that overflow classes are applied
-    const overflowElements = document.querySelectorAll('.overflow-auto.sm\\:overflow-hidden');
+    const overflowElements = document.querySelectorAll(
+      '.overflow-auto.sm\\:overflow-hidden'
+    );
     expect(overflowElements.length).toBeGreaterThan(0);
   });
 
@@ -912,18 +945,23 @@ describe('Dashboard', () => {
     });
 
     // Check that responsive height classes are applied
-    const heightElements = document.querySelectorAll('.h-\\[400px\\].sm\\:h-\\[667px\\]');
+    const heightElements = document.querySelectorAll(
+      '.h-\\[400px\\].sm\\:h-\\[667px\\]'
+    );
     expect(heightElements.length).toBeGreaterThan(0);
   });
 
   it('handles dynamic import error states', async () => {
     // Mock dynamic import to throw an error
-    const originalDynamic = require('next/dynamic').default;
     const mockDynamic = jest.fn((importFn, options) => {
       if (options?.loading) {
         return options.loading();
       }
-      return () => <div data-testid="dynamic-component">Dynamic Component</div>;
+      const MockComponent = () => (
+        <div data-testid="dynamic-component">Dynamic Component</div>
+      );
+      MockComponent.displayName = 'MockDynamicComponent';
+      return MockComponent;
     });
 
     jest.doMock('next/dynamic', () => ({
@@ -958,7 +996,7 @@ describe('Dashboard', () => {
       type: 'System',
       changesToday: 5,
       lastSeen: new Date().toISOString(),
-      properties: {}
+      properties: {},
     };
 
     mockUseRealTimeData.mockReturnValue({
@@ -975,14 +1013,16 @@ describe('Dashboard', () => {
   });
 
   it('handles useMemo dependencies correctly', async () => {
-    const mockEntities = [{ 
-      id: 'entity-1', 
-      name: 'Test Entity',
-      type: 'System',
-      changesToday: 5,
-      lastSeen: new Date().toISOString(),
-      properties: {}
-    }];
+    const mockEntities = [
+      {
+        id: 'entity-1',
+        name: 'Test Entity',
+        type: 'System',
+        changesToday: 5,
+        lastSeen: new Date().toISOString(),
+        properties: {},
+      },
+    ];
 
     mockUseRealTimeData.mockReturnValue({
       ...defaultMockData,
@@ -1020,8 +1060,12 @@ describe('Dashboard', () => {
     });
 
     // Verify that error boundary renders correctly
-    expect(screen.getByText('Error: Critical system error')).toBeInTheDocument();
-    expect(screen.getByText('Error: Critical system error')).toHaveClass('text-red-400');
+    expect(
+      screen.getByText('Error: Critical system error')
+    ).toBeInTheDocument();
+    expect(screen.getByText('Error: Critical system error')).toHaveClass(
+      'text-red-400'
+    );
   });
 
   it('handles error message styling', async () => {
@@ -1050,7 +1094,14 @@ describe('Dashboard', () => {
     });
 
     // Verify that error container has correct layout classes
-    const errorContainer = screen.getByText('Error: Layout test error').parentElement;
-    expect(errorContainer).toHaveClass('min-h-screen', 'flex', 'items-center', 'justify-center');
+    const errorContainer = screen.getByText(
+      'Error: Layout test error'
+    ).parentElement;
+    expect(errorContainer).toHaveClass(
+      'min-h-screen',
+      'flex',
+      'items-center',
+      'justify-center'
+    );
   });
 });
