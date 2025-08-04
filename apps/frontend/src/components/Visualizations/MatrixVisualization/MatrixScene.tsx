@@ -17,7 +17,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
 
   const gridElements = useMemo(() => {
     const { grid, materials } = MATRIX_CONFIG;
-    const elements = [];
+    const elements: React.ReactElement[] = [];
 
     // Base plane
     elements.push(
@@ -67,7 +67,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
 
   const textElements = useMemo(() => {
     const { text } = MATRIX_CONFIG;
-    const elements = [];
+    const elements: React.ReactElement[] = [];
 
     // Main labels
     text.mainLabels.forEach((label, index) => {
@@ -79,7 +79,7 @@ export const MatrixScene: React.FC<MatrixSceneProps> = ({
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
-          rotation={label.rotation || [0, 0, 0]}
+          rotation={(label as any).rotation || [0, 0, 0]}
         >
           {label.text}
         </Text>

@@ -43,7 +43,7 @@ const getThreatLabel = (entity: Entity, position: [number, number, number]) => {
   const { critical, high, medium, low } = THREAT_SEVERITY_CONFIG;
 
   // Y coordinate = severity
-  let severity = low.label;
+  let severity: string = low.label;
   if (y >= critical.threshold) severity = critical.label;
   else if (y >= high.threshold) severity = high.label;
   else if (y >= medium.threshold) severity = medium.label;

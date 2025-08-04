@@ -1,6 +1,6 @@
 import React from 'react';
 import { EntityChange } from './api';
-import { Entity } from './entity';
+import { Entity, EntityPosition } from './entity';
 import * as THREE from 'three';
 
 export interface EntityStyle {
