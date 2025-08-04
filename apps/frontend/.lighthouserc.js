@@ -7,7 +7,12 @@ module.exports = {
   ci: {
     assert: {
       assertions: {
-        'categories:performance': ['warn', { minScore: 0.8 }],
+        ...(process.env.NODE_ENV === 'production' && {
+          'categories:performance': ['error', { minScore: 0.8 }],
+        }),
+        ...(process.env.NODE_ENV === 'test' && {
+          'categories:performance': ['warn', { minScore: 0.6 }],
+        }),
         'categories:accessibility': ['warn', { minScore: 0.9 }],
         'categories:seo': ['warn', { minScore: 0.9 }],
         'categories:best-practices': ['warn', { minScore: 0.9 }],
@@ -15,16 +20,11 @@ module.exports = {
     },
     collect: {
       numberOfRuns: 1,
+      startServerCommand: 'yarn dev',
+      startServerReadyPattern: 'started server on',
+      url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
       settings: {
-        throttlingMethod: 'provided',
-        onlyCategories: [
-          'performance',
-          'accessibility',
-          'seo',
-          'best-practices',
-        ],
-        disableStorageReset: true,
-        emulatedFormFactor: 'desktop',
+        formFactor: 'desktop',
         screenEmulation: {
           mobile: false,
           width: 1920,
@@ -32,22 +32,16 @@ module.exports = {
           deviceScaleFactor: 1,
           disabled: false,
         },
-        throttling: {
-          rttMs: 0,
-          throughputKbps: 0,
-          cpuSlowdownMultiplier: 1,
-          requestLatencyMs: 0,
-          downloadThroughputKbps: 0,
-          uploadThroughputKbps: 0,
-        },
+        throttlingMethod: 'devtools',
+        onlyCategories: [
+          'performance',
+          'accessibility',
+          'seo',
+          'best-practices',
+        ],
         chromeFlags:
           '--headless --disable-gpu --no-sandbox --disable-dev-shm-usage --window-size=1920,1080',
       },
-      startServer: async () => {
-        const execa = await import('execa');
-        await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
-      },
-      url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
     },
     upload: {
       target: 'none',
