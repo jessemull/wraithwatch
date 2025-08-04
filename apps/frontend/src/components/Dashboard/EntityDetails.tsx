@@ -164,7 +164,9 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
           {/* Last Modified Indicator */}
           {selectedEntity.properties.source_ip.lastChanged && (
             <div className="absolute top-2 right-2 bg-gray-900/90 border border-gray-600 text-white text-xs px-2 py-1 rounded font-medium">
-              {new Date(selectedEntity.properties.source_ip.lastChanged).toLocaleTimeString()}
+              {new Date(
+                selectedEntity.properties.source_ip.lastChanged
+              ).toLocaleTimeString()}
             </div>
           )}
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
