@@ -66,9 +66,11 @@ Wraithwatch is a real-time cybersecurity dashboard that demonstrates how modern 
 ## Applications
 
 ### 1. Frontend Dashboard (`apps/frontend/`)
+
 **Next.js 15 + TypeScript + Three.js**
 
 A modern React dashboard with real-time 3D visualizations:
+
 - **Real-time Entity Updates** via WebSocket
 - **3D Visualizations**: Matrix, Network, and Timeline views
 - **Interactive Charts** with Chart.js
@@ -76,6 +78,7 @@ A modern React dashboard with real-time 3D visualizations:
 - **Performance Optimized** with Lighthouse CI
 
 **Key Skills Demonstrated:**
+
 - Modern React patterns with hooks and context
 - 3D graphics programming with Three.js
 - Real-time data visualization
@@ -83,9 +86,11 @@ A modern React dashboard with real-time 3D visualizations:
 - Responsive design and accessibility
 
 ### 2. Realtime API (`apps/realtime-api/`)
+
 **Fastify + WebSocket + DynamoDB**
 
 High-performance WebSocket server for real-time data streaming:
+
 - **WebSocket Server** with connection management
 - **DynamoDB Integration** for entity storage
 - **REST API** for historical data
@@ -93,6 +98,7 @@ High-performance WebSocket server for real-time data streaming:
 - **Docker Deployment** on ECS Fargate
 
 **Key Skills Demonstrated:**
+
 - WebSocket programming and connection management
 - NoSQL database design with DynamoDB
 - High-performance server development
@@ -100,9 +106,11 @@ High-performance WebSocket server for real-time data streaming:
 - Real-time data streaming patterns
 
 ### 3. ChatBot (`apps/chat-bot/`)
+
 **AWS Lambda + Claude 3.5 Sonnet**
 
 AI-powered cybersecurity assistant:
+
 - **Claude AI Integration** for natural language processing
 - **Session Management** for conversation context
 - **Threat Analysis** capabilities
@@ -110,6 +118,7 @@ AI-powered cybersecurity assistant:
 - **API Gateway** integration
 
 **Key Skills Demonstrated:**
+
 - AI/ML integration with language models
 - Serverless architecture patterns
 - Natural language processing
@@ -117,15 +126,18 @@ AI-powered cybersecurity assistant:
 - AWS Lambda development
 
 ### 4. Lambda@Edge (`apps/lambda-at-edge/`)
+
 **CloudFront Edge Functions**
 
 Edge computing for performance optimization:
+
 - **Domain Redirects** and URL normalization
 - **Edge Processing** at 400+ locations worldwide
 - **Request Transformation** and caching
 - **Global CDN** optimization
 
 **Key Skills Demonstrated:**
+
 - Edge computing and CDN optimization
 - Request/response transformation
 - Global performance optimization
@@ -134,6 +146,7 @@ Edge computing for performance optimization:
 ## Technology Stack
 
 ### Frontend
+
 - **Next.js 15**: React framework with App Router
 - **TypeScript**: Type-safe development
 - **Three.js**: 3D graphics and visualization
@@ -142,12 +155,14 @@ Edge computing for performance optimization:
 - **Jest + Cypress**: Testing framework
 
 ### Backend
+
 - **Fastify**: High-performance HTTP server
 - **WebSocket**: Real-time communication
 - **DynamoDB**: NoSQL database
 - **Node.js 22**: Latest LTS runtime
 
 ### Cloud Infrastructure
+
 - **AWS ECS Fargate**: Container orchestration
 - **AWS Lambda**: Serverless functions
 - **AWS CloudFront**: Global CDN
@@ -156,11 +171,13 @@ Edge computing for performance optimization:
 - **AWS API Gateway**: REST API management
 
 ### AI & Machine Learning
+
 - **Claude 3.5 Sonnet**: Advanced language model
 - **Anthropic SDK**: Official API client
 - **Prompt Engineering**: Optimized security prompts
 
 ### DevOps & CI/CD
+
 - **GitHub Actions**: Automated deployment
 - **Docker**: Containerization
 - **CloudFormation**: Infrastructure as code
@@ -169,6 +186,7 @@ Edge computing for performance optimization:
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 22+
 - AWS CLI configured
 - Docker (for local development)
@@ -176,6 +194,7 @@ Edge computing for performance optimization:
 ### Installation
 
 1. **Clone and install**
+
    ```bash
    git clone https://github.com/jessemull/wraithwatch.git
    cd wraithwatch
@@ -183,6 +202,7 @@ Edge computing for performance optimization:
    ```
 
 2. **Start development**
+
    ```bash
    yarn dev
    ```
@@ -195,6 +215,7 @@ Edge computing for performance optimization:
 ## Deployment
 
 ### Production Environment
+
 - **Frontend**: GH Actions + Cloudformation + S3 + CloudFront (Global CDN)
 - **API**: GH Actions + Cloudformation + ECS Fargate (Container orchestration)
 - **Database**: Cloudformation + DynamoDB (NoSQL)
@@ -202,6 +223,7 @@ Edge computing for performance optimization:
 - **Edge Functions**: GH Actions + Cloudformation + CloudFront Lambda@Edge
 
 ### CI/CD Pipeline
+
 - **GitHub Actions**: Automated testing and deployment
 - **Docker**: Containerized applications
 - **CloudFormation**: Infrastructure as code
@@ -210,7 +232,7 @@ Edge computing for performance optimization:
 ## Performance Metrics
 
 - **Build Time**: 3 days (part-time development)
-- **Lighthouse Score**: 95+ Performance, 100 Accessibility, 100 Best Practices, 100 SEO 
+- **Lighthouse Score**: 95+ Performance, 100 Accessibility, 100 Best Practices, 100 SEO
 - **WebSocket Latency**: <100ms
 - **Test Coverage**: >90%
 - **Deployment**: Fully automated CI/CD
@@ -221,23 +243,27 @@ Edge computing for performance optimization:
 This project demonstrates key qualities for startup success:
 
 ### **Rapid Development**
+
 - Built a full-stack application in just 3 days
 - Balanced development with full-time work and family
 - Demonstrated ability to ship quickly under constraints
 
 ### **Technical Versatility**
+
 - **Full-Stack Development**: Frontend, backend, database, cloud
 - **Multiple Technologies**: React, Node.js, AWS, AI/ML
 - **DevOps Skills**: CI/CD, containerization, infrastructure
 - **Testing & Quality**: Comprehensive testing and monitoring
 
 ### **Problem-Solving Approach**
+
 - **Architecture Design**: Scalable microservices architecture
 - **Performance Optimization**: Real-time data streaming
 - **User Experience**: Intuitive 3D visualizations
 - **Production Readiness**: Monitoring, logging, error handling
 
 ### **Modern Development Practices**
+
 - **TypeScript**: Type-safe development
 - **Testing**: Unit, integration, and E2E testing
 - **Code Quality**: ESLint, Prettier, coverage thresholds
@@ -246,24 +272,28 @@ This project demonstrates key qualities for startup success:
 ## Future Enhancements
 
 ### Data Pipeline & Intelligence
+
 - **Real Streaming Integration**: Replace mock data with AWS Kinesis, Apache Kafka, or Apache Pulsar
 - **Threat Intelligence**: Connect ChatBot to DynamoDB for context-aware threat analysis
 - **Machine Learning**: Implement ML-powered threat detection and risk scoring
 - **Data Quality**: Schema validation, data cleansing, and anomaly detection
 
 ### Scalability & Performance
+
 - **Micro-frontends**: Webpack code splitting for modular architecture
 - **Horizontal Scaling**: Auto-scaling ECS services and database sharding
 - **Advanced Caching**: Redis for high-frequency data and multi-layer caching
 - **Time-series Database**: InfluxDB or TimescaleDB for historical analytics
 
 ### Security & Compliance
+
 - **Authentication**: JWT tokens, OAuth2, or AWS Cognito integration
 - **Authorization**: Role-based access control (RBAC) and audit logging
 - **Data Encryption**: At-rest and in-transit encryption with compliance features
 - **Security Monitoring**: Distributed tracing with AWS X-Ray and real-time alerts
 
 ### User Experience & Analytics
+
 - **Progressive Web App**: Offline capabilities and mobile optimization
 - **Advanced Visualizations**: Geographic mapping and collaborative features
 - **Customizable Dashboard**: Theme switching and configurable layouts
@@ -273,4 +303,4 @@ This project demonstrates key qualities for startup success:
 
 **Built for Wraithwatch Cybersecurity - Demonstrating rapid development and technical excellence**
 
-*This project showcases the ability to rapidly build production-ready applications while balancing professional and personal commitments. It demonstrates modern development practices, cloud architecture expertise, and the versatility needed to succeed in a startup environment.* 
+_This project showcases the ability to rapidly build production-ready applications while balancing professional and personal commitments. It demonstrates modern development practices, cloud architecture expertise, and the versatility needed to succeed in a startup environment._

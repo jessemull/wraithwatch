@@ -22,6 +22,7 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 ## Features
 
 ### Dashboard Components
+
 - **Real-time Entity List**: Live entity updates with property changes
 - **Interactive Charts**: Dynamic metrics visualization with Chart.js
 - **Entity Details Panel**: Detailed entity information and history
@@ -29,6 +30,7 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 - **Welcome Section**: User onboarding and system status
 
 ### 3D Visualizations
+
 - **Timeline Visualization**: Time-based entity progression
 - **Network Visualization**: Entity relationships and connections
 - **Matrix Visualization**: Spatial entity positioning
@@ -36,6 +38,7 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 - **Entity Selection**: Interactive entity selection and highlighting
 
 ### Real-time Data Integration
+
 - **WebSocket Communication**: Real-time data streaming
 - **REST API Integration**: Historical data and metrics
 - **Data Transformation**: Entity change to visualization mapping
@@ -43,6 +46,7 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 - **Connection Recovery**: Automatic WebSocket reconnection
 
 ### User Experience
+
 - **Responsive Design**: Mobile and desktop optimization
 - **Loading States**: Smooth loading transitions
 - **Error Boundaries**: Graceful error handling
@@ -52,29 +56,34 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 ## Technology Stack
 
 ### Core Framework
+
 - **Next.js 15**: React framework with App Router
 - **React 19**: Latest React with concurrent features
 - **TypeScript**: Type-safe development
 - **Tailwind CSS**: Utility-first styling
 
 ### 3D Visualization
+
 - **Three.js**: 3D graphics library
 - **React Three Fiber**: React renderer for Three.js
 - **Drei**: Three.js helpers and utilities
 - **Framer Motion**: Animation library
 
 ### Data Visualization
+
 - **Chart.js**: Interactive charts and graphs
 - **React Chart.js 2**: React wrapper for Chart.js
 - **Lucide React**: Icon library
 
 ### Development Tools
+
 - **Jest**: Testing framework
 - **ESLint**: Code linting
 - **Cypress**: End-to-end testing
 - **Lighthouse CI**: Performance monitoring
 
 ### CI/CD
+
 - **GitHub Actions**: Deployment workflows
 - **AWS S3**: Static website hosting
 - **CloudFront**: Global CDN
@@ -83,6 +92,7 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 22+
 - Yarn package manager
 - API and WebSocket endpoints configured
@@ -90,17 +100,20 @@ The Wraithwatch Frontend provides an intuitive cybersecurity dashboard that disp
 ### Installation
 
 1. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 2. **Set environment variables**
+
    ```bash
    # Edit .env.local with environment variables (see below)
    touch .env.local
    ```
 
 3. **Start development server**
+
    ```bash
    yarn dev
    ```
@@ -134,6 +147,7 @@ apps/frontend/
 ## Component Architecture
 
 ### Dashboard Components
+
 - **Dashboard**: Main dashboard container and layout
 - **Header**: Navigation and connection status
 - **DashboardMetrics**: Real-time metrics display
@@ -142,6 +156,7 @@ apps/frontend/
 - **WelcomeSection**: User onboarding section
 
 ### Visualization Components
+
 - **TimelineVisualization**: Time-based entity progression
 - **NetworkGraph3D**: Entity relationship visualization
 - **Matrix3D**: Spatial entity positioning
@@ -149,6 +164,7 @@ apps/frontend/
 - **ControlPanel**: Visualization controls
 
 ### Chart Components
+
 - **BarChart**: Vertical bar chart component
 - **LineChart**: Time-series line chart
 - **PieChart**: Pie chart component
@@ -156,6 +172,7 @@ apps/frontend/
 - **HorizontalBarChart**: Horizontal bar chart
 
 ### Entity Components
+
 - **EntitiesList**: Entity list container
 - **EntityItem**: Individual entity item
 - **EntityGroupHeader**: Entity group headers
@@ -203,16 +220,19 @@ NEXT_PUBLIC_APP_ENV=development
 ### Development Workflow
 
 1. **Start development server**
+
    ```bash
    yarn dev
    ```
 
 2. **Run tests**
+
    ```bash
    yarn test
    ```
 
 3. **Check code quality**
+
    ```bash
    yarn lint
    ```
@@ -229,7 +249,7 @@ NEXT_PUBLIC_APP_ENV=development
 The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 
 1. **Automatic Trigger**: Deploy on push to main branch
-2. **Build Process**: 
+2. **Build Process**:
    - Install dependencies
    - Lint code
    - Run unit tests
@@ -253,6 +273,7 @@ The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 ## Performance Optimization
 
 ### Next.js Optimization
+
 - **App Router**: Latest Next.js routing system
 - **Static Generation**: Pre-rendered pages for performance
 - **Image Optimization**: Automatic image optimization
@@ -260,18 +281,21 @@ The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 - **Bundle Analysis**: Webpack bundle analysis
 
 ### 3D Visualization Optimization
+
 - **Lazy Loading**: Dynamic imports for 3D components
 - **Three.js Optimization**: Efficient 3D rendering
 - **Memory Management**: Proper cleanup and disposal
 - **Frame Rate Optimization**: 60fps rendering targets
 
 ### Data Optimization
+
 - **WebSocket Efficiency**: Optimized real-time communication
 - **Caching Strategy**: Client-side data caching
 - **Error Recovery**: Graceful error handling
 - **Connection Management**: Efficient WebSocket management
 
 ### Build Optimization
+
 - **Tree Shaking**: Unused code elimination
 - **Minification**: Code and asset minification
 - **Compression**: Gzip and Brotli compression
@@ -280,18 +304,21 @@ The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 ## Monitoring & Analytics
 
 ### Performance Monitoring
+
 - **Lighthouse CI**: Automated performance testing
 - **Core Web Vitals**: Performance metrics monitoring
 - **Bundle Analysis**: JavaScript bundle size tracking
 - **Load Time Monitoring**: Page load time tracking
 
 ### Error Monitoring
+
 - **Error Boundaries**: React error boundary implementation
 - **Console Logging**: Development error logging
 - **User Feedback**: Error reporting mechanisms
 - **Debugging Tools**: Development debugging utilities
 
 ### Analytics Integration
+
 - **User Interaction**: User behavior tracking
 - **Performance Metrics**: Real user monitoring
 - **Error Tracking**: Error rate monitoring
@@ -300,18 +327,21 @@ The Frontend is deployed via GitHub Actions workflow and AWS S3/CloudFront:
 ## Future Improvements
 
 ### Architecture & Security
+
 - **Micro-frontends**: Implement webpack's code splitting for modular architecture
 - **Server-side Rendering**: Run Next.js as a server with API routes and authentication
 - **Protected Endpoints**: Add role-based access control and rate limiting
 - **Internationalization**: Multi-language support with i18n framework
 
 ### Performance & User Experience
+
 - **Progressive Web App**: Add offline capabilities, service workers, and mobile optimization
 - **Advanced Visualizations**: Machine learning integration and geographic threat mapping
 - **Customizable Dashboard**: Theme switching, configurable layouts, and data export
 - **Virtual Scrolling**: Optimize large entity lists and advanced filtering
 
 ### DevOps & Data Management
+
 - **Containerization**: Docker deployment with blue-green strategy
 - **Monitoring Integration**: APM tools and visual regression testing
 - **Data Governance**: Real-time analytics, retention policies, and audit logging
