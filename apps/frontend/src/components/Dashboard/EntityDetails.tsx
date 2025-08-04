@@ -32,7 +32,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       <div key={key} className="bg-gray-800/50 rounded-lg p-2 relative">
         {/* Last Modified Indicator */}
         {property.lastChanged && (
-          <div className="absolute top-2 right-2 bg-gray-900/90 border border-gray-600 text-white text-xs px-2 py-1 rounded font-medium">
+          <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium">
             {new Date(property.lastChanged).toLocaleTimeString()}
           </div>
         )}
@@ -163,7 +163,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
         <div className="bg-gray-800/50 rounded-lg p-3 relative">
           {/* Last Modified Indicator */}
           {selectedEntity.properties.source_ip.lastChanged && (
-            <div className="absolute top-2 right-2 bg-gray-900/90 border border-gray-600 text-white text-xs px-2 py-1 rounded font-medium">
+            <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium">
               {new Date(
                 selectedEntity.properties.source_ip.lastChanged
               ).toLocaleTimeString()}
