@@ -23,20 +23,23 @@ An AI-powered cybersecurity assistant built with AWS Lambda and Claude 3.5 Sonne
 The Wraithwatch ChatBot provides an intelligent interface for security analysts to interact with cybersecurity data through natural language. Built on AWS Lambda for scalability and Claude AI for advanced reasoning, it demonstrates effective AI integration patterns for security operations.
 
 ## Features
+
 ### Basic Chat Functionality
+
 - **Natural Language Processing**: Handle incoming chat messages
 - **Claude Integration**: Connect to Claude 3.5 Sonnet API
 - **Response Generation**: Generate AI-powered responses
 - **Error Handling**: Graceful error management
 
 ### Conversation Management
+
 - **Session Persistence**: Maintains conversation context
 - **History Tracking**: Conversation history and analysis
 - **Multi-turn Dialogues**: Complex multi-step conversations
 - **Context Switching**: Seamless topic transitions
 
-
 ### Technical Features
+
 - **AWS Lambda**: Serverless architecture
 - **CORS Support**: Cross-origin request handling
 - **Error Handling**: Robust error management
@@ -45,20 +48,24 @@ The Wraithwatch ChatBot provides an intelligent interface for security analysts 
 ## Technology Stack
 
 ### Core Platform
+
 - **AWS Lambda**: Serverless compute platform
 - **Node.js 22**: Latest LTS runtime
 - **TypeScript**: Type-safe development
 
 ### AI Integration
+
 - **Claude 3.5 Sonnet**: Anthropic's advanced language model
 - **Anthropic SDK**: Official Claude API client
 - **Prompt Engineering**: Optimized security prompts
 
 ### Development Tools
+
 - **Jest**: Testing framework
 - **ESLint**: Code linting
 
 ### CI/CD
+
 - **Webpack**: Bundle optimization
 - **Github Actions**: Deployment workflows
 - **Cloudformation**: AWS infrastructure
@@ -66,6 +73,7 @@ The Wraithwatch ChatBot provides an intelligent interface for security analysts 
 ## Quick Start
 
 ### Prerequisites
+
 - AWS CLI configured
 - Claude API key
 - Node.js 22+
@@ -73,17 +81,20 @@ The Wraithwatch ChatBot provides an intelligent interface for security analysts 
 ### Installation
 
 1. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 2. **Set environment variables**
+
    ```bash
    # Edit .env with environment variables (see below)
    touch .env
    ```
 
 3. **Build the application**
+
    ```bash
    yarn build
    ```
@@ -114,11 +125,13 @@ apps/chat-bot/
 ## API Endpoints
 
 ### Chat Endpoint
+
 ```http
 POST https://api.chat.wraithwatch-demo.com/api/chat
 ```
 
 **Request Body:**
+
 ```json
 {
   "message": "What threats are currently active?",
@@ -131,6 +144,7 @@ POST https://api.chat.wraithwatch-demo.com/api/chat
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -141,11 +155,13 @@ POST https://api.chat.wraithwatch-demo.com/api/chat
 ```
 
 ### Health Check
+
 ```http
 GET https://api.chat.wraithwatch-demo.com/api/health
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Wraithwatch Chat Bot is running! Send a POST request with a message to start chatting.",
@@ -191,11 +207,13 @@ TEMPERATURE=0.7
 ### Development Workflow
 
 1. **Run tests**
+
    ```bash
    yarn test
    ```
 
 2. **Check code quality**
+
    ```bash
    yarn lint:fix
    ```
@@ -212,7 +230,7 @@ TEMPERATURE=0.7
 The chatbot is deployed via GitHub Actions workflow and AWS CloudFormation:
 
 1. **Manual Trigger**: Deploy via GitHub Actions workflow dispatch
-2. **Build Process**: 
+2. **Build Process**:
    - Install dependencies
    - Lint code
    - Run unit tests
@@ -236,18 +254,21 @@ The chatbot is deployed via GitHub Actions workflow and AWS CloudFormation:
 ## Performance Optimization
 
 ### Lambda Optimization
+
 - **Cold Start Reduction**: Optimized bundle size
 - **Memory Configuration**: Appropriate memory allocation
 - **Timeout Settings**: Optimal timeout configuration
 - **Concurrency**: Request concurrency management
 
 ### AI Response Optimization
+
 - **Prompt Engineering**: Optimized prompt design
 - **Token Management**: Efficient token usage
 - **Response Caching**: Cached common responses
 - **Streaming**: Real-time response streaming
 
 ### Cost Optimization
+
 - **Request Batching**: Batch multiple requests
 - **Response Caching**: Cache frequent responses
 - **Token Usage**: Optimize token consumption
@@ -256,18 +277,21 @@ The chatbot is deployed via GitHub Actions workflow and AWS CloudFormation:
 ## Monitoring & Logging
 
 ### Application Logging
+
 - **Structured Logging**: JSON-formatted logs
 - **Request Tracking**: Request/response logging
 - **Error Logging**: Comprehensive error tracking
 - **Performance Logging**: Response time monitoring
 
 ### AWS Monitoring
+
 - **CloudWatch**: Application and infrastructure metrics
 - **Lambda Metrics**: Function performance monitoring
 - **API Gateway**: Endpoint performance tracking
 - **Error Tracking**: Error rate and type monitoring
 
 ### AI Performance
+
 - **Response Time**: Claude API response times
 - **Token Usage**: Token consumption tracking
 - **Success Rate**: Request success monitoring
@@ -276,18 +300,21 @@ The chatbot is deployed via GitHub Actions workflow and AWS CloudFormation:
 ## Security
 
 ### API Security
+
 - **CORS Configuration**: Cross-origin request handling
 - **Input Validation**: Request parameter sanitization
 - **Rate Limiting**: Protection against abuse
 - **Error Handling**: Secure error responses
 
 ### AI Security
+
 - **Prompt Injection Protection**: Input sanitization
 - **Token Limits**: Request size limitations
 - **Content Filtering**: Inappropriate content filtering
 - **Audit Logging**: Security event tracking
 
 ### Data Protection
+
 - **Encryption**: Data encryption in transit and at rest
 - **Access Control**: AWS IAM role management
 - **Secret Management**: AWS Secrets Manager integration
@@ -296,18 +323,21 @@ The chatbot is deployed via GitHub Actions workflow and AWS CloudFormation:
 ## Future Improvements
 
 ### Threat Intelligence Integration
+
 - **Entity Data Access**: Connect to DynamoDB to retrieve real entity information
 - **Threat Analysis**: Implement context-aware threat assessment using entity data
 - **Risk Scoring**: Develop automated risk calculation algorithms
 - **Recommendations**: Generate actionable security insights based on threat data
 
 ### Implementation Approach
+
 1. **Database Integration**: Add DynamoDB client to access entity data
 2. **Context Enhancement**: Pass entity context to Claude for more informed responses
 3. **Prompt Engineering**: Develop specialized prompts for cybersecurity analysis
 4. **Response Processing**: Parse and structure Claude responses for dashboard display
 
 ### Technical Implementation
+
 ```typescript
 // Example: Enhanced handler with entity context
 
@@ -324,12 +354,14 @@ interface ChatRequest {
 // Enhanced Claude prompt with entity context
 
 const buildPrompt = (message: string, entityContext?: any) => {
-  const basePrompt = "You are a cybersecurity analyst assistant...";
-  const entityInfo = entityContext ? `\nEntity Context: ${JSON.stringify(entityContext)}` : "";
+  const basePrompt = 'You are a cybersecurity analyst assistant...';
+  const entityInfo = entityContext
+    ? `\nEntity Context: ${JSON.stringify(entityContext)}`
+    : '';
   return `${basePrompt}${entityInfo}\n\nUser: ${message}`;
 };
 ```
 
 ---
 
-**Built for Wraithwatch Cybersecurity - Intelligent AI-powered threat analysis** 
+**Built for Wraithwatch Cybersecurity - Intelligent AI-powered threat analysis**

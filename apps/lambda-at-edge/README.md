@@ -23,18 +23,21 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
 ## Features
 
 ### Domain Management
+
 - **Domain Redirect**: Redirects `wraithwatch-demo.com` to `www.wraithwatch-demo.com`
 - **URL Normalization**: Adds `.html` extension to URLs without file extensions
 - **Query String Preservation**: Maintains query parameters during redirects
 - **Protocol Preservation**: Respects the original protocol (HTTP/HTTPS)
 
 ### Request Processing
+
 - **Edge Processing**: Processing at 400+ CloudFront edge locations
 - **Low Latency**: Sub-100ms response times worldwide
 - **Request Modification**: Dynamic request transformation
 - **Response Enhancement**: Real-time response optimization
 
 ### Technical Features
+
 - **TypeScript**: Type-safe edge function development
 - **Webpack**: Optimized bundle compilation
 - **Testing**: Comprehensive edge function testing
@@ -43,27 +46,32 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
 ## Technology Stack
 
 ### Core Platform
+
 - **AWS Lambda@Edge**: Edge computing platform
 - **Node.js 22**: Latest LTS runtime
 - **TypeScript**: Type-safe development
 
 ### CloudFront Integration
+
 - **CloudFront Events**: Viewer request/response handling
 - **Edge Locations**: Global edge processing
 - **Cache Behavior**: Intelligent caching strategies
 - **Origin Control**: Dynamic origin selection
 
 ### Development Tools
+
 - **Jest**: Testing framework
 - **ESLint**: Code linting
 
 ### CI/CD
+
 - **Webpack**: Bundle optimization
 - **GitHub Actions**: Deployment workflows
 
 ## Quick Start
 
 ### Prerequisites
+
 - AWS CLI configured
 - CloudFront distribution
 - Node.js 22+
@@ -71,17 +79,20 @@ The Wraithwatch Lambda@Edge function provides edge computing capabilities for th
 ### Installation
 
 1. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 2. **Set environment variables**
+
    ```bash
    # Edit .env with environment variables (see below)
    touch .env
    ```
 
 3. **Build the function**
+
    ```bash
    yarn build
    ```
@@ -117,18 +128,20 @@ The Lambda@Edge function processes CloudFront viewer request events:
 
 ```typescript
 interface CloudFrontRequestEvent {
-  Records: [{
-    cf: {
-      request: {
-        uri: string;
-        method: string;
-        headers: Record<string, any>;
-        querystring: string;
-        clientIp: string;
-        userAgent: string;
+  Records: [
+    {
+      cf: {
+        request: {
+          uri: string;
+          method: string;
+          headers: Record<string, any>;
+          querystring: string;
+          clientIp: string;
+          userAgent: string;
+        };
       };
-    };
-  }];
+    },
+  ];
 }
 ```
 
@@ -181,11 +194,13 @@ EDGE_FUNCTION_NAME=wraithwatch-edge
 ### Development Workflow
 
 1. **Run tests**
+
    ```bash
    yarn test
    ```
 
 2. **Check code quality**
+
    ```bash
    yarn lint:fix
    ```
@@ -202,7 +217,7 @@ EDGE_FUNCTION_NAME=wraithwatch-edge
 The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFormation:
 
 1. **Manual Trigger**: Deploy via GitHub Actions workflow dispatch
-2. **Build Process**: 
+2. **Build Process**:
    - Install dependencies
    - Lint code
    - Run unit tests
@@ -226,18 +241,21 @@ The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFo
 ## Performance Optimization
 
 ### Edge Function Optimization
+
 - **Bundle Size**: Minimized bundle size for fast loading
 - **Memory Configuration**: Optimal memory allocation (128MB)
 - **Timeout Settings**: 5-second timeout (CloudFront limit)
 - **Cold Start**: Optimized cold start performance
 
 ### CloudFront Optimization
+
 - **Cache Headers**: Intelligent cache control
 - **Compression**: Automatic content compression
 - **Origin Selection**: Dynamic origin routing
 - **Error Handling**: Graceful error responses
 
 ### Cost Optimization
+
 - **Function Size**: Minimized function size
 - **Execution Time**: Optimized execution time
 - **Memory Usage**: Efficient memory utilization
@@ -246,18 +264,21 @@ The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFo
 ## Monitoring & Logging
 
 ### CloudWatch Monitoring
+
 - **Edge Metrics**: CloudFront edge function metrics
 - **Performance Monitoring**: Response time tracking
 - **Error Tracking**: Error rate and type monitoring
 - **Request Monitoring**: Request volume and patterns
 
 ### Application Logging
+
 - **Structured Logging**: JSON-formatted logs
 - **Request Logging**: Request/response logging
 - **Error Logging**: Comprehensive error tracking
 - **Performance Logging**: Response time monitoring
 
 ### Health Checks
+
 - **Function Health**: Edge function status monitoring
 - **CloudFront Health**: Distribution health monitoring
 - **Performance Health**: Response time monitoring
@@ -266,18 +287,21 @@ The Lambda@Edge function is deployed via GitHub Actions workflow and AWS CloudFo
 ## Security
 
 ### Request Security
+
 - **Input Validation**: Request parameter validation
 - **Security Headers**: Automatic security header injection
 - **Rate Limiting**: Edge-level rate limiting
 - **Bot Protection**: Basic bot detection
 
 ### Response Security
+
 - **Content Security**: Response content validation
 - **Header Security**: Security header injection
 - **CORS Handling**: Cross-origin request handling
 - **Error Security**: Secure error responses
 
 ### Edge Security
+
 - **Request Filtering**: Malicious request filtering
 - **Origin Validation**: Origin request validation
 - **IP Filtering**: IP-based request filtering

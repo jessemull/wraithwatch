@@ -136,6 +136,11 @@ export const EntityItem: React.FC<EntityItemProps> = ({ entity }) => {
                 <div className="text-xs sm:text-xs text-white font-semibold mt-0.5 sm:mt-1 truncate">
                   {formatPropertyValue(propertyName, property.currentValue)}
                 </div>
+                {property.lastChanged && (
+                  <div className="text-xs text-gray-400 mt-0.5 truncate">
+                    {new Date(property.lastChanged).toLocaleTimeString()}
+                  </div>
+                )}
               </div>
             ))}
           </div>

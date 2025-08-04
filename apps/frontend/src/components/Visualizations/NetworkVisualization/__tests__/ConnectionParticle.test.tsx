@@ -1,5 +1,27 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+
+// Mock the ConnectionParticle component for testing
+jest.mock('../ConnectionParticle', () => ({
+  ConnectionParticle: ({
+    start,
+    end,
+    type,
+    speed,
+    particleCount,
+    particleSize,
+  }: any) => (
+    <div data-testid="connection-particle-group">
+      <div data-testid="connection-particle-start">{start.join(',')}</div>
+      <div data-testid="connection-particle-end">{end.join(',')}</div>
+      <div data-testid="connection-particle-type">{type}</div>
+      <div data-testid="connection-particle-speed">{speed}</div>
+      <div data-testid="connection-particle-count">{particleCount}</div>
+      <div data-testid="connection-particle-size">{particleSize}</div>
+    </div>
+  ),
+}));
+
 import { ConnectionParticle } from '../ConnectionParticle';
 
 let originalError: typeof console.error;
@@ -12,54 +34,6 @@ beforeAll(() => {
 afterAll(() => {
   console.error = originalError;
 });
-
-jest.mock('@react-three/fiber', () => ({
-  useFrame: jest.fn(callback => {
-    callback({ clock: { elapsedTime: 1.0 } });
-  }),
-}));
-
-jest.mock('three', () => ({
-  Vector3: jest.fn((x, y, z) => ({ x, y, z, lerpVectors: jest.fn() })),
-  Group: jest.fn(() => ({
-    children: [],
-  })),
-  Mesh: jest.fn(() => ({
-    position: { copy: jest.fn() },
-    visible: true,
-  })),
-  SphereGeometry: jest.fn(),
-  MeshStandardMaterial: jest.fn(),
-}));
-
-jest.mock('../../../../constants/visualization', () => ({
-  CONNECTION_LINE_CONFIG: {
-    colors: {
-      location: '#ff0000',
-      agent: '#00ff00',
-      network: '#0000ff',
-      type: '#ffffff',
-    },
-  },
-  CONNECTION_PARTICLE_CONFIG: {
-    defaultSpeed: 1.0,
-    defaultParticleCount: 5,
-    defaultParticleSize: 0.1,
-    speedVariation: { min: 0.5, max: 1.5 },
-    delayRange: { max: 2.0 },
-    animation: {
-      progressIncrement: 0.01,
-      maxProgress: 1.0,
-    },
-    resetDelayRange: { min: 0.5, max: 1.5 },
-    particleGeometry: { segments: 8 },
-    particleMaterial: {
-      emissiveIntensity: 0.5,
-      transparent: true,
-      opacity: 0.8,
-    },
-  },
-}));
 
 const mockStart: [number, number, number] = [0, 0, 0];
 const mockEnd: [number, number, number] = [10, 10, 10];

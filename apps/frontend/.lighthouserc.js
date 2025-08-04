@@ -22,10 +22,12 @@ module.exports = {
     },
     collect: {
       numberOfRuns: 1,
-      ...(isProduction ? {} : {
-        startServerCommand: 'yarn dev',
-        startServerReadyPattern: 'started server on',
-      }),
+      ...(isProduction
+        ? {}
+        : {
+            startServerCommand: 'yarn dev',
+            startServerReadyPattern: 'started server on',
+          }),
       url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
       settings: {
         formFactor: 'desktop',
