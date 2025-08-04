@@ -1,29 +1,61 @@
-import React from 'react';
-
-interface DataParticleProps {
-  position: [number, number, number];
-  type?: 'threat' | 'ambient';
-}
+import React, { useRef, useMemo } from 'react';
+import { DataParticleProps } from '../../../types/visualization';
+import { DATA_PARTICLE_CONFIG } from '../../../constants/visualization';
 
 export const DataParticle: React.FC<DataParticleProps> = ({
   position,
   type = 'ambient',
 }) => {
-  const time = Date.now() * 0.001;
-  const pulse = Math.sin(time * 3) * 0.5 + 0.5;
+  const timeRef = useRef(Date.now() * 0.001);
 
-  const color = type === 'threat' ? '#ff4444' : '#ff6b35';
-  const size = type === 'threat' ? 0.12 : 0.08;
+  const particleStyle = useMemo(
+    () =>
+      type === 'threat'
+        ? DATA_PARTICLE_CONFIG.styles.threat
+        : DATA_PARTICLE_CONFIG.styles.ambient,
+    [type]
+  );
+
+  const animationValues = useMemo(() => {
+    const time = timeRef.current;
+    const pulse =
+      Math.sin(time * DATA_PARTICLE_CONFIG.animation.speed) * 0.5 + 0.5;
+
+    return {
+      size:
+        particleStyle.size *
+        (1 +
+          pulse *
+            (DATA_PARTICLE_CONFIG.animation.sizeMultiplier.max -
+              DATA_PARTICLE_CONFIG.animation.sizeMultiplier.min)),
+      opacity:
+        DATA_PARTICLE_CONFIG.animation.opacityRange.min +
+        pulse *
+          (DATA_PARTICLE_CONFIG.animation.opacityRange.max -
+            DATA_PARTICLE_CONFIG.animation.opacityRange.min),
+      emissiveIntensity:
+        DATA_PARTICLE_CONFIG.animation.emissiveRange.min +
+        pulse *
+          (DATA_PARTICLE_CONFIG.animation.emissiveRange.max -
+            DATA_PARTICLE_CONFIG.animation.emissiveRange.min),
+    };
+  }, [particleStyle.size]);
 
   return (
     <mesh position={position}>
-      <sphereGeometry args={[size * (1 + pulse * 0.3), 8, 8]} />
+      <sphereGeometry
+        args={[
+          animationValues.size,
+          DATA_PARTICLE_CONFIG.geometry.segments,
+          DATA_PARTICLE_CONFIG.geometry.segments,
+        ]}
+      />
       <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={0.8 + pulse * 0.4}
+        color={particleStyle.color}
+        emissive={particleStyle.color}
+        emissiveIntensity={animationValues.emissiveIntensity}
         transparent={true}
-        opacity={0.7 + pulse * 0.3}
+        opacity={animationValues.opacity}
       />
     </mesh>
   );

@@ -1,45 +1,52 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Entity } from '../../../types/entity';
 import { Text } from '@react-three/drei';
-
-interface MatrixNodeProps {
-  entity: Entity;
-  position: [number, number, number];
-  isSelected: boolean;
-  onClick: () => void;
-}
+import { MatrixNodeProps } from '../../../types/visualization';
+import {
+  THREAT_SEVERITY_CONFIG,
+  MATRIX_NODE_CONFIG,
+} from '../../../constants/visualization';
 
 const getThreatColor = (entity: Entity, position: [number, number, number]) => {
-  if (entity.type !== 'Threat') return '#4ecdc4';
+  if (entity.type !== 'Threat') return MATRIX_NODE_CONFIG.defaultColor;
 
-  // Use Y coordinate (severity) for color
   const y = position[1];
-  if (y >= 5) return '#ff4444'; // Critical (red)
-  if (y >= 3) return '#ff6b35'; // High (orange)
-  if (y >= 1) return '#ffa726'; // Medium (yellow-orange)
-  return '#ffeb3b'; // Low (yellow)
+  const { critical, high, medium, low } = THREAT_SEVERITY_CONFIG;
+
+  if (y >= critical.threshold) return critical.color;
+  if (y >= high.threshold) return high.color;
+  if (y >= medium.threshold) return medium.color;
+  return low.color;
 };
 
 const getThreatSize = (entity: Entity, position: [number, number, number]) => {
-  if (entity.type !== 'Threat') return 0.4;
+  if (entity.type !== 'Threat') return MATRIX_NODE_CONFIG.sizeRange.base;
 
-  // Use Z coordinate (threat score) for size
   const z = position[2];
-  const normalizedZ = (z + 3) / 6; // Convert from -3 to +3 range to 0-1
-  return Math.max(0.3, Math.min(0.8, 0.3 + normalizedZ * 0.5));
+  const { zRange } = MATRIX_NODE_CONFIG.coordinateMapping;
+  const normalizedZ = (z - zRange.min) / (zRange.max - zRange.min);
+  const size =
+    MATRIX_NODE_CONFIG.sizeRange.min +
+    normalizedZ *
+      (MATRIX_NODE_CONFIG.sizeRange.max - MATRIX_NODE_CONFIG.sizeRange.min);
+
+  return Math.max(
+    MATRIX_NODE_CONFIG.sizeRange.min,
+    Math.min(MATRIX_NODE_CONFIG.sizeRange.max, size)
+  );
 };
 
 const getThreatLabel = (entity: Entity, position: [number, number, number]) => {
   if (entity.type !== 'Threat') return entity.name;
 
-  // Use coordinates for meaningful labels
   const [x, y, z] = position;
+  const { critical, high, medium, low } = THREAT_SEVERITY_CONFIG;
 
   // Y coordinate = severity
-  let severity = 'low';
-  if (y >= 5) severity = 'critical';
-  else if (y >= 3) severity = 'high';
-  else if (y >= 1) severity = 'medium';
+  let severity = low.label;
+  if (y >= critical.threshold) severity = critical.label;
+  else if (y >= high.threshold) severity = high.label;
+  else if (y >= medium.threshold) severity = medium.label;
 
   // X coordinate = detection count (rough mapping)
   let detectionLevel = 'low';
@@ -47,7 +54,10 @@ const getThreatLabel = (entity: Entity, position: [number, number, number]) => {
   else if (x >= -1) detectionLevel = 'medium';
 
   // Z coordinate = threat score percentage
-  const threatScorePercent = Math.round(((z + 3) / 6) * 100);
+  const { zRange } = MATRIX_NODE_CONFIG.coordinateMapping;
+  const threatScorePercent = Math.round(
+    ((z - zRange.min) / (zRange.max - zRange.min)) * 100
+  );
 
   return `${entity.name}\n${severity} | ${threatScorePercent}%\n${detectionLevel} detections`;
 };
@@ -58,13 +68,26 @@ export const MatrixNode: React.FC<MatrixNodeProps> = ({
   isSelected,
   onClick,
 }) => {
-  const color = getThreatColor(entity, position);
-  const size = getThreatSize(entity, position);
-  const label = getThreatLabel(entity, position);
+  const color = useMemo(
+    () => getThreatColor(entity, position),
+    [entity, position]
+  );
+  const size = useMemo(
+    () => getThreatSize(entity, position),
+    [entity, position]
+  );
+  const label = useMemo(
+    () => getThreatLabel(entity, position),
+    [entity, position]
+  );
+
+  const handleClick = useCallback(() => {
+    onClick();
+  }, [onClick]);
 
   return (
     <group position={position}>
-      <mesh onClick={onClick}>
+      <mesh onClick={handleClick}>
         <sphereGeometry args={[size, 16, 16]} />
         <meshStandardMaterial
           color={color}
@@ -76,12 +99,12 @@ export const MatrixNode: React.FC<MatrixNodeProps> = ({
       </mesh>
 
       <Text
-        position={[0, size + 0.4, 0]}
-        fontSize={0.12}
+        position={[0, size + MATRIX_NODE_CONFIG.label.offset, 0]}
+        fontSize={MATRIX_NODE_CONFIG.label.fontSize}
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        maxWidth={2}
+        maxWidth={MATRIX_NODE_CONFIG.label.maxWidth}
         textAlign="center"
       >
         {label}
