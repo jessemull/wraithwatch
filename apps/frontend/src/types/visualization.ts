@@ -1,6 +1,6 @@
 import React from 'react';
 import { EntityChange } from './api';
-import { Entity } from './entity';
+import { Entity, EntityPosition } from './entity';
 import * as THREE from 'three';
 
 export interface EntityStyle {
@@ -22,6 +22,7 @@ export interface EntityStyleBase {
   color: string;
   textColor: string;
   pulse: boolean;
+  rotate?: boolean;
 }
 
 export interface EntityStyleConfig {
@@ -178,3 +179,49 @@ export interface Particle {
 }
 
 export type VisualizationType = 'timeline' | 'network' | 'matrix';
+
+// Matrix Visualization Types
+export interface MatrixSceneProps {
+  entities: Entity[];
+  positions?: EntityPosition[];
+  selectedEntity?: Entity;
+  onEntitySelect?: (entity: Entity) => void;
+}
+
+export interface MatrixNodeProps {
+  entity: Entity;
+  position: [number, number, number];
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+export interface DataParticleProps {
+  position: [number, number, number];
+  type?: 'threat' | 'ambient';
+}
+
+export interface DataFlowLineProps {
+  start: [number, number, number];
+  end: [number, number, number];
+}
+
+export interface ThreatSeverityConfig {
+  critical: { threshold: number; color: string; label: string };
+  high: { threshold: number; color: string; label: string };
+  medium: { threshold: number; color: string; label: string };
+  low: { threshold: number; color: string; label: string };
+}
+
+export interface MatrixGridConfig {
+  xLines: number;
+  zLines: number;
+  spacing: number;
+  baseY: number;
+}
+
+export interface MatrixTextConfig {
+  fontSize: number;
+  color: string;
+  anchorX: 'center' | 'left' | 'right';
+  anchorY: 'middle' | 'top' | 'bottom';
+}

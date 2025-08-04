@@ -31,9 +31,14 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
     return (
       <div key={key} className="bg-gray-800/50 rounded-lg p-2 relative">
         {property.lastChanged && (
-          <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium">
-            {new Date(property.lastChanged).toLocaleTimeString()}
-          </div>
+          <>
+            <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium hidden sm:block">
+              {new Date(property.lastChanged).toLocaleTimeString()}
+            </div>
+            <div className="text-gray-400 text-xs mb-1 sm:hidden">
+              {new Date(property.lastChanged).toLocaleTimeString()}
+            </div>
+          </>
         )}
         <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
           {formatPropertyName(key)}
@@ -153,7 +158,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {Object.entries(selectedEntity.properties || {})
           .filter(([key]) => key !== 'source_ip')
           .map(([key, property]) => renderProperty(key, property))}
@@ -161,11 +166,18 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       {selectedEntity.properties?.source_ip?.currentValue && (
         <div className="bg-gray-800/50 rounded-lg p-3 relative">
           {selectedEntity.properties.source_ip.lastChanged && (
-            <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium">
-              {new Date(
-                selectedEntity.properties.source_ip.lastChanged
-              ).toLocaleTimeString()}
-            </div>
+            <>
+              <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium hidden sm:block">
+                {new Date(
+                  selectedEntity.properties.source_ip.lastChanged
+                ).toLocaleTimeString()}
+              </div>
+              <div className="text-gray-400 text-xs mb-1 sm:hidden">
+                {new Date(
+                  selectedEntity.properties.source_ip.lastChanged
+                ).toLocaleTimeString()}
+              </div>
+            </>
           )}
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
             Source IP
