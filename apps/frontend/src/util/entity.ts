@@ -1,5 +1,6 @@
 import { MAX_PROPERTY_HISTORY_LENGTH } from '../constants';
 import { Entity } from '../types';
+import { formatSnakeCase } from './format';
 
 // Entity type color mapping - shared across components...
 
@@ -72,15 +73,15 @@ export const getStatusColor = (name: string, value: string): string => {
 // Utility functions for entity property formatting...
 
 export const formatPropertyName = (name: string): string => {
-  return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return formatSnakeCase(name);
 };
 
 export const formatText = (text: string): string => {
-  return text.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return formatSnakeCase(text);
 };
 
 export const formatEntityType = (entityType: string): string => {
-  return entityType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return formatSnakeCase(entityType);
 };
 
 export const getUnit = (name: string): string => {
