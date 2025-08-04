@@ -169,13 +169,11 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
         <div className="bg-gray-800/50 rounded-lg p-3 relative">
           {selectedEntity.properties.source_ip.lastChanged && (
             <>
-              {/* Desktop timestamp - upper right */}
               <div className="absolute top-2 right-2 text-white text-xs px-2 py-1 font-medium hidden sm:block">
                 {new Date(
                   selectedEntity.properties.source_ip.lastChanged
                 ).toLocaleTimeString()}
               </div>
-              {/* Mobile timestamp - underneath title */}
               <div className="text-gray-400 text-xs mb-1 sm:hidden">
                 {new Date(
                   selectedEntity.properties.source_ip.lastChanged
