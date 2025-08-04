@@ -105,38 +105,7 @@ export const Dashboard: React.FC = () => {
         <div className="absolute bottom-40 left-1/3 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-500"></div>
       </div>
       <div className="relative px-4 py-8">
-        {loading ? (
-          <div className="mb-10 min-h-[120px] sm:min-h-[100px]">
-            <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-              <div className="text-center sm:text-left">
-                <div className="h-8 bg-gray-700 rounded mb-4 animate-pulse"></div>
-                <div className="flex flex-col items-center space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4 mt-4 sm:mt-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 rounded-full bg-gray-600 animate-pulse"></div>
-                    <div className="h-4 bg-gray-700 rounded w-32 animate-pulse"></div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 rounded-full bg-gray-600 animate-pulse"></div>
-                    <div className="h-4 bg-gray-700 rounded w-36 animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-center sm:justify-end space-x-4">
-                <div className="text-center">
-                  <div className="text-sm text-gray-400">Status</div>
-                  <div className="h-4 bg-gray-700 rounded w-16 animate-pulse mt-1"></div>
-                </div>
-                <div className="w-px h-8 bg-gray-600"></div>
-                <div className="text-center">
-                  <div className="text-sm text-gray-400">Dashboard</div>
-                  <div className="h-4 bg-gray-700 rounded w-20 animate-pulse mt-1"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <WelcomeSection />
-        )}
+        <WelcomeSection />
         <div className="mb-6">
           <h1 className="sr-only">Wraithwatch Cyber Defense Dashboard</h1>
           <h2 className="text-xl font-semibold text-white mb-4">
