@@ -8,6 +8,7 @@ import {
   formatEntityType,
   getEntityName,
 } from '../../util/entity';
+import { formatLabel } from '../../util/format';
 
 interface EntityDetailsProps {
   selectedEntity: Entity | undefined;
@@ -78,11 +79,11 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
               <div
                 className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(key, value)}`}
               >
-                {value.toUpperCase()}
+                {formatLabel(value).toUpperCase()}
               </div>
             ) : (
               <p className="text-sm text-gray-300 capitalize">
-                {value.replace('_', ' ')}
+                {formatLabel(value)}
               </p>
             )}
           </div>
